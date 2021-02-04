@@ -1,12 +1,14 @@
+package imdb
+
 import org.scalatest.funsuite.AnyFunSuite
 
 import scala.io.Source
 
-class ParserTest extends AnyFunSuite {
+class IMDBParserTest extends AnyFunSuite {
   val starWarsQuotesRaw: String = Source.fromResource("star_wars.html").mkString("")
 
   test("parse star wars") {
-    val parsed = Parser.parse(starWarsQuotesRaw)
+    val parsed = IMDBParser.parse(starWarsQuotesRaw)
     assert(parsed.length == 118)
 
     val firstQuote = parsed.head

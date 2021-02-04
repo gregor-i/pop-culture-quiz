@@ -1,3 +1,5 @@
+package model
+
 case class Quote(id: String, statements: Seq[Statement])
 case class Statement(character: Option[String], items: Seq[Item])
 
