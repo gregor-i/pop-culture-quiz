@@ -1,0 +1,76 @@
+[
+  [
+    [
+      "هذا النص سوف يسافر حول العالم",
+      "This text will travel around the globe",
+      null,
+      null,
+      3,
+      null,
+      null,
+      [
+        []
+      ],
+      [
+        [
+          [
+            "76ff5bdda0bcf38f8f39347a53ce198d",
+            "en_ar_2020q2.md"
+          ]
+        ]
+      ]
+    ],
+    [
+      null,
+      null,
+      "hadha alnasi sawf yusafir hawl alealam"
+    ]
+  ],
+  null,
+  "en",
+  null,
+  null,
+  [
+    [
+      "This text will travel around the globe",
+      null,
+      [
+        [
+          "هذا النص سوف يسافر حول العالم",
+          0,
+          true,
+          false
+        ],
+        [
+          "وهذا النص السفر في جميع أنحاء العالم",
+          0,
+          true,
+          false
+        ]
+      ],
+      [
+        [
+          0,
+          38
+        ]
+      ],
+      "This text will travel around the globe",
+      0,
+      0
+    ]
+  ],
+  1.0,
+  [],
+  [
+    [
+      "en"
+    ],
+    null,
+    [
+      1.0
+    ],
+    [
+      "en"
+    ]
+  ]
+]
