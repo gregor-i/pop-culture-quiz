@@ -13,7 +13,7 @@ object Main {
     implicit val as: ActorSystem      = ActorSystem()
     implicit val ex: ExecutionContext = as.dispatcher
 
-    val fut = TranslationChain(args)
+    val fut = TranslationChain(texts = args.toList)
 
     println(Await.result(fut, Duration.Inf))
 
