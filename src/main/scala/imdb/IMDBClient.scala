@@ -11,7 +11,8 @@ object IMDBClient {
   private def quotesUrl(movieId: String) = s"https://www.imdb.com/title/${movieId}/quotes/"
 
   def getMovePage(movieId: String)(implicit as: ActorSystem, ex: ExecutionContext): Future[String] =
-    Http().singleRequest(HttpRequest(uri = quotesUrl(movieId)))
+    Http()
+      .singleRequest(HttpRequest(uri = quotesUrl(movieId)))
       .flatMap(checkStatus(_))
       .flatMap(_.entity.toStrict(10.second))
       .map(_.getData().utf8String)
@@ -19,7 +20,7 @@ object IMDBClient {
   private def checkStatus(response: HttpResponse)(implicit ex: ExecutionContext): Future[HttpResponse] =
     response match {
       case response if response.status == StatusCodes.OK => Future.successful(response)
-      case response => Future.failed(new Exception(s"IMDB responded with status code ${response.status}"))
+      case response                                      => Future.failed(new Exception(s"IMDB responded with status code ${response.status}"))
     }
 
 }

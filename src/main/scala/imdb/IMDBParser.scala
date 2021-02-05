@@ -13,9 +13,9 @@ object IMDBParser {
       val statements = quoteElement.select(".sodatext").head.children.map { p =>
         val character = p.select(".character").headOption.map(_.text)
         val items = p.childNodes.flatMap {
-          case TextNode(content) => Some(Speech(content)).flatMap(sanitise)
+          case TextNode(content)                    => Some(Speech(content)).flatMap(sanitise)
           case ElementNode(e) if isClass(e, "fine") => Some(Blocking(e.text))
-          case _ => None
+          case _                                    => None
         }.toSeq
         Statement(character = character, items = items)
       }
@@ -33,7 +33,7 @@ object IMDBParser {
       case ' ' => true
       case '[' => true
       case ']' => true
-      case _ => false
+      case _   => false
     }
 
     val trimmed = speech.text.dropWhile(toRemove).reverse.dropWhile(toRemove).reverse

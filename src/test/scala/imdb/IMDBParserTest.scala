@@ -1,5 +1,6 @@
 package imdb
 
+import model.{Blocking, Speech, Statement}
 import org.scalatest.funsuite.AnyFunSuite
 
 import scala.io.Source

@@ -13,6 +13,8 @@ libraryDependencies += "net.ruippeixotog" %% "scala-scraper" % "2.2.0"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.2" % Test
 
+libraryDependencies += "io.lemonlabs"            %% "scala-uri"          % "3.0.0"
+
 {
   val version = "0.13.0"
   libraryDependencies ++= Seq(

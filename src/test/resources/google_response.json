@@ -1,0 +1,109 @@
+[
+  [
+    [
+      "Hello World\n",
+      "hallo welt\n",
+      null,
+      null,
+      10,
+      null,
+      null,
+      null,
+      [
+        [
+          null,
+          true
+        ]
+      ]
+    ],
+    [
+      "How are you",
+      "wie geht es dir",
+      null,
+      null,
+      1
+    ]
+  ],
+  null,
+  "de",
+  null,
+  null,
+  [
+    [
+      "hallo welt",
+      null,
+      [
+        [
+          "Hello World",
+          1000,
+          true,
+          false
+        ]
+      ],
+      [
+        [
+          0,
+          10
+        ]
+      ],
+      "hallo welt",
+      0,
+      0
+    ],
+    [
+      "\n",
+      null,
+      null,
+      [
+        [
+          0,
+          1
+        ]
+      ],
+      "\n",
+      0,
+      0
+    ],
+    [
+      "wie geht es dir",
+      null,
+      [
+        [
+          "How are you",
+          1000,
+          true,
+          false
+        ],
+        [
+          "How is it going",
+          1000,
+          true,
+          false
+        ]
+      ],
+      [
+        [
+          0,
+          15
+        ]
+      ],
+      "wie geht es dir",
+      0,
+      0
+    ]
+  ],
+  1.0,
+  [],
+  [
+    [
+      "de"
+    ],
+    null,
+    [
+      1.0
+    ],
+    [
+      "de"
+    ]
+  ]
+]
