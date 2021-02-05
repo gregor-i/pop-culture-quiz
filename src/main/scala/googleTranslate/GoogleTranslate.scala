@@ -36,37 +36,40 @@ object GoogleTranslate {
       .addParam("q", text.mkString("\n"))
       .toStringPunycode
 
-  def apply(text: Seq[String], src: String, dest: String)(implicit as: ActorSystem, ex: ExecutionContext): Future[Map[String, String]] =
-    for{
-    response <- Http()
-      .singleRequest(HttpRequest(uri = uri(text = text, src = src, dest = dest)))
-      .flatMap(checkStatus)
+  def apply(text: Seq[String], src: String, dest: String)(
+      implicit as: ActorSystem,
+      ex: ExecutionContext
+  ): Future[Map[String, String]] =
+    for {
+      response <- Http()
+        .singleRequest(HttpRequest(uri = uri(text = text, src = src, dest = dest)))
+        .flatMap(checkStatus)
       body <- response.entity.toStrict(10.second)
-      data = body.getData().utf8String
-      json = parser.parse(data)
-        decoded = json.flatMap(_.as(decoder))
+      data    = body.getData().utf8String
+      json    = parser.parse(data)
+      decoded = json.flatMap(_.as(decoder))
       result <- decoded match {
-        case Left(_) => Future.failed(new Exception(s"data ${data} could not be decoded"))
+        case Left(_)            => Future.failed(new Exception(s"data ${data} could not be decoded"))
         case Right(translation) => Future.successful(translation)
       }
-  }  yield result
+    } yield result
 
-  def decoder: Decoder[Map[String, String]] = Decoder.instance{ cursor =>
+  def decoder: Decoder[Map[String, String]] = Decoder.instance { cursor =>
     cursor.downArray
       .as(Decoder.decodeSeq(decoderTranslation))
       .map(_.flatten.toMap)
   }
 
-  private def decoderTranslation: Decoder[Option[(String, String)]] = Decoder.instance{ cursor =>
+  private def decoderTranslation: Decoder[Option[(String, String)]] = Decoder.instance { cursor =>
     Right {
       for {
         translation <- cursor.downN(0).as[String].toOption
-        original <- cursor.downN(1).as[String].toOption
+        original    <- cursor.downN(1).as[String].toOption
       } yield (original.trim, translation.trim)
     }
   }
 
-
+  // 429 means bann
   private def checkStatus(response: HttpResponse)(implicit ex: ExecutionContext): Future[HttpResponse] =
     response match {
       case response if response.status == StatusCodes.OK => Future.successful(response)

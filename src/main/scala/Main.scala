@@ -10,21 +10,25 @@ import scala.util.Using
 
 object Main {
   def main(args: Array[String]): Unit = {
-    implicit val as: ActorSystem = ActorSystem()
+    implicit val as: ActorSystem      = ActorSystem()
     implicit val ex: ExecutionContext = as.dispatcher
 
-    val starWarsId = "tt0121766"
+    val fut = TranslationChain(args)
 
-    val translatedQuotes = Await.result(
-    for {
-      quotes <- IMDB.getMovieQuotes(starWarsId)
-      translatedQuotes <- Future.sequence(quotes.map(TranslateQuote(_)))
-      _ <- as.terminate()
-    } yield translatedQuotes
-    , Duration.Inf)
+    println(Await.result(fut, Duration.Inf))
 
+    as.terminate()
 
-    writeToFile(translatedQuotes, s"translated-quotes.$starWarsId.json")
+//    val starWarsId = "tt0121766"
+//
+//    val translatedQuotes = Await.result(
+//    for {
+//      quotes <- IMDB.getMovieQuotes(starWarsId)
+//      translatedQuotes <- Future.sequence(quotes.map(TranslateQuote(_)))
+//      _ <- as.terminate()
+//    } yield translatedQuotes
+//    , Duration.Inf)
+//    writeToFile(translatedQuotes, s"translated-quotes.$starWarsId.json")
   }
 
   def writeToFile(translatedQuotes: Seq[TranslatedQuote], file: String): Unit = {
