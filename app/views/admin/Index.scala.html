@@ -44,16 +44,34 @@
     <h2 class="title">Quotes: </h2>
     <table class="table">
       <tr>
-        <th>Movie Id</th>
-        <th>Quote Id</th>
+        <th><div>Movie Id</div><div>Quote Id</div></th>
+        <th>Votes</th>
         <th>Quote</th>
       </tr>
       @for(quote <- quotes) {
         <tr>
-          <td>@{quote.movieId}</td>
-          <td>@{quote.quoteId}</td>
+          <td><div>@{quote.movieId}</div><div>@{quote.quoteId}</div></td>
           <td>
-            todo: quote
+            @quote.quote.count match {
+              case Some((upVotes, countVotes)) => { @upVotes / @countVotes }
+              case None => { - }
+            }
+          </td>
+          <td>
+            @for(statement <- quote.quote.statements){
+              <div>
+                @statement.character match {
+                  case Some(character) => { <b>@{character}: </b>}
+                  case None => {}
+                }
+                @for(item <- statement.items){
+                  @item match {
+                    case Blocking(blocking) => {[<i>@blocking</i>] }
+                    case Speech(speech) => {<span>@speech</span> }
+                  }
+                }
+              </div>
+            }
           </td>
         </tr>
       }
