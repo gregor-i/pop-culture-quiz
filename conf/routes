@@ -1,7 +1,10 @@
 # API
-POST           /api/crawl-quotes                                 controller.DataController.crawlMovie(movieId: String)
+POST           /api/register-movie                              controller.DataController.registerMovie(movieId: String)
+
+# Admin
+GET           /                                                 controller.AdminUiController.index()
 
 # Frontend
-GET           /assets/*path                                     controller.UiController.asset(path: String, folder = "/public/assets")
-GET           /                                                 controller.UiController.frontend(path = "")
-GET           /*path                                            controller.UiController.frontend(path: String)
+#GET           /assets/*path                                     controller.UiController.asset(path: String, folder = "/public/assets")
+#GET           /                                                 controller.UiController.frontend(path = "")
+#GET           /*path                                            controller.UiController.frontend(path: String)

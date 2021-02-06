@@ -21,8 +21,6 @@ class IMDBParserTest extends AnyFunSuite {
     assert(firstQuote.statements.length == 3)
     assert(firstQuote.count.contains((480, 482)))
 
-    println(firstQuote)
-
     val firstStatement = firstQuote.statements.head
     assert(
       firstStatement == Statement(

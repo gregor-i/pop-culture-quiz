@@ -10,7 +10,6 @@ sealed trait Item
 case class Blocking(text: String) extends Item
 case class Speech(text: String)   extends Item
 
-
 object Quote {
   implicit val codec: Codec[Quote] = io.circe.generic.semiauto.deriveCodec[Quote]
 }

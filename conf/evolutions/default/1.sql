@@ -4,8 +4,7 @@
 
 CREATE TABLE movies (
   movie_id varchar NOT NULL, -- ie tt1345836
-  title varchar NOT NULL,
-  last_crawled_at timestamp with time zone,
+  state varchar,
   PRIMARY KEY (movie_id)
 );
 

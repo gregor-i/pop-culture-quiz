@@ -6,8 +6,7 @@ import net.ruippeixotog.scalascraper.model.{Element, ElementNode, TextNode}
 
 object IMDBParser {
   def extractTitle(rawHtml: String): String = {
-    JsoupBrowser().parseString(rawHtml).body.select(".subpage_title_block .parent a").head
-      .text
+    JsoupBrowser().parseString(rawHtml).body.select(".subpage_title_block .parent a").head.text
   }
 
   def extractQuotes(rawHtml: String): Map[String, Quote] = {
