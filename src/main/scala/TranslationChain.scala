@@ -27,7 +27,7 @@ object TranslationChain {
       implicit as: ActorSystem,
       ex: ExecutionContext
   ): Future[Map[String, String]] = {
-    GoogleTranslate(src = src, dest = dest, text = translations.values.toSeq)
+    GoogleTranslate(src = src, dest = dest, texts = translations.values.toSeq)
       .map { nextTranslation =>
         println(s"translation step: ${src} => ${dest}\n${nextTranslation}")
         translations.transform((_, value) => nextTranslation(value))

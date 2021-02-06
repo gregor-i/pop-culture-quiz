@@ -10,6 +10,9 @@ object IMDBParser {
       quoteElement <- JsoupBrowser().parseString(rawHtml).body.select(".quote")
     } yield {
       val id = quoteElement.attr("id")
+      val votes = quoteElement.select(".interesting-count-text").map(_.text.trim).collectFirst{
+        case s"${upvotes} of ${votes} found this interesting" => (upvotes.toInt, votes.toInt)
+      }
       val statements = quoteElement.select(".sodatext").head.children.map { p =>
         val character = p.select(".character").headOption.map(_.text)
         val items = p.childNodes.flatMap {
@@ -20,7 +23,7 @@ object IMDBParser {
         Statement(character = character, items = items)
       }
 
-      Quote(id, statements.toSeq)
+      Quote(id, statements.toSeq, votes)
     }).toList
   }
 

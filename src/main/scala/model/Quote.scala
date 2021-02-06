@@ -1,6 +1,6 @@
 package model
 
-case class Quote(id: String, statements: Seq[Statement])
+case class Quote(id: String, statements: Seq[Statement], count: Option[(Int, Int)])
 case class Statement(character: Option[String], items: Seq[Item])
 
 sealed trait Item
