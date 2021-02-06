@@ -40,7 +40,7 @@ object GoogleTranslate {
       implicit as: ActorSystem,
       ex: ExecutionContext
   ): Future[Map[String, String]] = {
-    if(texts.isEmpty)
+    if (texts.isEmpty)
       Future.failed(new Exception("no texts given to translate"))
     else
       for {

@@ -25,7 +25,7 @@ class GoogleTranslateTest extends AnyFunSuite {
 
     io.circe.parser.decode(response)(GoogleTranslate.decoder) match {
       case Right(value) => value
-      case Left(value) => throw value
+      case Left(value)  => throw value
     }
   }
 }

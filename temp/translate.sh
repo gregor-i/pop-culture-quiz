@@ -1,0 +1,1 @@
+curl -v "https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=en&hl=en&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&ie=UTF-8&oe=UTF-8&otf=1&ssel=0&tsel=0&tk=xxxx&q=hallo+welt%0Awie+geht+es+dir"

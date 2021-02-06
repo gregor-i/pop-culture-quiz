@@ -52,6 +52,13 @@ Map(Join the ranks of the legendary force of soldiers, scientists, adventurers a
 
 note: Google Translate may ban you for some time if you use it too much.
 
+## running with backend:
+the backend requires a running postgres instance, configured with the environment variable `DATABASE_URL`.
+
+ie:
+`DATABASE_URL="jdbc:postgresql://localhost:5432/" sbt`
+
+
 ## related work:
 
 * https://github.com/arnaudjuracek/google-translate-chain

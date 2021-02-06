@@ -8,14 +8,20 @@ import scala.io.Source
 class IMDBParserTest extends AnyFunSuite {
   val starWarsQuotesRaw: String = Source.fromResource("star_wars.html").mkString("")
 
-  test("parse star wars") {
-    val parsed = IMDBParser.parse(starWarsQuotesRaw)
-    assert(parsed.length == 118)
+  test("parse star wars title") {
+    val parsed = IMDBParser.extractTitle(starWarsQuotesRaw)
+    assert(parsed == "Star Wars: Episode III - Die Rache der Sith")
+  }
 
-    val firstQuote = parsed.head
-    assert(firstQuote.id == "qt0333083")
+  test("parse star wars quotes") {
+    val parsed = IMDBParser.extractQuotes(starWarsQuotesRaw)
+    assert(parsed.size == 118)
+
+    val firstQuote = parsed("qt0333083")
     assert(firstQuote.statements.length == 3)
     assert(firstQuote.count.contains((480, 482)))
+
+    println(firstQuote)
 
     val firstStatement = firstQuote.statements.head
     assert(

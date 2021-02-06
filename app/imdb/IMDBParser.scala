@@ -5,12 +5,17 @@ import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import net.ruippeixotog.scalascraper.model.{Element, ElementNode, TextNode}
 
 object IMDBParser {
-  def parse(rawHtml: String): Seq[Quote] = {
+  def extractTitle(rawHtml: String): String = {
+    JsoupBrowser().parseString(rawHtml).body.select(".subpage_title_block .parent a").head
+      .text
+  }
+
+  def extractQuotes(rawHtml: String): Map[String, Quote] = {
     (for {
       quoteElement <- JsoupBrowser().parseString(rawHtml).body.select(".quote")
     } yield {
       val id = quoteElement.attr("id")
-      val votes = quoteElement.select(".interesting-count-text").map(_.text.trim).collectFirst{
+      val votes = quoteElement.select(".interesting-count-text").map(_.text.trim).collectFirst {
         case s"${upvotes} of ${votes} found this interesting" => (upvotes.toInt, votes.toInt)
       }
       val statements = quoteElement.select(".sodatext").head.children.map { p =>
@@ -23,8 +28,8 @@ object IMDBParser {
         Statement(character = character, items = items)
       }
 
-      Quote(id, statements.toSeq, votes)
-    }).toList
+      id -> Quote(statements.toSeq, votes)
+    }).toMap
   }
 
   private def isClass(element: Element, expected: String): Boolean =
