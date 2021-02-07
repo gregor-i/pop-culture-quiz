@@ -12,7 +12,7 @@
     <logger name="application" level="DEBUG"/>
     <logger name="akka.streams.Materializer" level="DEBUG"/>
 
-    <root level="WARN">
+    <root level="DEBUG">
         <appender-ref ref="STDOUT"/>
     </root>
 

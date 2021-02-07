@@ -13,7 +13,6 @@ class DataController @Inject() (movieRepo: MovieRepo, quoteRepo: QuoteRepo)(impl
   def registerMovie(movieId: String) = Action {
     movieRepo.get(movieId) match {
       case Some(_) =>
-        movieRepo.delete(movieId)
         Accepted("Movie already registered")
       case None =>
         movieRepo.addNewMovie(movieId)

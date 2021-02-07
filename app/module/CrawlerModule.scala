@@ -28,9 +28,7 @@ class CrawlerModule(environment: Environment, configuration: Configuration)  ext
 }
 
 
-class Starter(crawler: Crawler) {
-//  crawler.run()
-}
+class Starter(crawler: Crawler)
 
 @Singleton
 class Crawler @Inject()(movieRepo: MovieRepo, quoteRepo: QuoteRepo)

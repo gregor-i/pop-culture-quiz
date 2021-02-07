@@ -1,0 +1,59 @@
+@import repo._
+@import model._
+
+@(movie: MovieRow, quotes: Seq[QuoteRow])
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@@0.9.1/css/bulma.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+<h1 class="title">Pop-Culture-Quiz Admin: Quotes</h1>
+<h2 class="subtitle">
+  @movie.state match{
+    case crawled: QuoteCrawlerState.Crawled => { @{crawled.title} }
+    case _ => { Not crawled jet }
+  }
+</h2>
+
+<section>
+  <table class="table">
+    <colgroup>
+      <col span="1" style="width: 5%;">
+      <col span="1" style="width: 5%;">
+      <col span="1" style="width: 45%;">
+      <col span="1" style="width: 45%;">
+    </colgroup>
+
+    <tr>
+      <th><div>Movie Id</div><div>Quote Id</div></th>
+      <th>Votes</th>
+      <th>Quote</th>
+      <th>Translated</th>
+    </tr>
+    @for(quote <- quotes.sortBy(_.translated.isEmpty)) {
+    <tr>
+      <td><div>@{quote.movieId}</div><div>@{quote.quoteId}</div></td>
+      <td>
+        @quote.quote.count match {
+        case Some((upVotes, countVotes)) => { @upVotes / @countVotes }
+        case None => { - }
+        }
+      </td>
+      <td>@views.html.admin.Quote(quote.quote)</td>
+      <td>
+        @quote.translated match {
+        case Some(translated) => { @views.html.admin.Quote(translated.translated) }
+        case None => { - }
+        }
+      </td>
+    </tr>
+    }
+  </table>
+</section>
+</body>
+</html>

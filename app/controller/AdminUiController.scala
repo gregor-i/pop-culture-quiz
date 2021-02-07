@@ -10,9 +10,19 @@ import scala.concurrent.ExecutionContext
 
 class AdminUiController @Inject() (movieRepo: MovieRepo, quoteRepo: QuoteRepo)(implicit ex: ExecutionContext)
     extends InjectedController {
-  def index() = Action {
+
+  def movies() = Action {
     val movies = movieRepo.list().sortBy(_.movieId)
-    val quotes = quoteRepo.list()
-    Ok(views.html.admin.Index(movies, quotes))
+    Ok(views.html.admin.Movies(movies))
+  }
+
+  def movieQuotes(movieId: String) = Action {
+    movieRepo.get(movieId) match {
+      case Some(movie) =>
+        val quotes = quoteRepo.list().filter(_.movieId == movieId)
+        Ok(views.html.admin.MovieQuotes(movie, quotes))
+      case None =>
+        NotFound
+    }
   }
 }

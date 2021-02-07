@@ -2,7 +2,8 @@
 POST           /api/register-movie                              controller.DataController.registerMovie(movieId: String)
 
 # Admin
-GET           /                                                 controller.AdminUiController.index()
+GET           /                                                 controller.AdminUiController.movies()
+GET           /movies/:movieId                                  controller.AdminUiController.movieQuotes(movieId: String)
 
 # Frontend
 #GET           /assets/*path                                     controller.UiController.asset(path: String, folder = "/public/assets")
