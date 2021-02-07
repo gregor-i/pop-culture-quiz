@@ -5,12 +5,12 @@ import akka.actor.ActorSystem
 import scala.concurrent.{ExecutionContext, Future}
 
 object TranslationChain {
-  val defaultLang = "en"
+  val defaultLang  = "en"
   val defaultChain = Seq("ar", "bn", "zh-tw", "cs", "nl", "eo", "fi", "el", "ht", "iw", "ta", "uz", "vi", "cy", "xh", "yo")
 
   def apply(texts: Seq[String], lang: String = defaultLang, chain: Seq[String] = defaultChain)(
-    implicit as: ActorSystem,
-    ex: ExecutionContext
+      implicit as: ActorSystem,
+      ex: ExecutionContext
   ): Future[Map[String, String]] = {
     val fullChain = lang +: chain :+ lang
     //    println(fullChain)
@@ -25,8 +25,8 @@ object TranslationChain {
   }
 
   def step(translations: Map[String, String], src: String, dest: String)(
-    implicit as: ActorSystem,
-    ex: ExecutionContext
+      implicit as: ActorSystem,
+      ex: ExecutionContext
   ): Future[Map[String, String]] = {
     GoogleTranslate(src = src, dest = dest, texts = translations.values.toSeq)
       .map { nextTranslation =>

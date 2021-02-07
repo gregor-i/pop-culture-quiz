@@ -16,9 +16,9 @@ case class QuoteRow(quoteId: String, movieId: String, quote: Quote, translated: 
 class QuoteRepo @Inject() (db: Database) extends JsonColumn {
   private def parser: RowParser[QuoteRow] =
     for {
-      quoteId <- SqlParser.str("quote_id")
-      movieId <- SqlParser.str("movie_id")
-      quote <- SqlParser.get[Either[io.circe.Error, Quote]]("data")
+      quoteId         <- SqlParser.str("quote_id")
+      movieId         <- SqlParser.str("movie_id")
+      quote           <- SqlParser.get[Either[io.circe.Error, Quote]]("data")
       translatedQuote <- SqlParser.get[Either[io.circe.Error, TranslatedQuote]]("translated_quote").?
     } yield QuoteRow(
       quoteId = quoteId,
@@ -34,7 +34,7 @@ class QuoteRepo @Inject() (db: Database) extends JsonColumn {
     }
 
   def listUnprocessed(): Seq[QuoteRow] =
-    db.withConnection{implicit con =>
+    db.withConnection { implicit con =>
       SQL"""SELECT * FROM quotes WHERE translated_quote IS NULL LIMIT 10"""
         .as(parser.*)
     }
@@ -51,7 +51,7 @@ class QuoteRepo @Inject() (db: Database) extends JsonColumn {
     addNewQuote(movieId = quoteRow.movieId, quoteId = quoteRow.quoteId, quote = quoteRow.quote)
 
   def setTranslatedQuote(quoteId: String, translated: TranslatedQuote): Int =
-    db.withConnection{ implicit con =>
+    db.withConnection { implicit con =>
       SQL"""UPDATE quotes
             SET translated_quote = ${translated.asJson}
             WHERE quote_id = ${quoteId}

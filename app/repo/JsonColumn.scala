@@ -5,7 +5,7 @@ import io.circe.syntax._
 import io.circe.{Decoder, Encoder, Json, parser}
 
 trait JsonColumn {
-  implicit def jsonColumnParser[T : Decoder]: Column[Either[io.circe.Error, T]] =
+  implicit def jsonColumnParser[T: Decoder]: Column[Either[io.circe.Error, T]] =
     Column.columnToString.map(parser.decode[T])
 
   implicit def jsonParameterValue: ToStatement[Json] =

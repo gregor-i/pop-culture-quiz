@@ -18,7 +18,7 @@ class MovieRepo @Inject() (db: Database)(implicit mat: Materializer) extends Jso
   private def parser: RowParser[MovieRow] =
     for {
       movieId <- SqlParser.str("movie_id")
-      state <-SqlParser.get[Either[io.circe.Error, QuoteCrawlerState]]("state").?
+      state   <- SqlParser.get[Either[io.circe.Error, QuoteCrawlerState]]("state").?
     } yield MovieRow(movieId, state.flatMap(_.toOption).getOrElse(QuoteCrawlerState.NotCrawled))
 
   def list(): Seq[MovieRow] =
@@ -54,9 +54,8 @@ class MovieRepo @Inject() (db: Database)(implicit mat: Materializer) extends Jso
         .executeUpdate()
     }
 
-
   def listUnprocessed(): Seq[MovieRow] =
-    db.withConnection{implicit con =>
+    db.withConnection { implicit con =>
       val notCrawled: QuoteCrawlerState = QuoteCrawlerState.NotCrawled
       SQL"""SELECT * FROM movies WHERE state IS NULL OR state = ${notCrawled.asJson} LIMIT 10"""
         .as(parser.*)

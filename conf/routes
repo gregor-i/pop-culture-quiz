@@ -4,6 +4,11 @@ POST           /api/register-movie                              controller.DataC
 # Admin
 GET           /                                                 controller.AdminUiController.movies()
 GET           /movies/:movieId                                  controller.AdminUiController.movieQuotes(movieId: String)
+GET           /agents                                           controller.AgentController.ui()
+
+GET           /api/agents                                       controller.AgentController.state()
+POST          /api/agents/:name/start                           controller.AgentController.start(name: String)
+POST          /api/agents/:name/stop                            controller.AgentController.stop(name: String)
 
 # Frontend
 #GET           /assets/*path                                     controller.UiController.asset(path: String, folder = "/public/assets")

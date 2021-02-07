@@ -22,12 +22,13 @@ class GoogleTranslateTest extends AnyFunSuite {
 
   test("decode a multi sentence statement") {
     val translation = parseTestResource("google_translate_multi_sentence.json")
-    val statement = "I've heard tell about you. I heard you been telling everybody them mandingos ain't no damn good, ain't nothing nobody is selling is worth buying - I'm curious. What makes you such a mandingo expert?"
+    val statement =
+      "I've heard tell about you. I heard you been telling everybody them mandingos ain't no damn good, ain't nothing nobody is selling is worth buying - I'm curious. What makes you such a mandingo expert?"
     val sanitizedTranslation = GoogleTranslate.handleMultiSentenceTexts(translation, Seq(statement))
     assert(sanitizedTranslation.contains(statement))
   }
 
-  test("handleMultiSentenceTexts"){
+  test("handleMultiSentenceTexts") {
     val t = GoogleTranslate.handleMultiSentenceTexts(Map("a. " -> "a."), Seq("a. "))
 
     assert(t("a. ") == "a.")

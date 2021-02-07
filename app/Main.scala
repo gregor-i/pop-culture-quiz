@@ -23,9 +23,13 @@ object Main {
 
     println {
       await {
-        googleTranslate.GoogleTranslate.apply(Seq(
-          "I've heard tell about you. I heard you been telling everybody them mandingos ain't no damn good, ain't nothing nobody is selling is worth buying - I'm curious. What makes you such a mandingo expert?"
-        ), "en", "de")
+        googleTranslate.GoogleTranslate.apply(
+          Seq(
+            "I've heard tell about you. I heard you been telling everybody them mandingos ain't no damn good, ain't nothing nobody is selling is worth buying - I'm curious. What makes you such a mandingo expert?"
+          ),
+          "en",
+          "de"
+        )
       }
     }
 //

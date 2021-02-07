@@ -3,6 +3,7 @@ package googleTranslate
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.{HttpRequest, HttpResponse, StatusCodes}
+import akka.stream.Materializer
 import io.circe.{Decoder, Json, parser}
 import io.lemonlabs.uri.Url
 
@@ -65,15 +66,13 @@ object GoogleTranslate {
   }
 
   def handleMultiSentenceTexts(translations: Map[String, String], texts: Seq[String]): Map[String, String] = {
-    texts
-      .map{ text =>
-        val translated = translations.foldLeft(text){ (text, translation) =>
-          text.replaceAll(translation._1, translation._2)
-        }
-
-        text -> translated
+    texts.map { text =>
+      val translated = translations.foldLeft(text) { (text, translation) =>
+        text.replaceAll(translation._1, translation._2)
       }
-      .toMap
+
+      text -> translated
+    }.toMap
   }
 
   private def decoderTranslation: Decoder[Option[(String, String)]] = Decoder.instance { cursor =>
