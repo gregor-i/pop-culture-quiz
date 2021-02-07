@@ -45,12 +45,14 @@
         }
       </td>
       <td>@views.html.admin.Quote(quote.quote)</td>
-      <td>
         @quote.translated match {
-        case Some(translated) => { @views.html.admin.Quote(translated.translated) }
-        case None => { - }
+          case Some(translated) => {
+            <td title="translated by @{translated.service}. Chain: @{translated.chain.mkString(" -> ")}">
+              @views.html.admin.Quote(translated.translated)
+            </td>
+          }
+          case None => { <td> - </td> }
         }
-      </td>
     </tr>
     }
   </table>
