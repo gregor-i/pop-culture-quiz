@@ -7,22 +7,25 @@ import play.api.mvc.InjectedController
 import javax.inject.{Inject, Singleton}
 
 @Singleton()
-class AgentController @Inject()(IMDBAgent: IMDBAgent, translationAgent: TranslationAgent)  extends InjectedController {
+class AgentController @Inject() (IMDBAgent: IMDBAgent, translationAgent: TranslationAgent) extends InjectedController {
 
   val agents: Map[String, Agent] = Map(
-    "IMDBAgent" -> IMDBAgent,
-    "translationAgent" -> translationAgent,
+    "IMDBAgent"        -> IMDBAgent,
+    "translationAgent" -> translationAgent
   )
 
-  def state() = Action{
-    Ok(JsObject(
-      agents.map{ case (key, value) =>
-        key -> JsString(if(value.running) "running" else "stopped")
-      }.toSeq
-    ))
+  def state() = Action {
+    Ok(
+      JsObject(
+        agents.map {
+          case (key, value) =>
+            key -> JsString(if (value.running) "running" else "stopped")
+        }.toSeq
+      )
+    )
   }
 
-  def start(agentName: String) = Action{
+  def start(agentName: String) = Action {
     agents.get(agentName) match {
       case Some(agent) =>
         agent.running = true
@@ -31,7 +34,7 @@ class AgentController @Inject()(IMDBAgent: IMDBAgent, translationAgent: Translat
     }
   }
 
-  def stop(agentName: String) = Action{
+  def stop(agentName: String) = Action {
     agents.get(agentName) match {
       case Some(agent) =>
         agent.running = false
@@ -39,7 +42,6 @@ class AgentController @Inject()(IMDBAgent: IMDBAgent, translationAgent: Translat
       case None => NotFound
     }
   }
-
 
   def ui() = Action {
     Ok(views.html.admin.Agents(agents))

@@ -1,0 +1,24 @@
+{
+  "outputs" : [
+    {
+      "output" : "Ich schreibe etwas Text, damit Sie übersetzen.",
+      "stats" : {
+        "elapsed_time" : 45,
+        "nb_characters" : 43,
+        "nb_tokens" : 11,
+        "nb_tus" : 1,
+        "nb_tus_failed" : 0
+      }
+    },
+    {
+      "output" : "Dieses sollte einfacher sein zu übersetzen.",
+      "stats" : {
+        "elapsed_time" : 27,
+        "nb_characters" : 35,
+        "nb_tokens" : 7,
+        "nb_tus" : 1,
+        "nb_tus_failed" : 0
+      }
+    }
+  ]
+}

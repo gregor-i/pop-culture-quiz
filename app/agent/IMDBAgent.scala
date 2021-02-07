@@ -3,15 +3,14 @@ package agent
 import akka.actor.ActorSystem
 import akka.stream.Materializer
 import akka.stream.scaladsl.{Flow, Sink, Source}
-import googleTranslate.TranslateQuote
 import imdb.{IMDBClient, IMDBParser}
 import model.{Quote, QuoteCrawlerState, TranslatedQuote}
 import repo.{MovieRepo, QuoteRepo, QuoteRow}
+import translation.TranslateQuote
 
 import java.time.ZonedDateTime
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
-
 import scala.concurrent.duration._
 
 @Singleton

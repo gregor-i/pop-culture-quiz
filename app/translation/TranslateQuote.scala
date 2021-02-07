@@ -1,4 +1,4 @@
-package googleTranslate
+package translation
 
 import akka.actor.ActorSystem
 import model.{Blocking, Quote, Speech, TranslatedQuote}
@@ -6,7 +6,12 @@ import model.{Blocking, Quote, Speech, TranslatedQuote}
 import scala.concurrent.{ExecutionContext, Future}
 
 object TranslateQuote {
-  def apply(quote: Quote, lang: String = TranslationChain.defaultLang, chain: Seq[String] = TranslationChain.defaultChain)(
+  def apply(
+      quote: Quote,
+      lang: String = TranslationChain.defaultLang,
+      chain: Seq[String] = TranslationChain.defaultChain,
+      service: TranslationService
+  )(
       implicit as: ActorSystem,
       ex: ExecutionContext
   ): Future[TranslatedQuote] = {
@@ -15,9 +20,9 @@ object TranslateQuote {
       case Speech(speech)     => speech
     }
     for {
-      translation <- TranslationChain(texts = texts, lang = lang, chain = chain)
+      translation <- TranslationChain(texts = texts, lang = lang, chain = chain, service = service)
       translatedQuote = applyTranslation(quote, translation)
-    } yield TranslatedQuote(original = quote, translated = translatedQuote, chain = chain)
+    } yield TranslatedQuote(original = quote, translated = translatedQuote, chain = chain, service = service.name)
   }
 
   def applyTranslation(quote: Quote, translation: Map[String, String]): Quote =

@@ -1,8 +1,10 @@
 import akka.actor.ActorSystem
 import akka.stream.scaladsl.Sink
-import googleTranslate.GoogleTranslate
+import translation.google.GoogleTranslate
 import imdb.IMDB
 import model.TranslatedQuote
+import translation.TranslationChain
+import translation.systran.SystranTranslate
 
 import java.io.FileWriter
 import scala.concurrent.{Await, ExecutionContext, Future}
@@ -23,17 +25,17 @@ object Main {
 
     println {
       await {
-        googleTranslate.GoogleTranslate.apply(
+        TranslationChain(
           Seq(
-            "I've heard tell about you. I heard you been telling everybody them mandingos ain't no damn good, ain't nothing nobody is selling is worth buying - I'm curious. What makes you such a mandingo expert?"
+            "I'm writing some text for you to translate.",
+            "This should be easier to translate."
           ),
-          "en",
-          "de"
+          service = SystranTranslate
         )
       }
     }
-//
-//    val translatedQuotes = Await.result(
+
+    //    val translatedQuotes = Await.result(
 //    for {
 //      quotes <- IMDB.getMovieQuotes(starWarsId)
 //      translatedQuotes <- Future.sequence(quotes.map(TranslateQuote(_)))

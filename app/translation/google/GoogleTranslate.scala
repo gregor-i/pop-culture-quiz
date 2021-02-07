@@ -1,4 +1,4 @@
-package googleTranslate
+package translation.google
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
@@ -6,12 +6,13 @@ import akka.http.scaladsl.model.{HttpRequest, HttpResponse, StatusCodes}
 import akka.stream.Materializer
 import io.circe.{Decoder, Json, parser}
 import io.lemonlabs.uri.Url
+import translation.TranslationService
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
-object GoogleTranslate {
+object GoogleTranslate extends TranslationService {
   def uri(text: Seq[String], src: String, dest: String) =
     Url(scheme = "https", host = "translate.googleapis.com", path = "/translate_a/single")
       .addParam("client", "gtx")

@@ -1,4 +1,4 @@
-package googleTranslate
+package translation.google
 
 import org.scalatest.funsuite.AnyFunSuite
 
