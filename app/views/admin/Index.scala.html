@@ -47,6 +47,7 @@
         <th><div>Movie Id</div><div>Quote Id</div></th>
         <th>Votes</th>
         <th>Quote</th>
+        <th>Translated</th>
       </tr>
       @for(quote <- quotes) {
         <tr>
@@ -57,20 +58,11 @@
               case None => { - }
             }
           </td>
+          <td>@views.html.admin.Quote(quote.quote)</td>
           <td>
-            @for(statement <- quote.quote.statements){
-              <div>
-                @statement.character match {
-                  case Some(character) => { <b>@{character}: </b>}
-                  case None => {}
-                }
-                @for(item <- statement.items){
-                  @item match {
-                    case Blocking(blocking) => {[<i>@blocking</i>] }
-                    case Speech(speech) => {<span>@speech</span> }
-                  }
-                }
-              </div>
+            @quote.translated match {
+              case Some(translated) => { @views.html.admin.Quote(quote.quote) }
+              case None => { - }
             }
           </td>
         </tr>

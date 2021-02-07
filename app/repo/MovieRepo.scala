@@ -1,28 +1,25 @@
 package repo
 
+import akka.stream.Materializer
+import akka.stream.scaladsl.{Sink, Source}
 import anorm._
 import io.circe.syntax._
-import model.{Quote, QuoteCrawlerState}
+import model.QuoteCrawlerState
 import play.api.db.Database
 
+import java.sql.Connection
 import javax.inject.{Inject, Singleton}
+import scala.concurrent.Future
 
 case class MovieRow(movieId: String, state: QuoteCrawlerState)
 
 @Singleton
-class MovieRepo @Inject() (db: Database) {
+class MovieRepo @Inject() (db: Database)(implicit mat: Materializer) extends JsonColumn {
   private def parser: RowParser[MovieRow] =
     for {
       movieId <- SqlParser.str("movie_id")
-      state <-SqlParser.str("state").collect("state could not be decoded") {
-        case StateData(quote) => quote
-      }.?
-    } yield MovieRow(movieId, state.getOrElse(QuoteCrawlerState.NotCrawled))
-
-  object StateData {
-    def unapply(data: String): Option[QuoteCrawlerState] =
-      io.circe.parser.decode(data)(QuoteCrawlerState.codec).toOption
-  }
+      state <-SqlParser.get[Either[io.circe.Error, QuoteCrawlerState]]("state").?
+    } yield MovieRow(movieId, state.flatMap(_.toOption).getOrElse(QuoteCrawlerState.NotCrawled))
 
   def list(): Seq[MovieRow] =
     db.withConnection { implicit con =>
@@ -45,7 +42,7 @@ class MovieRepo @Inject() (db: Database) {
   def setState(movieId: String, state: QuoteCrawlerState): Int =
     db.withConnection { implicit con =>
       SQL"""UPDATE movies
-            SET state = ${state.asJson.noSpaces}
+            SET state = ${state.asJson}
             WHERE movie_id = ${movieId}
          """
         .executeUpdate()
@@ -55,5 +52,13 @@ class MovieRepo @Inject() (db: Database) {
     db.withConnection { implicit con =>
       SQL"""DELETE FROM movies WHERE movie_id = ${movieId}"""
         .executeUpdate()
+    }
+
+
+  def listUnprocessed(): Seq[MovieRow] =
+    db.withConnection{implicit con =>
+      val notCrawled: QuoteCrawlerState = QuoteCrawlerState.NotCrawled
+      SQL"""SELECT * FROM movies WHERE state IS NULL OR state = ${notCrawled.asJson} LIMIT 10"""
+        .as(parser.*)
     }
 }

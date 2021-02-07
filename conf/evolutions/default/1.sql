@@ -1,5 +1,3 @@
-# Fractal schema
-
 # --- !Ups
 
 CREATE TABLE movies (

@@ -10,12 +10,14 @@
 
     <logger name="play" level="INFO"/>
     <logger name="application" level="DEBUG"/>
-    <logger name="module.NoSleepModule" level="INFO"/>
+    <logger name="akka.streams.Materializer" level="DEBUG"/>
 
     <root level="WARN">
         <appender-ref ref="STDOUT"/>
     </root>
 
     <logger name="access" level="info"/>
+
+
 
 </configuration>

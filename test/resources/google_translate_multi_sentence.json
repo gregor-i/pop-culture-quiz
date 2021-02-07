@@ -1,0 +1,165 @@
+[
+  [
+    [
+      "Ich habe von dir gehört. ",
+      "I've heard tell about you.",
+      null,
+      null,
+      3,
+      null,
+      null,
+      [
+        []
+      ],
+      [
+        [
+          [
+            "4d5e201a34474a12730540dc3bfae9fd",
+            "tea_en_de_2020q1.md"
+          ]
+        ]
+      ]
+    ],
+    [
+      "Ich habe gehört, Sie haben allen gesagt, dass Mandingos nicht verdammt gut sind, nichts, was niemand verkauft, ist einen Kauf wert - ich bin neugierig. ",
+      "I heard you been telling everybody them mandingos ain't no damn good, ain't nothing nobody is selling is worth buying - I'm curious.",
+      null,
+      null,
+      3,
+      null,
+      null,
+      [
+        []
+      ],
+      [
+        [
+          [
+            "4d5e201a34474a12730540dc3bfae9fd",
+            "tea_en_de_2020q1.md"
+          ]
+        ]
+      ]
+    ],
+    [
+      "Was macht Sie so zu einem Mandingo-Experten?",
+      "What makes you such a mandingo expert?",
+      null,
+      null,
+      3,
+      null,
+      null,
+      [
+        []
+      ],
+      [
+        [
+          [
+            "4d5e201a34474a12730540dc3bfae9fd",
+            "tea_en_de_2020q1.md"
+          ]
+        ]
+      ]
+    ]
+  ],
+  null,
+  "en",
+  null,
+  null,
+  [
+    [
+      "I've heard tell about you.",
+      null,
+      [
+        [
+          "Ich habe von dir gehört.",
+          0,
+          true,
+          false
+        ],
+        [
+          "Ich habe von dir gehört weiter.",
+          0,
+          true,
+          false
+        ]
+      ],
+      [
+        [
+          0,
+          26
+        ]
+      ],
+      "I've heard tell about you.",
+      0,
+      0
+    ],
+    [
+      "I heard you been telling everybody them mandingos ain't no damn good, ain't nothing nobody is selling is worth buying - I'm curious.",
+      null,
+      [
+        [
+          "Ich habe gehört, Sie haben allen gesagt, dass Mandingos nicht verdammt gut sind, nichts, was niemand verkauft, ist einen Kauf wert - ich bin neugierig.",
+          0,
+          true,
+          false
+        ],
+        [
+          "Ich habe gehört, Sie bei jedem Mandingos erzählt, ist kein verdammt gut, ist nicht nichts niemand verkauft den Kauf wert ist - ich bin gespannt.",
+          0,
+          true,
+          false
+        ]
+      ],
+      [
+        [
+          0,
+          132
+        ]
+      ],
+      "I heard you been telling everybody them mandingos ain't no damn good, ain't nothing nobody is selling is worth buying - I'm curious.",
+      0,
+      0
+    ],
+    [
+      "What makes you such a mandingo expert?",
+      null,
+      [
+        [
+          "Was macht Sie so zu einem Mandingo-Experten?",
+          0,
+          true,
+          false
+        ],
+        [
+          "Was macht Sie so ein mandingo Experte?",
+          0,
+          true,
+          false
+        ]
+      ],
+      [
+        [
+          0,
+          38
+        ]
+      ],
+      "What makes you such a mandingo expert?",
+      0,
+      0
+    ]
+  ],
+  1.0,
+  [],
+  [
+    [
+      "en"
+    ],
+    null,
+    [
+      1.0
+    ],
+    [
+      "en"
+    ]
+  ]
+]

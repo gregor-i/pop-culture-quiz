@@ -32,7 +32,13 @@ class QuotesRepoTest extends AnyFunSuite with GuiceOneAppPerSuite with BeforeAnd
     )
 
   test("insert a new quote") {
-    movieRepo.addNewMovie("tt1345836")
-    quotesRepo.addNewQuote(movieId = "tt1345836", quoteId = "qt0333083", quote = quote)
+    assert(movieRepo.addNewMovie("tt1345836") == 1)
+    assert(quotesRepo.addNewQuote(movieId = "tt1345836", quoteId = "qt0333083", quote = quote) == 1)
+  }
+
+  test("set the translated quote") {
+    assert(movieRepo.addNewMovie("tt1345836") == 1)
+    assert(quotesRepo.addNewQuote(movieId = "tt1345836", quoteId = "qt0333083", quote = quote) == 1)
+    assert(quotesRepo.setTranslatedQuote("qt0333083", TranslatedQuote(quote, quote, Seq("en", "de", "en"))) == 1)
   }
 }

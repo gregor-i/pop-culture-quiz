@@ -1,13 +1,17 @@
 package module
 
+import akka.NotUsed
 import akka.actor.ActorSystem
+import akka.stream.Materializer
+import akka.stream.scaladsl.{Flow, Sink, Source}
 import com.google.inject.AbstractModule
+import googleTranslate.TranslateQuote
 import imdb.{IMDB, IMDBClient, IMDBParser}
-import model.QuoteCrawlerState
+import model.{Quote, QuoteCrawlerState, TranslatedQuote}
 import model.QuoteCrawlerState.{Crawled, NotCrawled}
 import play.api.{Configuration, Environment, Logger}
 import play.api.inject.{Binding, Module}
-import repo.{MovieRepo, MovieRow, QuoteRepo}
+import repo.{MovieRepo, MovieRow, QuoteRepo, QuoteRow}
 
 import java.time.ZonedDateTime
 import javax.inject.{Inject, Singleton}
@@ -24,36 +28,59 @@ class CrawlerModule(environment: Environment, configuration: Configuration)  ext
 }
 
 
-class Starter(crawler: Crawler)
+class Starter(crawler: Crawler) {
+//  crawler.run()
+}
 
 @Singleton
-class Crawler @Inject()(movieRepo: MovieRepo, quoteRepo: QuoteRepo)(implicit as: ActorSystem, ex: ExecutionContext) {
-  private val logger = Logger(this.getClass)
+class Crawler @Inject()(movieRepo: MovieRepo, quoteRepo: QuoteRepo)
+      (implicit as: ActorSystem, ex: ExecutionContext, mat: Materializer) {
 
-  as.scheduler.scheduleAtFixedRate(initialDelay = 0.seconds, interval = 1.minutes)(() => run())
-
-  def run(): Unit = {
-    logger.info(s"Running Crawling")
-    movieRepo.list()
-      .collectFirst {case MovieRow(movieId, NotCrawled) => movieId}
-      .foreach{ movieId =>
-      logger.info(s"Crawling ${movieId}")
-      processMovie(movieId)
-        .flatMap{ state =>
-          Future.successful(movieRepo.setState(movieId, state))
-        }
+  val crawlMovieQuotes =
+  Source.repeat(())
+    .throttle(1, 1.second)
+    .log("imdb-crawler.trigger")
+    .flatMapConcat{ _ =>
+      Source(movieRepo.listUnprocessed().map(_.movieId))
     }
-  }
-
-  def processMovie(movieId: String): Future[QuoteCrawlerState] =
-    for{
-      moviePage <- IMDBClient.getMovePage(movieId)
-      title = IMDBParser.extractTitle(moviePage)
-      quotes = IMDBParser.extractQuotes(moviePage)
-      _ = quotes.foreach{
-        case (quoteId, quote) => quoteRepo.addNewQuote(movieId = movieId, quoteId = quoteId, quote = quote)
+    .log("imdb-crawler.movieId")
+    .via(
+      Flow[String].mapAsyncUnordered(1){movieId =>
+        IMDBClient.getMovePage(movieId).map {
+          moviePage =>
+            val title = IMDBParser.extractTitle(moviePage)
+            val quotes = IMDBParser.extractQuotes(moviePage)
+            (movieId, title, quotes)
+        }
       }
-    } yield QuoteCrawlerState.Crawled(
-      title = title, numberOfQuotes = quotes.size, time = ZonedDateTime.now()
     )
+    .to(Sink.foreach{
+      case (movieId, title, quotes) =>
+        movieRepo.setState(movieId, QuoteCrawlerState.Crawled(title= title, numberOfQuotes = quotes.size,        time = ZonedDateTime.now()))
+        quotes.foreach{case (quoteId, quote) => quoteRepo.addNewQuote(movieId = movieId, quoteId = quoteId, quote = quote) }
+    })
+    .named("imdb-crawler")
+
+  val translateQuotes =
+  Source.repeat(())
+    .throttle(1, 1.second)
+    .log("translator.trigger")
+    .flatMapConcat{ _ =>
+      Source(quoteRepo.listUnprocessed())
+    }
+    .log("translator.quoteId")
+    .throttle(1, 1.second)
+    .via(
+      Flow[QuoteRow].mapAsyncUnordered[(String, TranslatedQuote)](1){ quoteRow =>
+        TranslateQuote(quoteRow.quote)
+          .map((quoteRow.quoteId, _))
+      }
+    )
+    .to(Sink.foreach{ case (quoteId, translatedQuote) =>
+      quoteRepo.setTranslatedQuote(quoteId, translatedQuote)
+    })
+
+
+      crawlMovieQuotes.run()
+      translateQuotes.run()
 }
