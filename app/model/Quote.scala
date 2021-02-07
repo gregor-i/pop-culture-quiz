@@ -11,5 +11,7 @@ case class Blocking(text: String) extends Item
 case class Speech(text: String)   extends Item
 
 object Quote {
+  def empty = Quote(statements = Seq.empty, count = None)
+
   implicit val codec: Codec[Quote] = io.circe.generic.semiauto.deriveCodec[Quote]
 }

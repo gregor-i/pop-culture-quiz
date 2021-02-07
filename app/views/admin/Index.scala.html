@@ -61,7 +61,7 @@
           <td>@views.html.admin.Quote(quote.quote)</td>
           <td>
             @quote.translated match {
-              case Some(translated) => { @views.html.admin.Quote(quote.quote) }
+              case Some(translated) => { @views.html.admin.Quote(translated.translated) }
               case None => { - }
             }
           </td>

@@ -73,9 +73,11 @@ class Crawler @Inject()(movieRepo: MovieRepo, quoteRepo: QuoteRepo)
     .via(
       Flow[QuoteRow].mapAsyncUnordered[(String, TranslatedQuote)](1){ quoteRow =>
         TranslateQuote(quoteRow.quote)
+          .recover(_ => TranslatedQuote(original = Quote.empty, translated = Quote.empty, chain = Seq.empty))
           .map((quoteRow.quoteId, _))
       }
     )
+    .log("translator.translated")
     .to(Sink.foreach{ case (quoteId, translatedQuote) =>
       quoteRepo.setTranslatedQuote(quoteId, translatedQuote)
     })

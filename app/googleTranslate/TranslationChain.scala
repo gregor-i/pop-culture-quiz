@@ -30,7 +30,7 @@ object TranslationChain {
   ): Future[Map[String, String]] = {
     GoogleTranslate(src = src, dest = dest, texts = translations.values.toSeq)
       .map { nextTranslation =>
-        println(s"translation step: ${src} => ${dest}\n${nextTranslation}")
+//        println(s"translation step: ${src} => ${dest}\n${nextTranslation}")
         Thread.sleep(3000)
         translations.transform((_, value) => nextTranslation(value))
       }
