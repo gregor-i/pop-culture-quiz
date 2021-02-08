@@ -4,7 +4,7 @@ import akka.actor.ActorSystem
 import akka.stream.Materializer
 import akka.stream.scaladsl.{Flow, Sink, Source}
 import imdb.{IMDBClient, IMDBParser}
-import model.{Quote, QuoteCrawlerState, TranslatedQuote}
+import model.{Blocking, Quote, QuoteCrawlerState, Statement, TranslatedQuote}
 import repo.{MovieRepo, QuoteRepo, QuoteRow}
 import translation.TranslateQuote
 
@@ -31,6 +31,15 @@ class TranslationAgent @Inject() (quoteRepo: QuoteRepo)(implicit as: ActorSystem
       Flow[QuoteRow].mapAsyncUnordered[(String, TranslatedQuote)](1) { quoteRow =>
         translation
           .TranslateQuote(quoteRow.quote, service = translation.systran.SystranTranslate)
+          .recover(
+            error =>
+              TranslatedQuote(
+                original = Quote(Seq.empty, None),
+                translated = Quote(Seq(Statement(None, Seq(Blocking(error.getMessage)))), None),
+                chain = Seq.empty,
+                service = translation.systran.SystranTranslate.name
+              )
+          )
           .map((quoteRow.quoteId, _))
       }
     )
