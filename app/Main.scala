@@ -30,7 +30,8 @@ object Main {
             "I'm writing some text for you to translate.",
             "This should be easier to translate."
           ),
-          service = SystranTranslate
+          service = SystranTranslate,
+          chain = SystranTranslate.chain
         )
       }
     }

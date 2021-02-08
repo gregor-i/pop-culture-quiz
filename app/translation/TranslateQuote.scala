@@ -9,7 +9,7 @@ object TranslateQuote {
   def apply(
       quote: Quote,
       lang: String = TranslationChain.defaultLang,
-      chain: Seq[String] = TranslationChain.defaultChain,
+      chain: Seq[String],
       service: TranslationService
   )(
       implicit as: ActorSystem,

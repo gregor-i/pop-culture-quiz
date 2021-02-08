@@ -32,6 +32,17 @@ object SystranTranslate extends TranslationService {
     "sv"  //Swedish
   )
 
+  val chain = Seq(
+    "ar", //Arabic,
+    "en",
+    "nl", //Dutch,
+    "en", //English,
+    "zh", //Chinese,
+    "fr", //French,
+    "en",
+    "sv"  //Swedish
+  )
+
   def uri(text: Seq[String], src: String, dest: String) =
     text
       .foldLeft(Url(scheme = "https", host = "api-platform.systran.net", path = "/translation/text/translate")) {

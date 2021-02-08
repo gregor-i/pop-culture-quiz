@@ -11,4 +11,6 @@ trait TranslationService {
   ): Future[Map[String, String]]
 
   def name: String = this.getClass.getSimpleName
+
+  def chain: Seq[String]
 }

@@ -13,6 +13,8 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
 object GoogleTranslate extends TranslationService {
+  val chain = Seq("ar", "bn", "zh-tw", "cs", "nl", "eo", "fi", "el", "ht", "iw", "ta", "uz", "vi", "cy", "xh", "yo")
+
   def uri(text: Seq[String], src: String, dest: String) =
     Url(scheme = "https", host = "translate.googleapis.com", path = "/translate_a/single")
       .addParam("client", "gtx")
