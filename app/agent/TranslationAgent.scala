@@ -20,7 +20,7 @@ abstract class TranslationAgent(service: TranslationService, translationRepo: Tr
     mat: Materializer
 ) extends Agent {
 
-  var running: Boolean             = false
+  var running: Boolean             = true
   val pollInterval: FiniteDuration = 1.second
 
   Source
