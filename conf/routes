@@ -1,10 +1,12 @@
 # API
 POST           /api/register-movie                              controller.DataController.registerMovie(movieId: String)
+POST           /api/enqueue-translation                         controller.DataController.enqueueTranslation(quoteId: String)
 
 # Admin
 GET           /                                                 controller.AdminUiController.movies()
 GET           /movies/:movieId                                  controller.AdminUiController.movieQuotes(movieId: String)
 GET           /agents                                           controller.AgentController.ui()
+GET           /translations                                     controller.AdminUiController.translations()
 
 GET           /api/agents                                       controller.AgentController.state()
 POST          /api/agents/:name/start                           controller.AgentController.start(name: String)

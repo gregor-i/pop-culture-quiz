@@ -14,6 +14,8 @@ import scala.concurrent.{ExecutionContext, Future}
 object SystranTranslate extends TranslationService {
   val apiKey = "4bd8ecae-24e7-4df9-8747-3230ce9abe6c"
 
+  val name = "Systran"
+
   val supportedLanguages = Set(
     "ar", //Arabic,
     "zh", //Chinese,
@@ -32,7 +34,7 @@ object SystranTranslate extends TranslationService {
     "sv"  //Swedish
   )
 
-  val chain = Seq(
+  val defaultChain = Seq(
     "ar", //Arabic,
     "en",
     "nl", //Dutch,
@@ -40,7 +42,7 @@ object SystranTranslate extends TranslationService {
     "zh", //Chinese,
     "fr", //French,
     "en",
-    "sv"  //Swedish
+    "sv" //Swedish
   )
 
   def uri(text: Seq[String], src: String, dest: String) =
@@ -72,7 +74,7 @@ object SystranTranslate extends TranslationService {
         case Left(_)            => Future.failed(new Exception(s"data ${data} could not be decoded"))
         case Right(translation) => Future.successful(translation)
       }
-      _ = println(texts.zip(result).toMap)
+//      _ = println(texts.zip(result).toMap)
     } yield texts.zip(result).toMap
   }
 

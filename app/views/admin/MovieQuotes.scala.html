@@ -33,9 +33,8 @@
       <th><div>Movie Id</div><div>Quote Id</div></th>
       <th>Votes</th>
       <th>Quote</th>
-      <th>Translated</th>
     </tr>
-    @for(quote <- quotes.sortBy(_.translated.isEmpty)) {
+    @for(quote <- quotes) {
     <tr>
       <td><div>@{quote.movieId}</div><div>@{quote.quoteId}</div></td>
       <td>
@@ -45,14 +44,6 @@
         }
       </td>
       <td>@views.html.admin.Quote(quote.quote)</td>
-        @quote.translated match {
-          case Some(translated) => {
-            <td title="translated by @{translated.service}. Chain: @{translated.chain.mkString(" -> ")}">
-              @views.html.admin.Quote(translated.translated)
-            </td>
-          }
-          case None => { <td> - </td> }
-        }
     </tr>
     }
   </table>

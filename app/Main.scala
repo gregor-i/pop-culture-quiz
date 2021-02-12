@@ -31,7 +31,7 @@ object Main {
             "This should be easier to translate."
           ),
           service = SystranTranslate,
-          chain = SystranTranslate.chain
+          chain = SystranTranslate.defaultChain
         )
       }
     }

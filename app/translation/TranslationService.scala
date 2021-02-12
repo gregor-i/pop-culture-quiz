@@ -10,7 +10,7 @@ trait TranslationService {
       ex: ExecutionContext
   ): Future[Map[String, String]]
 
-  def name: String = this.getClass.getSimpleName
+  def name: String
 
-  def chain: Seq[String]
+  def defaultChain: Seq[String]
 }

@@ -12,7 +12,7 @@ class MovieRepoTest extends AnyFunSuite with GuiceOneAppPerSuite with BeforeAndA
   val repo: MovieRepo = app.injector.instanceOf[MovieRepo]
 
   override def beforeEach(): Unit = {
-    repo.list().foreach(row => repo.delete(row.movieId))
+    repo.truncate()
   }
 
   test("insert a new movie") {

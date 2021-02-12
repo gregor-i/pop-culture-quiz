@@ -14,7 +14,7 @@ object TranslateQuote {
   )(
       implicit as: ActorSystem,
       ex: ExecutionContext
-  ): Future[TranslatedQuote] = {
+  ): Future[Quote] = {
     val texts = quote.statements.flatMap(_.items).map {
       case Blocking(blocking) => blocking
       case Speech(speech)     => speech
@@ -22,7 +22,7 @@ object TranslateQuote {
     for {
       translation <- TranslationChain(texts = texts, lang = lang, chain = chain, service = service)
       translatedQuote = applyTranslation(quote, translation)
-    } yield TranslatedQuote(original = quote, translated = translatedQuote, chain = chain, service = service.name)
+    } yield translatedQuote
   }
 
   def applyTranslation(quote: Quote, translation: Map[String, String]): Quote =

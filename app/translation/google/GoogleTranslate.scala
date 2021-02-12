@@ -13,7 +13,9 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
 object GoogleTranslate extends TranslationService {
-  val chain = Seq("ar", "bn", "zh-tw", "cs", "nl", "eo", "fi", "el", "ht", "iw", "ta", "uz", "vi", "cy", "xh", "yo")
+  val name = "Google"
+
+  val defaultChain = Seq("ar", "bn", "zh-tw", "cs", "nl", "eo", "fi", "el", "ht", "iw", "ta", "uz", "vi", "cy", "xh", "yo")
 
   def uri(text: Seq[String], src: String, dest: String) =
     Url(scheme = "https", host = "translate.googleapis.com", path = "/translate_a/single")
@@ -59,6 +61,10 @@ object GoogleTranslate extends TranslationService {
           case Left(_)            => Future.failed(new Exception(s"data ${data} could not be decoded"))
           case Right(translation) => Future.successful(translation)
         }
+        _ <- Future {
+          Thread.sleep(10000)
+          true
+        }
       } yield handleMultiSentenceTexts(result, texts)
   }
 
@@ -71,7 +77,7 @@ object GoogleTranslate extends TranslationService {
   def handleMultiSentenceTexts(translations: Map[String, String], texts: Seq[String]): Map[String, String] = {
     texts.map { text =>
       val translated = translations.foldLeft(text) { (text, translation) =>
-        text.replaceAll(translation._1, translation._2)
+        text.replace(translation._1, translation._2)
       }
 
       text -> translated

@@ -15,7 +15,7 @@ case class MovieRow(movieId: String, state: QuoteCrawlerState)
 
 @Singleton
 class MovieRepo @Inject() (db: Database)(implicit mat: Materializer) extends JsonColumn {
-  private def parser: RowParser[MovieRow] =
+  def parser: RowParser[MovieRow] =
     for {
       movieId <- SqlParser.str("movie_id")
       state   <- SqlParser.get[Either[io.circe.Error, QuoteCrawlerState]]("state").?
@@ -48,9 +48,9 @@ class MovieRepo @Inject() (db: Database)(implicit mat: Materializer) extends Jso
         .executeUpdate()
     }
 
-  def delete(movieId: String): Int =
+  def truncate(): Int =
     db.withConnection { implicit con =>
-      SQL"""DELETE FROM movies WHERE movie_id = ${movieId}"""
+      SQL"""TRUNCATE movies CASCADE"""
         .executeUpdate()
     }
 
