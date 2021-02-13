@@ -42,8 +42,6 @@ class AdminUiController @Inject() (movieRepo: MovieRepo, quoteRepo: QuoteRepo, t
 object Score{
   // source:  https://www.evanmiller.org/how-not-to-sort-by-average-rating.html
   def score(pos: Int, n: Int): Double = {
-    // note: this is a modification from the original algorithms.
-    // pretending to start with a single like, makes dislikes count. ie: score(0, 1) < score(0, 0)
     val z    = 1.96
     val phat = pos.toDouble / n
     (phat + z * z / (2.0 * n) - z * Math.sqrt((phat * (1.0 - phat) + z * z / (4.0 * n)) / n)) / (1.0 + z * z / n)

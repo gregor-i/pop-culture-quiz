@@ -51,7 +51,7 @@
           }
           case QuoteCrawlerState.NotCrawled => { <td>not jet crawled</td> }
           case QuoteCrawlerState.NotFound => { <td>movie was not found on imdb</td> }
-          case state: QuoteCrawlerState.UnexpectedError => { <td>an unexpected error ocurred: ${state.message}</td> }
+          case state: QuoteCrawlerState.UnexpectedError => { <td>an unexpected error ocurred: @{state.message}</td> }
         }
       </tr>
     }

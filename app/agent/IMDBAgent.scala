@@ -12,6 +12,7 @@ import java.time.ZonedDateTime
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
+import scala.util.{Failure, Success}
 
 @Singleton
 class IMDBAgent @Inject() (movieRepo: MovieRepo, quoteRepo: QuoteRepo)(
@@ -32,17 +33,21 @@ class IMDBAgent @Inject() (movieRepo: MovieRepo, quoteRepo: QuoteRepo)(
     }
     .via(
       Flow[String].mapAsyncUnordered(1) { movieId =>
-        IMDBClient.getMovePage(movieId).map { moviePage =>
+        IMDBClient.getMovePage(movieId)
+          .map { moviePage =>
           val title  = IMDBParser.extractTitle(moviePage)
           val quotes = IMDBParser.extractQuotes(moviePage)
           (movieId, title, quotes)
         }
+          .transform {
+          case Success((movieId, title, quotes)) => Success((movieId, QuoteCrawlerState.Crawled(title = title, numberOfQuotes = quotes.size, time = ZonedDateTime.now()), quotes))
+          case Failure(exception)  => Success((movieId,  QuoteCrawlerState.UnexpectedError(exception.getMessage), Seq.empty))
+        }
       }
     )
     .to(Sink.foreach {
-      case (movieId, title, quotes) =>
-        movieRepo
-          .setState(movieId, QuoteCrawlerState.Crawled(title = title, numberOfQuotes = quotes.size, time = ZonedDateTime.now()))
+      case (movieId, state, quotes) =>
+        movieRepo.setState(movieId, state)
         quotes.foreach { case (quoteId, quote) => quoteRepo.addNewQuote(movieId = movieId, quoteId = quoteId, quote = quote) }
     })
     .run()

@@ -15,7 +15,7 @@ object IMDBParser {
     } yield {
       val id = quoteElement.attr("id")
       val votes = quoteElement.select(".interesting-count-text").map(_.text.trim).collectFirst {
-        case s"${upvotes} of ${votes} found this interesting" => (upvotes.toInt, votes.toInt)
+        case s"${upvotes} of ${votes} found this interesting" => (upvotes.replace(",", "").toInt, votes.replace(",", "").toInt)
       }
       val statements = quoteElement.select(".sodatext").head.children.map { p =>
         val character = p.select(".character").headOption.map(_.text)

@@ -27,6 +27,8 @@ class QuoteRepo @Inject() (db: Database) extends JsonColumn {
     db.withConnection { implicit con =>
       SQL"""INSERT INTO quotes (movie_id, quote_id, data)
             VALUES (${movieId}, ${quoteId}, ${quote.asJson})
+            ON CONFLICT (quote_id)
+            DO UPDATE SET data = ${quote.asJson}
       """
         .executeUpdate()
     }

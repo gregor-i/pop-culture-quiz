@@ -2,6 +2,7 @@ package controller
 
 import akka.actor.ActorSystem
 import imdb.{IMDBClient, IMDBParser}
+import model.QuoteCrawlerState
 import play.api.libs.json.JsObject
 import play.api.mvc.InjectedController
 import repo.{MovieRepo, QuoteRepo, TranslationRepo}
@@ -16,6 +17,7 @@ class DataController @Inject() (movieRepo: MovieRepo, quoteRepo: QuoteRepo, tran
   def registerMovie(movieId: String) = Action {
     movieRepo.get(movieId) match {
       case Some(_) =>
+        movieRepo.setState(movieId, QuoteCrawlerState.NotCrawled)
         Accepted("Movie already registered")
       case None =>
         movieRepo.addNewMovie(movieId)
