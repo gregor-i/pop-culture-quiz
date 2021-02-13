@@ -17,6 +17,15 @@ class QuoteRepo @Inject() (db: Database) extends JsonColumn {
         .as(QuotesRepo.parser.*)
     }
 
+  def listByMovie(movieId: String): Seq[QuoteRow] =
+    db.withConnection{ implicit con =>
+      SQL"""SELECT *
+            FROM quotes
+            WHERE movie_id = ${movieId}
+      """
+        .as(QuotesRepo.parser.*)
+    }
+
   def find(quoteId: String): Option[QuoteRow] =
     db.withConnection { implicit con =>
       SQL"""SELECT * FROM quotes WHERE quote_id = ${quoteId}"""

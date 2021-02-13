@@ -1,6 +1,7 @@
 # API
 POST           /api/register-movie                              controller.DataController.registerMovie(movieId: String)
 POST           /api/enqueue-translation                         controller.DataController.enqueueTranslation(quoteId: String)
+POST           /api/enqueue-top-quotes                          controller.DataController.enqueueTopQuotes(count: Int)
 
 # Admin
 GET           /                                                 controller.AdminUiController.movies()

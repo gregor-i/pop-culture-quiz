@@ -44,4 +44,22 @@ class DataController @Inject() (movieRepo: MovieRepo, quoteRepo: QuoteRepo, tran
       Accepted("")
     }).merge
   }
+
+  def enqueueTopQuotes(count: Int) = Action(parse.json) { request =>
+    val parsed: Option[(String, Seq[String])] = for {
+      body    <- request.body.asOpt[JsObject]
+      service <- body.value.get("service").flatMap(_.asOpt[String])
+      chain   <- body.value.get("chain").flatMap(_.asOpt[Seq[String]])
+    } yield (service, chain)
+
+    (for {
+      parsedBody <- parsed.toRight(BadRequest("body could not be parsed"))
+      quotes      = quoteRepo.list().sortBy(_.quote).take(count)
+    } yield {
+      quotes.foreach{ quote =>
+        translationRepo.enqueue(quoteId = quote.quoteId, translationService = parsedBody._1, translationChain =parsedBody._2)
+      }
+      Accepted("")
+    }).merge
+  }
 }
