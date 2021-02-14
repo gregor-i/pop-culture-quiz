@@ -44,7 +44,7 @@
         @movie.state match {
           case state: QuoteCrawlerState.Crawled => {
             <td>
-              <a href="/movies/@{movie.movieId}">
+              <a href="/admin/movies/@{movie.movieId}">
                 @{state.numberOfQuotes} Quotes
               </a>
             </td>

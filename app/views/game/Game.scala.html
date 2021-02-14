@@ -1,0 +1,66 @@
+@import model._
+
+@(translation: Quote, original: Quote, correctTitle: String, titles: Seq[String])
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@@0.9.1/css/bulma.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <script type="text/javascript">
+    function reveal(){
+      document.body.classList.add("revealed")
+    }
+  </script>
+
+  <style>
+    body .original{
+      display: none;
+    }
+
+    body.revealed .original {
+      display: block;
+    }
+
+    body.revealed button.correct {
+      border-color: green;
+    }
+
+    body .next-link {
+      display: none;
+    }
+
+    body.revealed .next-link {
+      display: block;
+    }
+  </style>
+</head>
+
+<body class="container">
+<h1 class="title">Pop-Culture-Quiz</h1>
+
+<div class="buttons block">
+  @for(title <- titles){
+  <button class="button @{if(title == correctTitle) "correct" else ""}" onclick="reveal()">
+  @title
+  </button>
+  }
+</div>
+
+<div class="translated block">
+  <h3 class="title">Scrambled:</h3>
+  @views.html.components.Quote(translation)
+</div>
+
+<div class="original block">
+  <h3 class="title">Original:</h3>
+  @views.html.components.Quote(original)
+</div>
+
+<div class="buttons next-link block">
+  <button class="button is-link" onclick="window.location.reload()">Next</button>
+</div>
+
+</body>

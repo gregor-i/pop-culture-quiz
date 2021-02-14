@@ -1,13 +1,15 @@
 # API
-POST           /api/register-movie                              controller.DataController.registerMovie(movieId: String)
-POST           /api/enqueue-translation                         controller.DataController.enqueueTranslation(quoteId: String)
-POST           /api/enqueue-top-quotes                          controller.DataController.enqueueTopQuotes(count: Int)
+POST          /api/register-movie                               controller.DataController.registerMovie(movieId: String)
+POST          /api/enqueue-translation                          controller.DataController.enqueueTranslation(quoteId: String)
+POST          /api/enqueue-top-quotes                           controller.DataController.enqueueTopQuotes(count: Int)
+
+GET           /                                                 controller.GameController.play()
 
 # Admin
-GET           /                                                 controller.AdminUiController.movies()
-GET           /movies/:movieId                                  controller.AdminUiController.movieQuotes(movieId: String)
-GET           /agents                                           controller.AgentController.ui()
-GET           /translations                                     controller.AdminUiController.translations()
+GET           /admin                                            controller.AdminUiController.movies()
+GET           /admin/movies/:movieId                            controller.AdminUiController.movieQuotes(movieId: String)
+GET           /admin/agents                                     controller.AgentController.ui()
+GET           /admin/translations                               controller.AdminUiController.translations()
 
 GET           /api/agents                                       controller.AgentController.state()
 POST          /api/agents/:name/start                           controller.AgentController.start(name: String)

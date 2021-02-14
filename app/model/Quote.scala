@@ -15,14 +15,13 @@ object Quote {
 
   implicit val codec: Codec[Quote] = io.circe.generic.semiauto.deriveCodec[Quote]
 
-  implicit val ordering: Ordering[Quote] = Ordering.by{
-    case Quote(_,Some((upVotes, votes))) => 1d - Score.score(upVotes, votes)
-    case _ => 1d
+  implicit val ordering: Ordering[Quote] = Ordering.by {
+    case Quote(_, Some((upVotes, votes))) => 1d - Score.score(upVotes, votes)
+    case _                                => 1d
   }
 }
 
-
-object Score{
+object Score {
   // source:  https://www.evanmiller.org/how-not-to-sort-by-average-rating.html
   def score(pos: Int, n: Int): Double = {
     val z    = 1.96
@@ -30,5 +29,3 @@ object Score{
     (phat + z * z / (2.0 * n) - z * Math.sqrt((phat * (1.0 - phat) + z * z / (4.0 * n)) / n)) / (1.0 + z * z / n)
   }
 }
-
-

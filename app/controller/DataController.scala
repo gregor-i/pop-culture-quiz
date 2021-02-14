@@ -54,10 +54,10 @@ class DataController @Inject() (movieRepo: MovieRepo, quoteRepo: QuoteRepo, tran
 
     (for {
       parsedBody <- parsed.toRight(BadRequest("body could not be parsed"))
-      quotes      = quoteRepo.list().sortBy(_.quote).take(count)
+      quotes = quoteRepo.list().sortBy(_.quote).take(count)
     } yield {
-      quotes.foreach{ quote =>
-        translationRepo.enqueue(quoteId = quote.quoteId, translationService = parsedBody._1, translationChain =parsedBody._2)
+      quotes.foreach { quote =>
+        translationRepo.enqueue(quoteId = quote.quoteId, translationService = parsedBody._1, translationChain = parsedBody._2)
       }
       Accepted("")
     }).merge

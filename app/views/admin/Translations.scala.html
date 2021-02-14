@@ -97,11 +97,11 @@
           <div>@{translation.translationService}</div>
           <div>@{translation.translationChain.mkString(", ")}</div>
         </td>
-        <td>@views.html.admin.Quote(quote.quote)</td>
+        <td>@views.html.components.Quote(quote.quote)</td>
         <td>
           @translation.translation match{
             case TranslationState.NotTranslated => { awaiting translation }
-            case TranslationState.Translated(quote) => { @views.html.admin.Quote(quote) }
+            case TranslationState.Translated(quote) => { @views.html.components.Quote(quote) }
             case TranslationState.UnexpectedError(error) => { Error: @error }
           }
         </td>

@@ -33,16 +33,24 @@ class IMDBAgent @Inject() (movieRepo: MovieRepo, quoteRepo: QuoteRepo)(
     }
     .via(
       Flow[String].mapAsyncUnordered(1) { movieId =>
-        IMDBClient.getMovePage(movieId)
+        IMDBClient
+          .getMovePage(movieId)
           .map { moviePage =>
-          val title  = IMDBParser.extractTitle(moviePage)
-          val quotes = IMDBParser.extractQuotes(moviePage)
-          (movieId, title, quotes)
-        }
+            val title  = IMDBParser.extractTitle(moviePage)
+            val quotes = IMDBParser.extractQuotes(moviePage)
+            (movieId, title, quotes)
+          }
           .transform {
-          case Success((movieId, title, quotes)) => Success((movieId, QuoteCrawlerState.Crawled(title = title, numberOfQuotes = quotes.size, time = ZonedDateTime.now()), quotes))
-          case Failure(exception)  => Success((movieId,  QuoteCrawlerState.UnexpectedError(exception.getMessage), Seq.empty))
-        }
+            case Success((movieId, title, quotes)) =>
+              Success(
+                (
+                  movieId,
+                  QuoteCrawlerState.Crawled(title = title, numberOfQuotes = quotes.size, time = ZonedDateTime.now()),
+                  quotes
+                )
+              )
+            case Failure(exception) => Success((movieId, QuoteCrawlerState.UnexpectedError(exception.getMessage), Seq.empty))
+          }
       }
     )
     .to(Sink.foreach {

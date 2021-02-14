@@ -15,22 +15,16 @@ case class MovieRow(movieId: String, state: QuoteCrawlerState)
 
 @Singleton
 class MovieRepo @Inject() (db: Database)(implicit mat: Materializer) extends JsonColumn {
-  def parser: RowParser[MovieRow] =
-    for {
-      movieId <- SqlParser.str("movie_id")
-      state   <- SqlParser.get[Either[io.circe.Error, QuoteCrawlerState]]("state").?
-    } yield MovieRow(movieId, state.flatMap(_.toOption).getOrElse(QuoteCrawlerState.NotCrawled))
-
   def list(): Seq[MovieRow] =
     db.withConnection { implicit con =>
       SQL"""SELECT * FROM movies"""
-        .as(parser.*)
+        .as(MovieRepo.parser.*)
     }
 
   def get(movieId: String): Option[MovieRow] =
     db.withConnection { implicit con =>
       SQL"""SELECT * FROM movies WHERE movie_id = ${movieId}"""
-        .as(parser.singleOpt)
+        .as(MovieRepo.parser.singleOpt)
     }
 
   def addNewMovie(movieId: String): Int =
@@ -58,6 +52,14 @@ class MovieRepo @Inject() (db: Database)(implicit mat: Materializer) extends Jso
     db.withConnection { implicit con =>
       val notCrawled: QuoteCrawlerState = QuoteCrawlerState.NotCrawled
       SQL"""SELECT * FROM movies WHERE state IS NULL OR state = ${notCrawled.asJson} LIMIT 10"""
-        .as(parser.*)
+        .as(MovieRepo.parser.*)
     }
+}
+
+object MovieRepo extends JsonColumn {
+  def parser: RowParser[MovieRow] =
+    for {
+      movieId <- SqlParser.str("movie_id")
+      state   <- SqlParser.get[Either[io.circe.Error, QuoteCrawlerState]]("state").?
+    } yield MovieRow(movieId, state.flatMap(_.toOption).getOrElse(QuoteCrawlerState.NotCrawled))
 }
