@@ -6,14 +6,32 @@ import org.scalatest.funsuite.AnyFunSuite
 import scala.io.Source
 
 class IMDBParserTest extends AnyFunSuite {
-  val starWarsQuotesRaw: String = Source.fromResource("star_wars.html").mkString("")
+  test("parse movie data (the godfather)") {
+    val moviePageRaw = Source.fromResource("movie_page_1.html").mkString("")
 
-  test("parse star wars title") {
-    val parsed = IMDBParser.extractTitle(starWarsQuotesRaw)
-    assert(parsed == "Star Wars: Episode III - Die Rache der Sith")
+    val parsed = IMDBParser.parseMoviePage(moviePageRaw)
+
+    assert(parsed.isDefined)
+    assert(parsed.get.englishTitle == "The Godfather")
+    assert(parsed.get.originalTitle == "The Godfather")
+    assert(parsed.get.genre == Set(    "Crime","Drama"))
+    assert(parsed.get.releaseYear == 1972)
+  }
+
+  test("parse movie data (oldboy)") {
+    val moviePageRaw = Source.fromResource("movie_page_2.html").mkString("")
+
+    val parsed = IMDBParser.parseMoviePage(moviePageRaw)
+
+    assert(parsed.isDefined)
+    assert(parsed.get.englishTitle == "Oldboy")
+    assert(parsed.get.originalTitle == "Oldeuboi")
+    assert(parsed.get.genre == Set("Action", "Drama", "Mystery", "Thriller"))
+    assert(parsed.get.releaseYear == 2003)
   }
 
   test("parse star wars quotes") {
+    val starWarsQuotesRaw = Source.fromResource("movie_quotes_page.html").mkString("")
     val parsed = IMDBParser.extractQuotes(starWarsQuotesRaw)
     assert(parsed.size == 118)
 

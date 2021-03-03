@@ -1,12 +1,35 @@
 package imdb
 
-import model.{Blocking, Quote, Speech, Statement}
+import model.{Blocking, MovieData, Quote, Speech, Statement}
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import net.ruippeixotog.scalascraper.model.{Element, ElementNode, TextNode}
 
 object IMDBParser {
   def extractTitle(rawHtml: String): String = {
     JsoupBrowser().parseString(rawHtml).body.select(".subpage_title_block .parent a").head.text
+  }
+
+  def parseMoviePage(rawHtml: String): Option[MovieData] = {
+    val metaTitleRegex = "(.*) \\((\\d*)\\) - IMDb".r
+
+    val document =JsoupBrowser().parseString(rawHtml).root
+
+    val ldJson = document.select("script[type=application/ld+json]").head.innerHtml
+    for{
+      json <- io.circe.parser.parse(ldJson).toOption
+      originalTitle <- json.asObject.flatMap(_.apply("name")).flatMap(_.as[String].toOption)
+      metaTitle = document.select("meta[property='og:title']").head.attr("content")
+      Seq(englishTitle, releaseYear) <- metaTitleRegex.unapplySeq(metaTitle)
+      genre <- json.asObject.flatMap(_.apply("genre")).flatMap(_.as[Set[String]].toOption)
+      releaseYear <- releaseYear.toIntOption
+    } yield {
+        MovieData(
+          englishTitle = englishTitle,
+          originalTitle = originalTitle,
+          releaseYear = releaseYear,
+          genre = genre
+        )
+    }
   }
 
   def extractQuotes(rawHtml: String): Map[String, Quote] = {
