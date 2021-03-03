@@ -10,7 +10,7 @@ class TranslationRepoTest extends AnyFunSuite with GuiceOneAppPerSuite {
   val quotesRepo: QuoteRepo             = app.injector.instanceOf[QuoteRepo]
   val translationsRepo: TranslationRepo = app.injector.instanceOf[TranslationRepo]
 
-  val quote = Quote(Seq.empty, None)
+  val quote = Quote(Seq.empty, 1d)
 
   test("enqueue a quote for translation") {
     assert(movieRepo.addNewMovie("movieId") == 1)

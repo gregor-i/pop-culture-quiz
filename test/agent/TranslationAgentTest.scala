@@ -21,7 +21,7 @@ class TranslationAgentTest extends AnyFunSuite with GuiceOneAppPerSuite with Eve
   val quotesRepo: QuoteRepo             = app.injector.instanceOf[QuoteRepo]
   val translationsRepo: TranslationRepo = app.injector.instanceOf[TranslationRepo]
 
-  val quote = Quote(Seq.empty, None)
+  val quote = Quote(Seq.empty, 1d)
 
   override def beforeEach() = {
     movieRepo.truncate()

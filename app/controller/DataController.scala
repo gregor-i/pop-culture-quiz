@@ -17,7 +17,6 @@ class DataController @Inject() (movieRepo: MovieRepo, quoteRepo: QuoteRepo, tran
   def registerMovie(movieId: String) = Action {
     movieRepo.get(movieId) match {
       case Some(_) =>
-        movieRepo.setState(movieId, QuoteCrawlerState.NotCrawled)
         Accepted("Movie already registered")
       case None =>
         movieRepo.addNewMovie(movieId)

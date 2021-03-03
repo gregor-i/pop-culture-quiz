@@ -4,7 +4,7 @@ import akka.actor.ActorSystem
 import akka.stream.Materializer
 import akka.stream.scaladsl.{Flow, Sink, Source}
 import imdb.{IMDBClient, IMDBParser}
-import model.{Quote, QuoteCrawlerState, TranslatedQuote}
+import model.{MovieData, Quote, QuoteCrawlerState, TranslatedQuote}
 import repo.{MovieRepo, QuoteRepo, QuoteRow}
 import translation.TranslateQuote
 
@@ -29,34 +29,39 @@ class IMDBAgent @Inject() (movieRepo: MovieRepo, quoteRepo: QuoteRepo)(
     .filter(_ => running)
     .throttle(1, pollInterval)
     .flatMapConcat { _ =>
-      Source(movieRepo.listUnprocessed().map(_.movieId))
+      Source(movieRepo.listNoData().map(_.movieId))
     }
-    .via(
-      Flow[String].mapAsyncUnordered(1) { movieId =>
+    .to(
+      Sink.foreach { movieId =>
         IMDBClient
-          .getMovePage(movieId)
-          .map { moviePage =>
-            val title  = IMDBParser.extractTitle(moviePage)
-            val quotes = IMDBParser.extractQuotes(moviePage)
-            (movieId, title, quotes)
+          .getMoviePage(movieId)
+          .map(IMDBParser.parseMoviePage)
+          .map {
+            case Some(movieData) => Right(movieData)
+            case None            => Left("failed to parse html")
           }
-          .transform {
-            case Success((movieId, title, quotes)) =>
-              Success(
-                (
-                  movieId,
-                  QuoteCrawlerState.Crawled(title = title, numberOfQuotes = quotes.size, time = ZonedDateTime.now()),
-                  quotes
-                )
-              )
-            case Failure(exception) => Success((movieId, QuoteCrawlerState.UnexpectedError(exception.getMessage), Seq.empty))
-          }
+          .recover(ex => Left(ex.getMessage))
+          .foreach(movieRepo.setMovieData(movieId, _))
       }
     )
-    .to(Sink.foreach {
-      case (movieId, state, quotes) =>
-        movieRepo.setState(movieId, state)
-        quotes.foreach { case (quoteId, quote) => quoteRepo.addNewQuote(movieId = movieId, quoteId = quoteId, quote = quote) }
-    })
+    .run()
+
+  Source
+    .repeat(())
+    .filter(_ => running)
+    .throttle(1, pollInterval)
+    .flatMapConcat { _ =>
+      Source(movieRepo.listNoQuotes().map(_.movieId))
+    }
+    .to(
+      Sink.foreach { movieId =>
+        IMDBClient
+          .getQuotesPage(movieId)
+          .map(IMDBParser.extractQuotes)
+          .map(Right(_))
+          .recover(ex => Left(ex.getMessage))
+          .foreach(movieRepo.setQuotes(movieId, _))
+      }
+    )
     .run()
 }

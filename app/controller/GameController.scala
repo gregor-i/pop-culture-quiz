@@ -42,15 +42,15 @@ class GameController @Inject() (db: Database) extends InjectedController {
           .as(MovieRepo.parser.*)
       }
 
-    val correctTitle = movie.state match {
-      case QuoteCrawlerState.Crawled(title, _, _) => title
-      case _                                      => "Error"
+    val correctTitle = movie.data match {
+      case Right(movieData) => movieData.englishTitle
+      case _                => "Error"
     }
 
     val titles = scala.util.Random.shuffle(
       otherMovies
         .collect {
-          case MovieRow(_, QuoteCrawlerState.Crawled(title, _, _)) => title
+          case MovieRow(_, Right(movieData), _) => movieData.englishTitle
         }
         .appended(correctTitle)
     )

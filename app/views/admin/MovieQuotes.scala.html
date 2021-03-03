@@ -14,9 +14,9 @@
 <body>
 <h1 class="title">Pop-Culture-Quiz Admin: Quotes</h1>
 <h2 class="subtitle">
-  @movie.state match{
-    case crawled: QuoteCrawlerState.Crawled => { @{crawled.title} }
-    case _ => { Not crawled jet }
+  @movie.data match{
+    case Right(movieData) => { @{movieData.englishTitle} }
+    case Left(msg) => { @msg }
   }
 </h2>
 
@@ -37,12 +37,7 @@
     @for(quote <- quotes) {
     <tr>
       <td><div>@{quote.movieId}</div><div>@{quote.quoteId}</div></td>
-      <td>
-        @quote.quote.count match {
-        case Some((upVotes, countVotes)) => { @upVotes / @countVotes }
-        case None => { - }
-        }
-      </td>
+      <td>@quote.quote.score</td>
       <td>@views.html.components.Quote(quote.quote)</td>
     </tr>
     }

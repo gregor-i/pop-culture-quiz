@@ -8,9 +8,17 @@ import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 
 object IMDBClient {
+  private def movieUrl(movieId: String)  = s"https://www.imdb.com/title/${movieId}/"
   private def quotesUrl(movieId: String) = s"https://www.imdb.com/title/${movieId}/quotes/"
 
-  def getMovePage(movieId: String)(implicit as: ActorSystem, ex: ExecutionContext): Future[String] =
+  def getMoviePage(movieId: String)(implicit as: ActorSystem, ex: ExecutionContext): Future[String] =
+    Http()
+      .singleRequest(HttpRequest(uri = movieUrl(movieId)))
+      .flatMap(checkStatus(_))
+      .flatMap(_.entity.toStrict(10.second))
+      .map(_.getData().utf8String)
+
+  def getQuotesPage(movieId: String)(implicit as: ActorSystem, ex: ExecutionContext): Future[String] =
     Http()
       .singleRequest(HttpRequest(uri = quotesUrl(movieId)))
       .flatMap(checkStatus(_))

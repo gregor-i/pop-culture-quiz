@@ -28,7 +28,7 @@ class QuotesRepoTest extends AnyFunSuite with GuiceOneAppPerSuite with BeforeAnd
         Statement(Some("Anakin Skywalker"), List(Blocking("shouts"), Speech("I HATE YOU!"))),
         Statement(Some("Obi-Wan"), List(Speech("You were my brother, Anakin! I loved you!")))
       ),
-      Some((480, 482))
+      Score.score(480, 482)
     )
 
   test("insert a new quote") {

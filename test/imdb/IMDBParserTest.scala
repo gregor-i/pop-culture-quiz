@@ -1,6 +1,6 @@
 package imdb
 
-import model.{Blocking, Speech, Statement}
+import model.{Blocking, Score, Speech, Statement}
 import org.scalatest.funsuite.AnyFunSuite
 
 import scala.io.Source
@@ -14,7 +14,7 @@ class IMDBParserTest extends AnyFunSuite {
     assert(parsed.isDefined)
     assert(parsed.get.englishTitle == "The Godfather")
     assert(parsed.get.originalTitle == "The Godfather")
-    assert(parsed.get.genre == Set(    "Crime","Drama"))
+    assert(parsed.get.genre == Set("Crime", "Drama"))
     assert(parsed.get.releaseYear == 1972)
   }
 
@@ -32,12 +32,12 @@ class IMDBParserTest extends AnyFunSuite {
 
   test("parse star wars quotes") {
     val starWarsQuotesRaw = Source.fromResource("movie_quotes_page.html").mkString("")
-    val parsed = IMDBParser.extractQuotes(starWarsQuotesRaw)
+    val parsed            = IMDBParser.extractQuotes(starWarsQuotesRaw)
     assert(parsed.size == 118)
 
     val firstQuote = parsed("qt0333083")
     assert(firstQuote.statements.length == 3)
-    assert(firstQuote.count.contains((480, 482)))
+    assert(firstQuote.score == Score.score(480, 482))
 
     val firstStatement = firstQuote.statements.head
     assert(

@@ -37,21 +37,19 @@
     @for(movie <- movies) {
       <tr>
         <td>@{movie.movieId}</td>
-        @movie.state match{
-          case crawled: QuoteCrawlerState.Crawled => { <td>@{crawled.title}</td> }
-          case _ => { <td></td> }
+        @movie.data match{
+          case Right(movieData) => { <td>@{movieData.englishTitle}</td> }
+          case Left(msg) => { <td>@{msg}</td> }
         }
-        @movie.state match {
-          case state: QuoteCrawlerState.Crawled => {
+        @movie.quotes match {
+          case Right(quotes) => {
             <td>
               <a href="/admin/movies/@{movie.movieId}">
-                @{state.numberOfQuotes} Quotes
+                @{quotes.size} Quotes
               </a>
             </td>
           }
-          case QuoteCrawlerState.NotCrawled => { <td>not jet crawled</td> }
-          case QuoteCrawlerState.NotFound => { <td>movie was not found on imdb</td> }
-          case state: QuoteCrawlerState.UnexpectedError => { <td>an unexpected error ocurred: @{state.message}</td> }
+          case Left(msg) => { <td>@{msg}</td> }
         }
       </tr>
     }

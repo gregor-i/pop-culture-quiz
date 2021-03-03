@@ -1,17 +1,14 @@
 package repo
 
 import akka.stream.Materializer
-import akka.stream.scaladsl.{Sink, Source}
 import anorm._
 import io.circe.syntax._
-import model.QuoteCrawlerState
+import model.{MovieData, Quote, QuoteCrawlerState}
 import play.api.db.Database
 
-import java.sql.Connection
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.Future
 
-case class MovieRow(movieId: String, state: QuoteCrawlerState)
+case class MovieRow(movieId: String, data: Either[String, MovieData], quotes: Either[String, Map[String, Quote]])
 
 @Singleton
 class MovieRepo @Inject() (db: Database)(implicit mat: Materializer) extends JsonColumn {
@@ -33,13 +30,44 @@ class MovieRepo @Inject() (db: Database)(implicit mat: Materializer) extends Jso
         .executeUpdate()
     }
 
-  def setState(movieId: String, state: QuoteCrawlerState): Int =
+  def setMovieData(movieId: String, movieData: Either[String, MovieData]): Int =
     db.withConnection { implicit con =>
+      val data = movieData match {
+        case Right(value) => value.asJson
+        case Left(value)  => s"Error: ${value}".asJson
+      }
+
       SQL"""UPDATE movies
-            SET state = ${state.asJson}
+            SET data = ${data.asJson}
             WHERE movie_id = ${movieId}
          """
         .executeUpdate()
+    }
+
+  def setQuotes(movieId: String, quotes: Either[String, Map[String, Quote]]): Int =
+    db.withConnection { implicit con =>
+      val data = quotes match {
+        case Right(value) => value.asJson
+        case Left(value)  => s"Error: ${value}".asJson
+      }
+
+      SQL"""UPDATE movies
+            SET quotes = ${data}
+            WHERE movie_id = ${movieId}
+         """
+        .executeUpdate()
+    }
+
+  def listNoData(): Seq[MovieRow] =
+    db.withConnection { implicit con =>
+      SQL"""SELECT * FROM movies WHERE data IS NULL LIMIT 10"""
+        .as(MovieRepo.parser.*)
+    }
+
+  def listNoQuotes(): Seq[MovieRow] =
+    db.withConnection { implicit con =>
+      SQL"""SELECT * FROM movies WHERE quotes IS NULL LIMIT 10"""
+        .as(MovieRepo.parser.*)
     }
 
   def truncate(): Int =
@@ -47,19 +75,17 @@ class MovieRepo @Inject() (db: Database)(implicit mat: Materializer) extends Jso
       SQL"""TRUNCATE movies CASCADE"""
         .executeUpdate()
     }
-
-  def listUnprocessed(): Seq[MovieRow] =
-    db.withConnection { implicit con =>
-      val notCrawled: QuoteCrawlerState = QuoteCrawlerState.NotCrawled
-      SQL"""SELECT * FROM movies WHERE state IS NULL OR state = ${notCrawled.asJson} LIMIT 10"""
-        .as(MovieRepo.parser.*)
-    }
 }
 
 object MovieRepo extends JsonColumn {
   def parser: RowParser[MovieRow] =
     for {
       movieId <- SqlParser.str("movie_id")
-      state   <- SqlParser.get[Either[io.circe.Error, QuoteCrawlerState]]("state").?
-    } yield MovieRow(movieId, state.flatMap(_.toOption).getOrElse(QuoteCrawlerState.NotCrawled))
+      data    <- SqlParser.get[Either[io.circe.Error, MovieData]]("data").?
+      quotes  <- SqlParser.get[Either[io.circe.Error, Map[String, Quote]]]("quotes").?
+    } yield MovieRow(
+      movieId = movieId,
+      data = data.map(_.left.map(_.getMessage)).fold[Either[String, MovieData]](Left("Null"))(identity),
+      quotes = quotes.map(_.left.map(_.getMessage)).fold[Either[String, Map[String, Quote]]](Left("Null"))(identity)
+    )
 }

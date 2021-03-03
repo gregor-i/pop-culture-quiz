@@ -1,11 +1,9 @@
 package repo
 
-import model.QuoteCrawlerState
+import model.{MovieData, Quote}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-
-import java.time.{Instant, ZonedDateTime}
 
 class MovieRepoTest extends AnyFunSuite with GuiceOneAppPerSuite with BeforeAndAfterEach {
 
@@ -21,34 +19,32 @@ class MovieRepoTest extends AnyFunSuite with GuiceOneAppPerSuite with BeforeAndA
     assert(repo.list().length == 2)
   }
 
-  test("the initial state is NotCrawled") {
+  test("the initial state is null") {
     assert(repo.addNewMovie("tt1345836") == 1)
 
-    val movie = repo.get("tt1345836").get
-    assert(movie.state == QuoteCrawlerState.NotCrawled)
+    assert(repo.listNoData().size == 1)
+    assert(repo.listNoQuotes().size == 1)
+    assert(repo.list().size == 1)
   }
 
-  test("set crawled as state") {
+  test("set movieData") {
     assert(repo.addNewMovie("tt1345836") == 1)
 
-    val state = QuoteCrawlerState.Crawled(title = "The Dark Knight Rises", numberOfQuotes = 15, time = ZonedDateTime.now())
-    assert(repo.setState("tt1345836", state) == 1)
+    val movieData =
+      MovieData(englishTitle = "The Dark Knight Rises", originalTitle = "wayne", releaseYear = 2152, genre = Set.empty)
+    assert(repo.setMovieData("tt1345836", Right(movieData)) == 1)
 
     val movie = repo.get("tt1345836").get
-    assert(movie.state == state)
+    assert(movie.data == Right(movieData))
   }
 
-  test("list movies") {
+  test("set quotes") {
     assert(repo.addNewMovie("tt1345836") == 1)
-    assert(repo.addNewMovie("tt0121766") == 1)
 
-    val state = QuoteCrawlerState.Crawled(title = "The Dark Knight Rises", numberOfQuotes = 15, time = ZonedDateTime.now())
-    assert(repo.setState("tt1345836", state) == 1)
+    val quotes = Map("1" -> Quote(statements = Seq.empty, score = 1.2), "2" -> Quote(statements = Seq.empty, score = 1.1))
+    assert(repo.setQuotes("tt1345836", Right(quotes)) == 1)
 
-    val list = repo.list()
-    assert(list.length == 2)
-
-    assert(list.contains(MovieRow(movieId = "tt1345836", state = state)))
-    assert(list.contains(MovieRow(movieId = "tt0121766", state = QuoteCrawlerState.NotCrawled)))
+    val movie = repo.get("tt1345836").get
+    assert(movie.quotes == Right(quotes))
   }
 }
