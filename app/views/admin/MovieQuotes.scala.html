@@ -1,7 +1,7 @@
 @import repo._
 @import model._
 
-@(movie: MovieRow, quotes: Seq[QuoteRow])
+@(movieId: String, data: Either[String, MovieData], quotes: Either[String, Map[String, Quote]])
 
 <!DOCTYPE html>
 <html>
@@ -12,36 +12,36 @@
 </head>
 
 <body>
-<h1 class="title">Pop-Culture-Quiz Admin: Quotes</h1>
-<h2 class="subtitle">
-  @movie.data match{
-    case Right(movieData) => { @{movieData.englishTitle} }
-    case Left(msg) => { @msg }
+  @data match{
+    case Right(movieData) => {
+      <h1 class="title">Pop-Culture-Quiz Admin: @{movieData.englishTitle} (@{movieData.originalTitle})</h1>
+      <h2 class="subtitle"><a href="https://www.imdb.com/title/@{movieId}/">@{movieId}</a> @{movieData.releaseYear} @{movieData.genre.mkString(" ")}</h2>
+    }
+    case Left(msg) => {
+      <h1 class="title">Pop-Culture-Quiz Admin: @msg</h1>
+    }
   }
-</h2>
 
 <section>
-  <table class="table">
-    <colgroup>
-      <col span="1" style="width: 5%;">
-      <col span="1" style="width: 5%;">
-      <col span="1" style="width: 45%;">
-      <col span="1" style="width: 45%;">
-    </colgroup>
-
-    <tr>
-      <th><div>Movie Id</div><div>Quote Id</div></th>
-      <th>Votes</th>
-      <th>Quote</th>
-    </tr>
-    @for(quote <- quotes) {
-    <tr>
-      <td><div>@{quote.movieId}</div><div>@{quote.quoteId}</div></td>
-      <td>@quote.quote.score</td>
-      <td>@views.html.components.Quote(quote.quote)</td>
-    </tr>
+  @quotes match{
+    case Right(quotes) => {
+      <table class="table">
+        <tr>
+          <th><div>Movie Id</div><div>Quote Id</div></th>
+          <th>Score</th>
+          <th>Quote</th>
+        </tr>
+        @for((quoteId, quote) <- quotes.toSeq.sortBy(_._2.score).reverse) {
+          <tr>
+            <td><a href="https://www.imdb.com/title/@{movieId}/quotes/@{quoteId}">@{quoteId}</a></td>
+            <td>@{(quote.score * 100).toInt}%</td>
+            <td>@views.html.components.Quote(quote)</td>
+          </tr>
+        }
+      </table>
     }
-  </table>
+    case Left(msg) => { @msg }
+  }
 </section>
 </body>
 </html>

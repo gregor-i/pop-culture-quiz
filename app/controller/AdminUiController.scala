@@ -1,15 +1,12 @@
 package controller
 
-import controllers.Assets
-import model.Quote
-import play.api.Environment
 import play.api.mvc.InjectedController
-import repo.{MovieRepo, QuoteRepo, QuoteRow, TranslationRepo}
+import repo.{MovieRepo, MovieRow, TranslationRepo}
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class AdminUiController @Inject() (movieRepo: MovieRepo, quoteRepo: QuoteRepo, translationRepo: TranslationRepo)(
+class AdminUiController @Inject() (movieRepo: MovieRepo, translationRepo: TranslationRepo)(
     implicit ex: ExecutionContext
 ) extends InjectedController {
 
@@ -25,10 +22,8 @@ class AdminUiController @Inject() (movieRepo: MovieRepo, quoteRepo: QuoteRepo, t
 
   def movieQuotes(movieId: String) = Action {
     movieRepo.get(movieId) match {
-      case Some(movie) =>
-        val quotes = quoteRepo.list().filter(_.movieId == movieId).sortBy(_.quote)
-
-        Ok(views.html.admin.MovieQuotes(movie, quotes))
+      case Some(MovieRow(_, data, quotes)) =>
+        Ok(views.html.admin.MovieQuotes(movieId, data, quotes))
       case None =>
         NotFound
     }
