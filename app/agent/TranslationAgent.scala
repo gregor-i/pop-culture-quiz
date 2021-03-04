@@ -2,9 +2,9 @@ package agent
 
 import akka.actor.ActorSystem
 import akka.stream.Materializer
-import akka.stream.scaladsl.{Flow, Sink, Source}
+import akka.stream.scaladsl.{Sink, Source}
 import model.TranslationState
-import repo.{QuoteRow, TranslationRepo, TranslationRow}
+import repo.TranslationRepo
 import translation.TranslationService
 import translation.google.GoogleTranslate
 import translation.systran.SystranTranslate
@@ -30,19 +30,19 @@ abstract class TranslationAgent(service: TranslationService, translationRepo: Tr
       Source(translationRepo.listUnprocessed(service.name))
     }
     .throttle(1, 1.second)
-    .via(
-      Flow[(TranslationRow, QuoteRow)].mapAsyncUnordered[TranslationRow](1) {
-        case (translationRow, quoteRow) =>
-          translation
-            .TranslateQuote(quote = quoteRow.quote, service = service, chain = translationRow.translationChain)
-            .transform {
-              case Success(translated) => Success(TranslationState.Translated(translated))
-              case Failure(exception)  => Success(TranslationState.UnexpectedError(exception.getMessage))
-            }
-            .map(state => translationRow.copy(translation = state))
+    .to(
+      Sink.foreach { translationRow =>
+        translation
+          .TranslateQuote(quote = translationRow.quote, service = service, chain = translationRow.translationChain)
+          .onComplete {
+            case Success(translated) =>
+              translationRepo.upsert(translationRow.copy(translation = TranslationState.Translated(translated)))
+
+            case Failure(exception) =>
+              translationRepo.upsert(translationRow.copy(translation = TranslationState.UnexpectedError(exception.getMessage)))
+          }
       }
     )
-    .to(Sink.foreach { translationRepo.upsert(_) })
     .run()
 
 }

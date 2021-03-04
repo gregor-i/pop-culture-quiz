@@ -20,8 +20,13 @@ object IMDBParser {
       originalTitle <- json.asObject.flatMap(_.apply("name")).flatMap(_.as[String].toOption)
       metaTitle = document.select("meta[property='og:title']").head.attr("content")
       Seq(englishTitle, releaseYear) <- metaTitleRegex.unapplySeq(metaTitle)
-      genre                          <- json.asObject.flatMap(_.apply("genre")).flatMap(_.as[Set[String]].toOption)
-      releaseYear                    <- releaseYear.toIntOption
+      genre <- json.asObject.flatMap(_.apply("genre")).flatMap { json =>
+        json
+          .as[Set[String]]
+          .toOption
+          .orElse(json.as[String].map(Set.apply(_)).toOption)
+      }
+      releaseYear <- releaseYear.toIntOption
     } yield {
       MovieData(
         englishTitle = englishTitle,

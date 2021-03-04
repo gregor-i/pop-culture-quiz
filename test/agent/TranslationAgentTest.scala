@@ -7,23 +7,21 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.Eventually
 import org.scalatest.concurrent.PatienceConfiguration.Timeout
 import org.scalatest.funsuite.AnyFunSuite
-import org.scalatest.time.Seconds
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import repo.{MovieRepo, QuoteRepo, TranslationRepo}
+import repo.{MovieRepo, TranslationRepo}
 import translation.TranslationService
 
-import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.duration._
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 class TranslationAgentTest extends AnyFunSuite with GuiceOneAppPerSuite with Eventually with BeforeAndAfterEach {
 
   val movieRepo: MovieRepo              = app.injector.instanceOf[MovieRepo]
-  val quotesRepo: QuoteRepo             = app.injector.instanceOf[QuoteRepo]
   val translationsRepo: TranslationRepo = app.injector.instanceOf[TranslationRepo]
 
   val quote = Quote(Seq.empty, 1d)
 
-  override def beforeEach() = {
+  override def afterEach() = {
     movieRepo.truncate()
   }
 
@@ -35,14 +33,19 @@ class TranslationAgentTest extends AnyFunSuite with GuiceOneAppPerSuite with Eve
     agent.running = true
 
     movieRepo.addNewMovie("movieId")
-    quotesRepo.addNewQuote(movieId = "movieId", quoteId = "quoteId", quote = quote)
-    translationsRepo.enqueue("quoteId", translationService = service.name, translationChain = Seq("de", "fr", "nl"))
+    translationsRepo.enqueue(
+      "movieId",
+      "quoteId",
+      quote,
+      translationService = service.name,
+      translationChain = Seq("de", "fr", "nl")
+    )
 
     eventually(timeout = Timeout(1.25.seconds)) {
       assert(translationsRepo.listUnprocessed(service.name).isEmpty)
     }
 
-    translationsRepo.list().head._1.translation match {
+    translationsRepo.list().head.translation match {
       case TranslationState.Translated(quote) =>
         assert(quote == this.quote)
       case _ => fail()
@@ -59,14 +62,19 @@ class TranslationAgentTest extends AnyFunSuite with GuiceOneAppPerSuite with Eve
     agent.running = true
 
     movieRepo.addNewMovie("movieId")
-    quotesRepo.addNewQuote(movieId = "movieId", quoteId = "quoteId", quote = quote)
-    translationsRepo.enqueue("quoteId", translationService = service.name, translationChain = Seq("de", "fr", "nl"))
+    translationsRepo.enqueue(
+      "movieId",
+      "quoteId",
+      quote,
+      translationService = service.name,
+      translationChain = Seq("de", "fr", "nl")
+    )
 
     eventually(timeout = Timeout(1.25.seconds)) {
       assert(translationsRepo.listUnprocessed(service.name).isEmpty)
     }
 
-    translationsRepo.list().head._1.translation match {
+    translationsRepo.list().head.translation match {
       case TranslationState.UnexpectedError(message) =>
         assert(message == "FailingDummyService doin' his thing")
       case _ => fail()

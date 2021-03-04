@@ -1,18 +1,18 @@
 package controller
 
+import anorm._
+import model.{Quote, TranslationState}
+import play.api.db.Database
 import play.api.mvc.InjectedController
+import repo.{MovieRepo, MovieRow, TranslationRepo, TranslationRow}
 
 import javax.inject.{Inject, Singleton}
-import anorm._
-import model.{Quote, QuoteCrawlerState, TranslationState}
-import play.api.db.Database
-import repo.{MovieRepo, MovieRow, QuotesRepo, TranslationRepo, TranslationRow}
 @Singleton
 class GameController @Inject() (db: Database) extends InjectedController {
 
   def play() = Action {
 
-    val Some((quoteId, translation)) =
+    val Some((movieId, quoteId, original, translation)) =
       db.withConnection { implicit con =>
         SQL"""SELECT *
               FROM translations
@@ -21,18 +21,13 @@ class GameController @Inject() (db: Database) extends InjectedController {
            """
           .as(TranslationRepo.parser.*)
           .collectFirst {
-            case TranslationRow(quoteId, TranslationState.Translated(quote), _, _) => (quoteId, quote)
+            case TranslationRow(movieId, quoteId, quote, TranslationState.Translated(translated), _, _) =>
+              (movieId, quoteId, quote, translated)
           }
       }
 
-    val original =
-      db.withConnection { implicit con =>
-        SQL"""SELECT * FROM quotes WHERE quote_id = ${quoteId}"""
-          .as(QuotesRepo.parser.single)
-      }
-
     val movie = db.withConnection { implicit con =>
-      SQL"""SELECT * FROM movies WHERE movie_id = ${original.movieId}"""
+      SQL"""SELECT * FROM movies WHERE movie_id = ${movieId}"""
         .as(MovieRepo.parser.single)
     }
 
@@ -58,7 +53,7 @@ class GameController @Inject() (db: Database) extends InjectedController {
     Ok(
       views.html.game.Game(
         translation = hideCharacters(translation),
-        original = original.quote,
+        original = original,
         correctTitle = correctTitle,
         titles = titles
       )

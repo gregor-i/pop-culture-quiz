@@ -1,7 +1,7 @@
 @import repo._
 @import model._
 
-@(translation: Seq[(TranslationRow, QuoteRow)])
+@(translations: Seq[TranslationRow])
 
 
 <!DOCTYPE html>
@@ -17,10 +17,11 @@
       function submit(event){
         event.preventDefault()
         let quoteId = document.querySelector("#enqueue-quote [name=quoteId]").value
+        let movieId = document.querySelector("#enqueue-quote [name=movieId]").value
         let service = document.querySelector("#enqueue-quote [name=service]").value
         let chain = document.querySelector("#enqueue-quote [name=chain]").value.split(",").map(step => step.trim())
 
-        fetch(`/api/enqueue-translation?quoteId=${quoteId}`, {
+        fetch(`/api/enqueue-translation?quoteId=${quoteId}&movieId=${movieId}`, {
           method: "POST",
           body: JSON.stringify({service, chain}),
           headers: {
@@ -39,6 +40,13 @@
 
 
   <form id="enqueue-quote" class="block box" style="max-width: 600px; margin-left: auto; margin-right: auto;">
+    <div class="field is-horizontal">
+      <div class="field-label is-normal" style="flex-grow: 2;"><label class="label">Movie Id:</label></div>
+      <div class="field-body"><div class="control">
+        <input class="input" type="text" name="movieId" placeholder="tt0068646">
+      </div></div>
+    </div>
+
     <div class="field is-horizontal">
       <div class="field-label is-normal" style="flex-grow: 2;"><label class="label">Quote Id:</label></div>
       <div class="field-body"><div class="control">
@@ -87,17 +95,17 @@
       <th>Original</th>
       <th>Translation</th>
     </tr>
-    @for((translation, quote) <- translation) {
+    @for(translation <- translations) {
       <tr>
         <td>
-          <div>@{quote.movieId}</div>
-          <div>@{quote.quoteId}</div>
+          <div>@{translation.movieId}</div>
+          <div>@{translation.quoteId}</div>
         </td>
         <td>
           <div>@{translation.translationService}</div>
           <div>@{translation.translationChain.mkString(", ")}</div>
         </td>
-        <td>@views.html.components.Quote(quote.quote)</td>
+        <td>@views.html.components.Quote(translation.quote)</td>
         <td>
           @translation.translation match{
             case TranslationState.NotTranslated => { awaiting translation }

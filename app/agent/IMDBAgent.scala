@@ -2,27 +2,23 @@ package agent
 
 import akka.actor.ActorSystem
 import akka.stream.Materializer
-import akka.stream.scaladsl.{Flow, Sink, Source}
+import akka.stream.scaladsl.{Sink, Source}
 import imdb.{IMDBClient, IMDBParser}
-import model.{MovieData, Quote, QuoteCrawlerState, TranslatedQuote}
-import repo.{MovieRepo, QuoteRepo, QuoteRow}
-import translation.TranslateQuote
+import repo.MovieRepo
 
-import java.time.ZonedDateTime
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
-import scala.util.{Failure, Success}
 
 @Singleton
-class IMDBAgent @Inject() (movieRepo: MovieRepo, quoteRepo: QuoteRepo)(
+class IMDBAgent @Inject() (movieRepo: MovieRepo)(
     implicit as: ActorSystem,
     ex: ExecutionContext,
     mat: Materializer
 ) extends Agent {
 
   var running: Boolean             = true
-  val pollInterval: FiniteDuration = 1.second
+  val pollInterval: FiniteDuration = 5.second
 
   Source
     .repeat(())
@@ -31,6 +27,7 @@ class IMDBAgent @Inject() (movieRepo: MovieRepo, quoteRepo: QuoteRepo)(
     .flatMapConcat { _ =>
       Source(movieRepo.listNoData().map(_.movieId))
     }
+    .throttle(1, pollInterval)
     .to(
       Sink.foreach { movieId =>
         IMDBClient
@@ -53,6 +50,7 @@ class IMDBAgent @Inject() (movieRepo: MovieRepo, quoteRepo: QuoteRepo)(
     .flatMapConcat { _ =>
       Source(movieRepo.listNoQuotes().map(_.movieId))
     }
+    .throttle(1, pollInterval)
     .to(
       Sink.foreach { movieId =>
         IMDBClient

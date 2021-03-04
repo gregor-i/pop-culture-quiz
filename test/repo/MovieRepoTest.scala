@@ -9,7 +9,7 @@ class MovieRepoTest extends AnyFunSuite with GuiceOneAppPerSuite with BeforeAndA
 
   val repo: MovieRepo = app.injector.instanceOf[MovieRepo]
 
-  override def beforeEach(): Unit = {
+  override def afterEach(): Unit = {
     repo.truncate()
   }
 

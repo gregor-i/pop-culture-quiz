@@ -1,16 +1,14 @@
 package controller
 
 import akka.actor.ActorSystem
-import imdb.{IMDBClient, IMDBParser}
-import model.QuoteCrawlerState
 import play.api.libs.json.JsObject
 import play.api.mvc.InjectedController
-import repo.{MovieRepo, QuoteRepo, TranslationRepo}
+import repo.{MovieRepo, MovieRow, TranslationRepo}
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 @Singleton
-class DataController @Inject() (movieRepo: MovieRepo, quoteRepo: QuoteRepo, translationRepo: TranslationRepo)(
+class DataController @Inject() (movieRepo: MovieRepo, translationRepo: TranslationRepo)(
     implicit as: ActorSystem,
     ex: ExecutionContext
 ) extends InjectedController {
@@ -24,7 +22,7 @@ class DataController @Inject() (movieRepo: MovieRepo, quoteRepo: QuoteRepo, tran
     }
   }
 
-  def enqueueTranslation(quoteId: String) = Action(parse.json) { request =>
+  def enqueueTranslation(movieId: String, quoteId: String) = Action(parse.json) { request =>
     val parsed: Option[(String, Seq[String])] = for {
       body    <- request.body.asOpt[JsObject]
       service <- body.value.get("service").flatMap(_.asOpt[String])
@@ -33,14 +31,17 @@ class DataController @Inject() (movieRepo: MovieRepo, quoteRepo: QuoteRepo, tran
 
     (for {
       parsedBody <- parsed.toRight(BadRequest("body could not be parsed"))
-      quote      <- quoteRepo.find(quoteId).toRight(NotFound("Quote not found"))
+      movie      <- movieRepo.get(movieId).toRight(NotFound("Movie not found"))
+      quote      <- movie.quotes.toOption.flatMap(_.get(quoteId)).toRight(NotFound("Quote not found"))
     } yield {
       translationRepo.enqueue(
-        quoteId = quote.quoteId,
+        movieId = movieId,
+        quoteId = quoteId,
+        quote = quote,
         translationService = parsedBody._1,
         translationChain = parsedBody._2
       )
-      Accepted("")
+      Accepted
     }).merge
   }
 
@@ -53,12 +54,27 @@ class DataController @Inject() (movieRepo: MovieRepo, quoteRepo: QuoteRepo, tran
 
     (for {
       parsedBody <- parsed.toRight(BadRequest("body could not be parsed"))
-      quotes = quoteRepo.list().sortBy(_.quote).take(count)
     } yield {
-      quotes.foreach { quote =>
-        translationRepo.enqueue(quoteId = quote.quoteId, translationService = parsedBody._1, translationChain = parsedBody._2)
-      }
-      Accepted("")
+      movieRepo
+        .list()
+        .flatMap {
+          case MovieRow(movieId, _, Right(quotes)) => quotes.map { case (quoteId, quote) => (movieId, quoteId, quote) }
+          case _                                   => Seq.empty
+        }
+        .sortBy(_._3.score)
+        .reverse
+        .take(count)
+        .foreach {
+          case (movieId, quoteId, quote) =>
+            translationRepo.enqueue(
+              movieId = movieId,
+              quoteId = quoteId,
+              quote = quote,
+              translationService = parsedBody._1,
+              translationChain = parsedBody._2
+            )
+        }
+      Accepted
     }).merge
   }
 }

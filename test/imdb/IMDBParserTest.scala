@@ -30,6 +30,30 @@ class IMDBParserTest extends AnyFunSuite {
     assert(parsed.get.releaseYear == 2003)
   }
 
+  test("parse movie data (The Shawshank Redemption)") {
+    val moviePageRaw = Source.fromResource("movie_page_3.html").mkString("")
+
+    val parsed = IMDBParser.parseMoviePage(moviePageRaw)
+
+    assert(parsed.isDefined)
+    assert(parsed.get.englishTitle == "The Shawshank Redemption")
+    assert(parsed.get.originalTitle == "The Shawshank Redemption")
+    assert(parsed.get.genre == Set("Drama"))
+    assert(parsed.get.releaseYear == 1994)
+  }
+
+  test("parse movie data (A Silent Voice: The Movie)") {
+    val moviePageRaw = Source.fromResource("movie_page_4.html").mkString("")
+
+    val parsed = IMDBParser.parseMoviePage(moviePageRaw)
+
+    assert(parsed.isDefined)
+    assert(parsed.get.englishTitle == "A Silent Voice: The Movie")
+    assert(parsed.get.originalTitle == "Koe no katachi")
+    assert(parsed.get.genre == Set("Animation", "Drama", "Family", "Romance"))
+    assert(parsed.get.releaseYear == 2016)
+  }
+
   test("parse star wars quotes") {
     val starWarsQuotesRaw = Source.fromResource("movie_quotes_page.html").mkString("")
     val parsed            = IMDBParser.extractQuotes(starWarsQuotesRaw)
