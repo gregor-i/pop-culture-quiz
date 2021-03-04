@@ -15,7 +15,7 @@ object IMDBClient {
   private val logger = Logger(this.getClass)
 
   def getMoviePage(movieId: String)(implicit as: ActorSystem, ex: ExecutionContext): Future[String] = {
-    logger.info(s"Lading movie page of ${movieId}")
+    logger.info(s"Loading movie page of ${movieId}")
     Http()
       .singleRequest(HttpRequest(uri = movieUrl(movieId)))
       .flatMap(checkStatus(_))
@@ -24,7 +24,7 @@ object IMDBClient {
   }
 
   def getQuotesPage(movieId: String)(implicit as: ActorSystem, ex: ExecutionContext): Future[String] = {
-    logger.info(s"Lading quotes page of ${movieId}")
+    logger.info(s"Loading quotes page of ${movieId}")
     Http()
       .singleRequest(HttpRequest(uri = quotesUrl(movieId)))
       .flatMap(checkStatus(_))
@@ -35,7 +35,7 @@ object IMDBClient {
   private def checkStatus(response: HttpResponse)(implicit ex: ExecutionContext): Future[HttpResponse] =
     response match {
       case response if response.status == StatusCodes.OK => Future.successful(response)
-      case response                                      =>
+      case response =>
         logger.warn(s"IMDB did not respond with Ok, but with ${response.status}")
         Future.failed(new Exception(s"IMDB responded with status code ${response.status}"))
     }

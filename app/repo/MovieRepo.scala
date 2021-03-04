@@ -2,6 +2,7 @@ package repo
 
 import akka.stream.Materializer
 import anorm._
+import io.circe.Json
 import io.circe.syntax._
 import model.{MovieData, Quote, QuoteCrawlerState}
 import play.api.db.Database
@@ -81,11 +82,11 @@ object MovieRepo extends JsonColumn {
   def parser: RowParser[MovieRow] =
     for {
       movieId <- SqlParser.str("movie_id")
-      data    <- SqlParser.get[Either[io.circe.Error, MovieData]]("data").?
-      quotes  <- SqlParser.get[Either[io.circe.Error, Map[String, Quote]]]("quotes").?
+      data    <- SqlParser.get[Json]("data").?
+      quotes  <- SqlParser.get[Json]("quotes").?
     } yield MovieRow(
       movieId = movieId,
-      data = data.map(_.left.map(_.getMessage)).fold[Either[String, MovieData]](Left("Null"))(identity),
-      quotes = quotes.map(_.left.map(_.getMessage)).fold[Either[String, Map[String, Quote]]](Left("Null"))(identity)
+      data = data.getOrElse(Json.Null).as[MovieData].left.map(_.getMessage()),
+      quotes = quotes.getOrElse(Json.Null).as[Map[String, Quote]].left.map(_.getMessage())
     )
 }

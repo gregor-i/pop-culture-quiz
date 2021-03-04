@@ -1,63 +1,33 @@
 package controller
 
-import anorm._
-import model.{Quote, TranslationState}
-import play.api.db.Database
+import model.Quote
 import play.api.mvc.InjectedController
-import repo.{MovieRepo, MovieRow, TranslationRepo, TranslationRow}
+import repo.QuestionService
 
 import javax.inject.{Inject, Singleton}
+import scala.util.Random
+
 @Singleton
-class GameController @Inject() (db: Database) extends InjectedController {
+class GameController @Inject() (questionService: QuestionService) extends InjectedController {
 
-  def play() = Action {
-
-    val Some((movieId, quoteId, original, translation)) =
-      db.withConnection { implicit con =>
-        SQL"""SELECT *
-              FROM translations
-              ORDER BY random()
-              LIMIT 10
-           """
-          .as(TranslationRepo.parser.*)
-          .collectFirst {
-            case TranslationRow(movieId, quoteId, quote, TranslationState.Translated(translated), _, _) =>
-              (movieId, quoteId, quote, translated)
-          }
-      }
-
-    val movie = db.withConnection { implicit con =>
-      SQL"""SELECT * FROM movies WHERE movie_id = ${movieId}"""
-        .as(MovieRepo.parser.single)
+  def game(releaseYearMin: Int, releaseYearMax: Int) = Action {
+    questionService.getOne(
+      releaseYearMax = releaseYearMax,
+      releaseYearMin = releaseYearMin
+    ) match {
+      case Some(question) =>
+        Ok(
+          views.html.game.Game(
+            translation = hideCharacters(question.translatedQuote),
+            original = question.originalQuote,
+            correctTitle = question.correctMovie.englishTitle,
+            titles = Random.shuffle((question.correctMovie +: question.otherMovies).map(_.englishTitle))
+          )
+        )
+      case None =>
+        NotFound
     }
 
-    val otherMovies =
-      db.withConnection { implicit con =>
-        SQL"""SELECT * FROM movies WHERE movie_id <> ${movie.movieId} AND data IS NOT NULL ORDER BY random() LIMIT 3"""
-          .as(MovieRepo.parser.*)
-      }
-
-    val correctTitle = movie.data match {
-      case Right(movieData) => movieData.englishTitle
-      case _                => "Error"
-    }
-
-    val titles = scala.util.Random.shuffle(
-      otherMovies
-        .collect {
-          case MovieRow(_, Right(movieData), _) => movieData.englishTitle
-        }
-        .appended(correctTitle)
-    )
-
-    Ok(
-      views.html.game.Game(
-        translation = hideCharacters(translation),
-        original = original,
-        correctTitle = correctTitle,
-        titles = titles
-      )
-    )
   }
 
   def hideCharacters(quote: Quote): Quote = {

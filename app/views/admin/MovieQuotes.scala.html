@@ -1,4 +1,3 @@
-@import repo._
 @import model._
 
 @(movieId: String, data: Either[String, MovieData], quotes: Either[String, Map[String, Quote]])
@@ -15,7 +14,7 @@
   @data match{
     case Right(movieData) => {
       <h1 class="title">Pop-Culture-Quiz Admin: @{movieData.englishTitle} (@{movieData.originalTitle})</h1>
-      <h2 class="subtitle"><a href="https://www.imdb.com/title/@{movieId}/">@{movieId}</a> @{movieData.releaseYear} @{movieData.genre.mkString(" ")}</h2>
+      <h2 class="subtitle">@{views.html.components.IMDBLinkMovie(movieId)} @{movieData.releaseYear} @{movieData.genre.mkString(" ")}</h2>
     }
     case Left(msg) => {
       <h1 class="title">Pop-Culture-Quiz Admin: @msg</h1>
@@ -33,7 +32,7 @@
         </tr>
         @for((quoteId, quote) <- quotes.toSeq.sortBy(_._2.score).reverse) {
           <tr>
-            <td><a href="https://www.imdb.com/title/@{movieId}/quotes/@{quoteId}">@{quoteId}</a></td>
+            <td>@{views.html.components.IMDBLinkQuote(movieId, quoteId)}</td>
             <td>@{(quote.score * 100).toInt}%</td>
             <td>@views.html.components.Quote(quote)</td>
           </tr>

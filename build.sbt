@@ -12,6 +12,7 @@ libraryDependencies += evolutions
 libraryDependencies += "io.lemonlabs"            %% "scala-uri"          % "3.0.0"
 libraryDependencies += "org.postgresql"          % "postgresql"          % "42.2.18"
 libraryDependencies += "org.playframework.anorm" %% "anorm"              % "2.6.9"
+libraryDependencies += "org.playframework.anorm" %% "anorm-postgres" % "2.6.9"
 libraryDependencies += "org.scalatestplus.play"  %% "scalatestplus-play" % "5.1.0" % Test
 libraryDependencies += "net.ruippeixotog"        %% "scala-scraper"      % "2.2.0"
 libraryDependencies += "org.scalatest"           %% "scalatest"          % "3.2.2" % Test

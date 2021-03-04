@@ -1,15 +1,26 @@
 package repo
 
-import anorm.{Column, ToStatement}
-import io.circe.syntax._
-import io.circe.{Decoder, Encoder, Json, parser}
+import anorm.{Column, SqlMappingError, ToStatement}
+import io.circe.{Json, parser}
+import org.postgresql.util.PGobject
 
 trait JsonColumn {
-  implicit def jsonColumnParser[T: Decoder]: Column[Either[io.circe.Error, T]] =
-    Column.columnToString.map(parser.decode[T])
+  implicit def jsonColumnParser: Column[Json] =
+    Column[Json] {
+      case (obj: PGobject, _) =>
+        parser.parse(obj.getValue).left.map(_ => SqlMappingError("invalid json"))
+      case (null, _) =>
+        Right(Json.Null)
+      case other =>
+        Left(SqlMappingError("unexpected type"))
+    }
 
-  implicit def jsonParameterValue: ToStatement[Json] =
-    ToStatement.of[String].contramap(_.noSpaces)
+  implicit def jsValueToStatement = ToStatement[Json] { (s, i, json) =>
+    val pgObject = new PGobject()
+    pgObject.setType("JSONB")
+    pgObject.setValue(json.noSpaces)
+    s.setObject(i, pgObject, java.sql.Types.OTHER)
+  }
 }
 
 object JsonColumn extends JsonColumn

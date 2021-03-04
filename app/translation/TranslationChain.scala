@@ -13,7 +13,6 @@ object TranslationChain {
       ex: ExecutionContext
   ): Future[Map[String, String]] = {
     val fullChain = lang +: chain :+ lang
-    //    println(fullChain)
 
     var translation = Future.successful(texts.map(x => (x, x)).toMap)
 

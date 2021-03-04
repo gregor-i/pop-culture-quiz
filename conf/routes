@@ -1,21 +1,21 @@
 # API
-POST          /api/register-movie                               controller.DataController.registerMovie(movieId: String)
-POST          /api/enqueue-translation                          controller.DataController.enqueueTranslation(movieId: String, quoteId: String)
-POST          /api/enqueue-top-quotes                           controller.DataController.enqueueTopQuotes(count: Int)
+POST  /api/register-movie        controller.DataController.registerMovie(movieId: String)
+POST  /api/enqueue-translation   controller.DataController.enqueueTranslation(movieId: String, quoteId: String)
+POST  /api/enqueue-top-quotes    controller.DataController.enqueueTopQuotes(count: Int)
 
-GET           /                                                 controller.GameController.play()
+GET   /                          controller.GameController.game(releaseYearMin: Int ?= 1900, releaseYearMax: Int ?= 2100)
 
 # Admin
-GET           /admin                                            controller.AdminUiController.movies()
-GET           /admin/movies/:movieId                            controller.AdminUiController.movieQuotes(movieId: String)
-GET           /admin/agents                                     controller.AgentController.ui()
-GET           /admin/translations                               controller.AdminUiController.translations()
+GET   /admin                     controller.AdminUiController.movies()
+GET   /admin/movies/:movieId     controller.AdminUiController.movieQuotes(movieId: String)
+GET   /admin/agents              controller.AgentController.ui()
+GET   /admin/translations        controller.AdminUiController.translations()
 
-GET           /api/agents                                       controller.AgentController.state()
-POST          /api/agents/:name/start                           controller.AgentController.start(name: String)
-POST          /api/agents/:name/stop                            controller.AgentController.stop(name: String)
+GET   /api/agents                controller.AgentController.state()
+POST  /api/agents/:name/start    controller.AgentController.start(name: String)
+POST  /api/agents/:name/stop     controller.AgentController.stop(name: String)
 
 # Frontend
-#GET           /assets/*path                                     controller.UiController.asset(path: String, folder = "/public/assets")
-#GET           /                                                 controller.UiController.frontend(path = "")
-#GET           /*path                                            controller.UiController.frontend(path: String)
+#GET   /assets/*path              controller.UiController.asset(path: String, folder = "/public/assets")
+#GET   /                          controller.UiController.frontend(path = "")
+#GET   /*path                     controller.UiController.frontend(path: String)

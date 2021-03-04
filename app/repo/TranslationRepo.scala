@@ -1,11 +1,12 @@
 package repo
 
-import io.circe.syntax.EncoderOps
 import model.{Quote, TranslationState}
 import play.api.db.Database
 
 import javax.inject.{Inject, Singleton}
 import anorm._
+import io.circe.Json
+import io.circe.syntax._
 
 case class TranslationRow(
     movieId: String,
@@ -89,15 +90,15 @@ object TranslationRepo extends JsonColumn {
     for {
       movieId            <- SqlParser.str("movie_id")
       quoteId            <- SqlParser.str("quote_id")
-      quote              <- SqlParser.get[Either[io.circe.Error, Quote]]("quote")
-      translation        <- SqlParser.get[Either[io.circe.Error, TranslationState]]("translation")
+      quote              <- SqlParser.get[Json]("quote")
+      translation        <- SqlParser.get[Json]("translation")
       translationService <- SqlParser.str("translation_service")
       translationChain   <- SqlParser.array[String]("translation_chain")
     } yield TranslationRow(
       movieId,
       quoteId,
-      quote.getOrElse(???),
-      translation.getOrElse(???),
+      quote.as[Quote].getOrElse(???),
+      translation.as[TranslationState].getOrElse(???),
       translationService,
       translationChain.toIndexedSeq
     )

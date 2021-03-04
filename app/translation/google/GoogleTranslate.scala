@@ -20,8 +20,6 @@ object GoogleTranslate extends TranslationService {
 
   val logger = Logger(this.getClass)
 
-  // ar, bn, zh-tw, cs, nl, eo, fi, el, ht, iw, ta, uz, vi, cy, xh, yo
-
   def uri(text: Seq[String], src: String, dest: String) =
     Url(scheme = "https", host = "translate.googleapis.com", path = "/translate_a/single")
       .addParam("client", "gtx")
@@ -64,13 +62,13 @@ object GoogleTranslate extends TranslationService {
         json    = parser.parse(data)
         decoded = json.flatMap(_.as(decoder))
         result <- decoded match {
-          case Left(_)            =>
+          case Left(_) =>
             logger.warn("Decoding failure")
             Future.failed(new Exception(s"data ${data} could not be decoded"))
           case Right(translation) => Future.successful(translation)
         }
         _ <- Future {
-          Thread.sleep(10000)
+          Thread.sleep(30000)
           true
         }
       } yield handleMultiSentenceTexts(result, texts)
@@ -105,7 +103,7 @@ object GoogleTranslate extends TranslationService {
   private def checkStatus(response: HttpResponse)(implicit ex: ExecutionContext, mat: Materializer): Future[HttpResponse] =
     response match {
       case response if response.status == StatusCodes.OK => Future.successful(response)
-      case response                                      =>
+      case response =>
         logger.warn(s"Google translate did not respond with Ok, but with ${response.status}")
         response.discardEntityBytes()
         Future.failed(new Exception(s"Google Translate responded with status code ${response.status}"))
