@@ -6,6 +6,7 @@ import akka.http.scaladsl.model.{HttpRequest, HttpResponse, StatusCodes}
 import akka.stream.Materializer
 import io.circe.{Decoder, parser}
 import io.lemonlabs.uri.Url
+import play.api.Logger
 import translation.TranslationService
 
 import scala.concurrent.duration._
@@ -15,6 +16,8 @@ object SystranTranslate extends TranslationService {
   val apiKey = "4bd8ecae-24e7-4df9-8747-3230ce9abe6c"
 
   val name = "Systran"
+
+  val logger = Logger(this.getClass)
 
   val supportedLanguages = Set(
     "ar", //Arabic,
@@ -83,6 +86,8 @@ object SystranTranslate extends TranslationService {
       case response if response.status == StatusCodes.OK => Future.successful(response)
       case response =>
         response.discardEntityBytes()
+        logger.warn(s"Systran translate did not respond with Ok, but with ${response.status}")
+
         Future.failed(new Exception(s"Systran responded with status code ${response.status}"))
     }
 

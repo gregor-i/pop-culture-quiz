@@ -6,6 +6,7 @@ import akka.http.scaladsl.model.{HttpRequest, HttpResponse, StatusCodes}
 import akka.stream.Materializer
 import io.circe.{Decoder, Json, parser}
 import io.lemonlabs.uri.Url
+import play.api.Logger
 import translation.TranslationService
 
 import scala.concurrent.duration._
@@ -16,6 +17,10 @@ object GoogleTranslate extends TranslationService {
   val name = "Google"
 
   val defaultChain = Seq("ar", "bn", "zh-tw", "cs", "nl", "eo", "fi", "el", "ht", "iw", "ta", "uz", "vi", "cy", "xh", "yo")
+
+  val logger = Logger(this.getClass)
+
+  // ar, bn, zh-tw, cs, nl, eo, fi, el, ht, iw, ta, uz, vi, cy, xh, yo
 
   def uri(text: Seq[String], src: String, dest: String) =
     Url(scheme = "https", host = "translate.googleapis.com", path = "/translate_a/single")
@@ -48,7 +53,8 @@ object GoogleTranslate extends TranslationService {
   ): Future[Map[String, String]] = {
     if (texts.isEmpty)
       Future.failed(new Exception("no texts given to translate"))
-    else
+    else {
+      logger.info(s"Translating ${texts.mkString(",").take(10)} from ${src} to ${dest}")
       for {
         response <- Http()
           .singleRequest(HttpRequest(uri = uri(text = texts, src = src, dest = dest)))
@@ -58,7 +64,9 @@ object GoogleTranslate extends TranslationService {
         json    = parser.parse(data)
         decoded = json.flatMap(_.as(decoder))
         result <- decoded match {
-          case Left(_)            => Future.failed(new Exception(s"data ${data} could not be decoded"))
+          case Left(_)            =>
+            logger.warn("Decoding failure")
+            Future.failed(new Exception(s"data ${data} could not be decoded"))
           case Right(translation) => Future.successful(translation)
         }
         _ <- Future {
@@ -66,6 +74,7 @@ object GoogleTranslate extends TranslationService {
           true
         }
       } yield handleMultiSentenceTexts(result, texts)
+    }
   }
 
   def decoder: Decoder[Map[String, String]] = Decoder.instance { cursor =>
@@ -93,10 +102,12 @@ object GoogleTranslate extends TranslationService {
     }
   }
 
-  // 429 means bann
-  private def checkStatus(response: HttpResponse)(implicit ex: ExecutionContext): Future[HttpResponse] =
+  private def checkStatus(response: HttpResponse)(implicit ex: ExecutionContext, mat: Materializer): Future[HttpResponse] =
     response match {
       case response if response.status == StatusCodes.OK => Future.successful(response)
-      case response                                      => Future.failed(new Exception(s"Google Translate responded with status code ${response.status}"))
+      case response                                      =>
+        logger.warn(s"Google translate did not respond with Ok, but with ${response.status}")
+        response.discardEntityBytes()
+        Future.failed(new Exception(s"Google Translate responded with status code ${response.status}"))
     }
 }
