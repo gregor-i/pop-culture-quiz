@@ -29,7 +29,7 @@ class IMDBAgent @Inject() (movieRepo: MovieRepo)(
     }
     .throttle(1, pollInterval)
     .to(
-      Sink.foreach { movieId =>
+      Sink.foreachAsync(1) { movieId =>
         IMDBClient
           .getMoviePage(movieId)
           .map(IMDBParser.parseMoviePage)
@@ -38,7 +38,7 @@ class IMDBAgent @Inject() (movieRepo: MovieRepo)(
             case None            => Left("failed to parse html")
           }
           .recover(ex => Left(ex.getMessage))
-          .foreach(movieRepo.setMovieData(movieId, _))
+          .map(movieRepo.setMovieData(movieId, _))
       }
     )
     .run()
@@ -52,13 +52,13 @@ class IMDBAgent @Inject() (movieRepo: MovieRepo)(
     }
     .throttle(1, pollInterval)
     .to(
-      Sink.foreach { movieId =>
+      Sink.foreachAsync(1) { movieId =>
         IMDBClient
           .getQuotesPage(movieId)
           .map(IMDBParser.extractQuotes)
           .map(Right(_))
           .recover(ex => Left(ex.getMessage))
-          .foreach(movieRepo.setQuotes(movieId, _))
+          .map(movieRepo.setQuotes(movieId, _))
       }
     )
     .run()

@@ -31,16 +31,12 @@ abstract class TranslationAgent(service: TranslationService, translationRepo: Tr
     }
     .throttle(1, 1.second)
     .to(
-      Sink.foreach { translationRow =>
+      Sink.foreachAsync(1) { translationRow =>
         translation
           .TranslateQuote(quote = translationRow.quote, service = service, chain = translationRow.translationChain)
-          .onComplete {
-            case Success(translated) =>
-              translationRepo.upsert(translationRow.copy(translation = TranslationState.Translated(translated)))
-
-            case Failure(exception) =>
-              translationRepo.upsert(translationRow.copy(translation = TranslationState.UnexpectedError(exception.getMessage)))
-          }
+          .map(translated => TranslationState.Translated(translated))
+          .recover(exception => TranslationState.UnexpectedError(exception.getMessage))
+          .map(state => translationRepo.upsert(translationRow.copy(translation = state)))
       }
     )
     .run()

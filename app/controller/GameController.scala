@@ -13,7 +13,7 @@ import scala.util.Random
 @Singleton
 class GameController @Inject() (questionService: QuestionService) extends InjectedController with Circe {
 
-  def start() = Action{
+  def start() = Action {
     Ok(views.html.game.Start())
   }
 
