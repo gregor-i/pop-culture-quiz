@@ -33,7 +33,7 @@ class GameController @Inject() (db: Database) extends InjectedController {
 
     val otherMovies =
       db.withConnection { implicit con =>
-        SQL"""SELECT * FROM movies WHERE movie_id <> ${movie.movieId} ORDER BY random() LIMIT 3"""
+        SQL"""SELECT * FROM movies WHERE movie_id <> ${movie.movieId} AND data IS NOT NULL ORDER BY random() LIMIT 3"""
           .as(MovieRepo.parser.*)
       }
 
