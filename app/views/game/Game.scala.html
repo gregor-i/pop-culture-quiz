@@ -1,6 +1,6 @@
 @import model._
 
-@(translation: Quote, original: Quote, correctTitle: String, titles: Seq[String])
+@(translation: Quote, original: Quote, correctMovie: MovieData, movies: Seq[MovieData])
 
 <!DOCTYPE html>
 <html>
@@ -26,6 +26,7 @@
 
     body.revealed button.correct {
       border-color: green;
+      background: rgba(0, 255, 0, 0.25);
     }
 
     body .next-link {
@@ -35,23 +36,36 @@
     body.revealed .next-link {
       display: block;
     }
+
+    .options {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .options .option {
+      display: block;
+      flex-basis: 34%;
+      flex-grow: 1;
+      margin: .5rem;
+    }
   </style>
 </head>
 
 <body class="container">
 <h1 class="title">Pop-Culture-Quiz</h1>
 
-<div class="buttons block">
-  @for(title <- titles){
-  <button class="button @{if(title == correctTitle) "correct" else ""}" onclick="reveal()">
-  @title
-  </button>
-  }
-</div>
-
 <div class="translated block">
   <h3 class="title">Scrambled:</h3>
   @views.html.components.Quote(translation)
+</div>
+
+<div class="buttons block options">
+  @for(movie <- movies){
+  <button class="button option @{if(movie == correctMovie) "correct" else ""}" onclick="reveal()">
+  @{movie.englishTitle}
+  <span class="tag">@{movie.releaseYear}</span>
+  </button>
+  }
 </div>
 
 <div class="original block">
@@ -60,6 +74,7 @@
 </div>
 
 <div class="buttons next-link block">
+  <a class="button" href="/">Back</a>
   <button class="button is-link" onclick="window.location.reload()">Next</button>
 </div>
 

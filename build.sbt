@@ -17,6 +17,7 @@ libraryDependencies += "org.scalatestplus.play"  %% "scalatestplus-play" % "5.1.
 libraryDependencies += "net.ruippeixotog"        %% "scala-scraper"      % "2.2.0"
 libraryDependencies += "org.scalatest"           %% "scalatest"          % "3.2.2" % Test
 libraryDependencies += "io.lemonlabs"            %% "scala-uri"          % "3.0.0"
+libraryDependencies += "com.dripower"            %% "play-circe"         % "2812.0"
 
 {
   val version = "0.13.0"

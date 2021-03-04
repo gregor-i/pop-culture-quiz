@@ -3,7 +3,11 @@ POST  /api/register-movie        controller.DataController.registerMovie(movieId
 POST  /api/enqueue-translation   controller.DataController.enqueueTranslation(movieId: String, quoteId: String)
 POST  /api/enqueue-top-quotes    controller.DataController.enqueueTopQuotes(count: Int)
 
-GET   /                          controller.GameController.game(releaseYearMin: Int ?= 1900, releaseYearMax: Int ?= 2100)
+GET   /api/games/meta            controller.GameController.meta(releaseYearMin: Int ?= 1900, releaseYearMax: Int ?= 2100)
+GET   /api/games                 controller.GameController.getOne(releaseYearMin: Int ?= 1900, releaseYearMax: Int ?= 2100)
+
+GET   /                          controller.GameController.start()
+GET   /game                      controller.GameController.game(releaseYearMin: Int ?= 1900, releaseYearMax: Int ?= 2100)
 
 # Admin
 GET   /admin                     controller.AdminUiController.movies()

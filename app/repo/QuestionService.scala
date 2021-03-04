@@ -44,4 +44,26 @@ class QuestionService @Inject() (db: Database, movieRepo: MovieRepo) {
       correctMovie = correctMovie,
       otherMovies = otherMovies
     )
+
+  def countMovies(releaseYearMin: Int, releaseYearMax: Int): Int =
+    db.withConnection { implicit con =>
+      SQL"""SELECT count(*)
+              FROM movies
+              WHERE data->>'englishTitle' IS NOT NULL
+                AND (movies.data->>'releaseYear') :: integer >= ${releaseYearMin}
+                AND (movies.data->>'releaseYear') :: integer <= ${releaseYearMax}
+           """
+        .as(SqlParser.scalar[Int].single)
+    }
+
+  def countTranslations(releaseYearMin: Int, releaseYearMax: Int): Int =
+    db.withConnection { implicit con =>
+      SQL"""SELECT count(*)
+              FROM translations INNER JOIN movies ON translations.movie_id = movies.movie_id
+              WHERE translation->>'Translated' IS NOT NULL
+                AND (movies.data->>'releaseYear') :: integer >= ${releaseYearMin}
+                AND (movies.data->>'releaseYear') :: integer <= ${releaseYearMax}
+           """
+        .as(SqlParser.scalar[Int].single)
+    }
 }
