@@ -1,6 +1,6 @@
 package repo
 
-import model.{Quote, TranslationState}
+import model.{Quote, SpeechState, TranslationState}
 import play.api.db.Database
 
 import javax.inject.{Inject, Singleton}
@@ -12,9 +12,10 @@ case class TranslationRow(
     movieId: String,
     quoteId: String,
     quote: Quote,
-    translation: TranslationState,
+    translation: TranslationState = TranslationState.NotTranslated,
     translationService: String,
-    translationChain: Seq[String]
+    translationChain: Seq[String],
+    speech: SpeechState = SpeechState.NotProcessed
 )
 
 @Singleton
@@ -22,38 +23,21 @@ class TranslationRepo @Inject() (db: Database) extends JsonColumn {
 
   def upsert(translationRow: TranslationRow): Int =
     db.withConnection { implicit con =>
-      SQL"""INSERT INTO translations (movie_id, quote_id, quote, translation_service, translation_chain, translation)
+      SQL"""INSERT INTO translations (movie_id, quote_id, quote, translation_service, translation_chain, translation, speech)
             VALUES (
               ${translationRow.movieId},
               ${translationRow.quoteId},
               ${translationRow.quote.asJson},
               ${translationRow.translationService},
               ${translationRow.translationChain.toArray[String]},
-              ${translationRow.translation.asJson}
+              ${translationRow.translation.asJson},
+              ${translationRow.speech.asJson}
             )
             ON CONFLICT (quote_id, translation_service, translation_chain)
-            DO UPDATE SET translation = ${translationRow.translation.asJson}
+            DO UPDATE SET translation = ${translationRow.translation.asJson},
+                          speech = ${translationRow.speech.asJson}
          """.executeUpdate()
     }
-
-  def insertTranslatedQuote(
-      movieId: String,
-      quoteId: String,
-      quote: Quote,
-      translationService: String,
-      translationChain: Seq[String],
-      translation: TranslationState
-  ): Int =
-    upsert(
-      TranslationRow(
-        movieId = movieId,
-        quoteId = quoteId,
-        quote = quote,
-        translationService = translationService,
-        translationChain = translationChain,
-        translation = translation
-      )
-    )
 
   def enqueue(movieId: String, quoteId: String, quote: Quote, translationService: String, translationChain: Seq[String]): Int =
     upsert(
@@ -63,7 +47,8 @@ class TranslationRepo @Inject() (db: Database) extends JsonColumn {
         quote = quote,
         translationService = translationService,
         translationChain = translationChain,
-        translation = TranslationState.NotTranslated
+        translation = TranslationState.NotTranslated,
+        speech = SpeechState.NotProcessed
       )
     )
 
@@ -73,13 +58,24 @@ class TranslationRepo @Inject() (db: Database) extends JsonColumn {
         .as(TranslationRepo.parser.*)
     }
 
-  def listUnprocessed(service: String): Seq[TranslationRow] =
+  def listWithoutTranslation(service: String): Seq[TranslationRow] =
     db.withConnection { implicit con =>
       val state: TranslationState = TranslationState.NotTranslated
       SQL"""SELECT *
             FROM translations
             WHERE translation = ${state.asJson}
               AND translation_service = $service
+            LIMIT 10"""
+        .as(TranslationRepo.parser.*)
+    }
+
+  def listWithoutSpeech(): Seq[TranslationRow] =
+    db.withConnection { implicit con =>
+      val state: SpeechState = SpeechState.NotProcessed
+      SQL"""SELECT *
+            FROM translations
+            WHERE (speech = ${state.asJson} OR speech IS NULL)
+              AND translation->>'Translated' IS NOT NULL
             LIMIT 10"""
         .as(TranslationRepo.parser.*)
     }
@@ -92,6 +88,7 @@ object TranslationRepo extends JsonColumn {
       quoteId            <- SqlParser.str("quote_id")
       quote              <- SqlParser.get[Json]("quote")
       translation        <- SqlParser.get[Json]("translation")
+      speech             <- SqlParser.get[Json]("speech")
       translationService <- SqlParser.str("translation_service")
       translationChain   <- SqlParser.array[String]("translation_chain")
     } yield TranslationRow(
@@ -100,6 +97,7 @@ object TranslationRepo extends JsonColumn {
       quote.as[Quote].getOrElse(???),
       translation.as[TranslationState].getOrElse(???),
       translationService,
-      translationChain.toIndexedSeq
+      translationChain.toIndexedSeq,
+      speech.as[SpeechState].getOrElse(SpeechState.NotProcessed)
     )
 }

@@ -1,9 +1,11 @@
 package repo
 
-import model.{Quote, TranslatedQuote, TranslationState}
+import model.{Quote, SpeechState, TranslatedQuote, TranslationState}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+
+import scala.util.Random
 
 class TranslationRepoTest extends AnyFunSuite with GuiceOneAppPerSuite with BeforeAndAfterEach {
 
@@ -21,36 +23,25 @@ class TranslationRepoTest extends AnyFunSuite with GuiceOneAppPerSuite with Befo
     assert(translationsRepo.enqueue("movieId", "quoteId", quote, "translationService", Seq("de", "fr")) == 1)
     assert(translationsRepo.enqueue("movieId", "quoteId", quote, "translationService", Seq("de", "ar")) == 1)
 
-    assert(translationsRepo.listUnprocessed("translationService").length == 2)
+    assert(translationsRepo.listWithoutTranslation("translationService").length == 2)
+    assert(translationsRepo.listWithoutSpeech().isEmpty)
 
-    assert(
-      translationsRepo
-        .insertTranslatedQuote(
-          "movieId",
-          "quoteId",
-          quote,
-          "translationService",
-          Seq("de", "fr"),
-          TranslationState.Translated(quote)
-        ) == 1
-    )
+    val rowWithTranslation = translationsRepo
+      .list()
+      .find(_.translationChain == Seq("de", "fr"))
+      .get
+      .copy(translation = TranslationState.Translated(quote))
 
-    assert(translationsRepo.listUnprocessed("translationService").length == 1)
-    assert(
-      translationsRepo
-        .list()
-        .contains(
-          TranslationRow(
-            movieId = "movieId",
-            quoteId = "quoteId",
-            quote = quote,
-            translationService = "translationService",
-            translationChain = Seq("de", "fr"),
-            translation = TranslationState.Translated(quote)
-          )
-        )
-    )
+    assert(translationsRepo.upsert(rowWithTranslation) == 1)
+    assert(translationsRepo.listWithoutTranslation("translationService").length == 1)
+    assert(translationsRepo.list().contains(rowWithTranslation))
+    assert(translationsRepo.listWithoutTranslation("otherService").isEmpty)
+    assert(translationsRepo.listWithoutSpeech() == Seq(rowWithTranslation))
 
-    assert(translationsRepo.listUnprocessed("otherService").isEmpty)
+    val rowWithSpeech = rowWithTranslation.copy(speech = SpeechState.Processed(Random.nextBytes(15)))
+    assert(translationsRepo.upsert(rowWithSpeech) == 1)
+    assert(translationsRepo.list().contains(rowWithSpeech))
+    assert(translationsRepo.listWithoutSpeech().isEmpty)
   }
+
 }

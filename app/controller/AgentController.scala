@@ -1,6 +1,6 @@
 package controller
 
-import agent.{Agent, GoogleTranslationAgent, IMDBAgent, SystranTranslationAgent, TranslationAgent}
+import agent.{Agent, GoogleTranslationAgent, IMDBAgent, SpeechAgent, SystranTranslationAgent, TranslationAgent}
 import play.api.libs.json.{JsObject, JsString}
 import play.api.mvc.InjectedController
 
@@ -10,13 +10,15 @@ import javax.inject.{Inject, Singleton}
 class AgentController @Inject() (
     imdbAgent: IMDBAgent,
     googleTranslationAgent: GoogleTranslationAgent,
-    systranTranslationAgent: SystranTranslationAgent
+    systranTranslationAgent: SystranTranslationAgent,
+    speechAgent: SpeechAgent
 ) extends InjectedController {
 
   val agents: Map[String, Agent] = Map(
     "IMDBAgent"               -> imdbAgent,
     "GoogleTranslationAgent"  -> googleTranslationAgent,
-    "SystranTranslationAgent" -> systranTranslationAgent
+    "SystranTranslationAgent" -> systranTranslationAgent,
+    "SpeechAgent"             -> speechAgent
   )
 
   def state() = Action {

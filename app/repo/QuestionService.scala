@@ -1,7 +1,7 @@
 package repo
 
 import anorm._
-import model.{Question, TranslationState}
+import model.{Question, SpeechState, TranslationState}
 import play.api.db.Database
 
 import javax.inject.Inject
@@ -12,8 +12,16 @@ class QuestionService @Inject() (db: Database, movieRepo: MovieRepo) {
 
   def getOne(releaseYearMin: Int, releaseYearMax: Int): Option[Question] =
     for {
-      TranslationRow(movieId, quoteId, original, TranslationState.Translated(translation), _, _) <- db.withConnection {
-        implicit con =>
+      TranslationRow(
+        movieId,
+        quoteId,
+        original,
+        TranslationState.Translated(translation),
+        translationService,
+        translationChain,
+        SpeechState.Processed(spokenQuoteDataUrl)
+      ) <- db
+        .withConnection { implicit con =>
           SQL"""SELECT *
               FROM translations INNER JOIN movies ON translations.movie_id = movies.movie_id
               WHERE translation->>'Translated' IS NOT NULL
@@ -23,7 +31,7 @@ class QuestionService @Inject() (db: Database, movieRepo: MovieRepo) {
               LIMIT 1
            """
             .as(TranslationRepo.parser.singleOpt)
-      }
+        }
       correctMovie <- movieRepo.get(movieId).flatMap(_.data.toOption)
       otherMovies = db
         .withConnection { implicit con =>
@@ -42,7 +50,8 @@ class QuestionService @Inject() (db: Database, movieRepo: MovieRepo) {
       originalQuote = original,
       translatedQuote = translation,
       correctMovie = correctMovie,
-      otherMovies = otherMovies
+      otherMovies = otherMovies,
+      spokenQuoteDataUrl = spokenQuoteDataUrl
     )
 
   def countMovies(releaseYearMin: Int, releaseYearMax: Int): Int =

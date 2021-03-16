@@ -1,6 +1,6 @@
 @import model._
 
-@(translation: Quote, original: Quote, correctMovie: MovieData, movies: Seq[MovieData])
+@(translation: Quote, original: Quote, correctMovie: MovieData, movies: Seq[MovieData], spokenQuoteDataUrl: String)
 
 <!DOCTYPE html>
 <html>
@@ -48,6 +48,11 @@
       flex-grow: 1;
       margin: .5rem;
     }
+
+    .audio {
+      display: flex;
+      justify-content: center;
+    }
   </style>
 </head>
 
@@ -57,6 +62,11 @@
 <div class="translated block">
   <h3 class="title">Scrambled:</h3>
   @views.html.components.Quote(translation)
+  <div class="audio">
+    <audio autoplay controls="controls">
+      <source src="@{spokenQuoteDataUrl}" type="audio/MP3"/>
+    </audio>
+  </div>
 </div>
 
 <div class="buttons block options">

@@ -6,6 +6,7 @@ import play.api.libs.circe.Circe
 import io.circe.Json
 import play.api.mvc.InjectedController
 import repo.QuestionService
+import service.HideCharacterNames
 
 import javax.inject.{Inject, Singleton}
 import scala.util.Random
@@ -25,10 +26,11 @@ class GameController @Inject() (questionService: QuestionService) extends Inject
       case Some(question) =>
         Ok(
           views.html.game.Game(
-            translation = hideCharacters(question.translatedQuote),
+            translation = HideCharacterNames(question.translatedQuote),
             original = question.originalQuote,
             correctMovie = question.correctMovie,
-            movies = Random.shuffle((question.correctMovie +: question.otherMovies))
+            movies = Random.shuffle((question.correctMovie +: question.otherMovies)),
+            spokenQuoteDataUrl = question.spokenQuoteDataUrl
           )
         )
       case None =>
@@ -60,20 +62,5 @@ class GameController @Inject() (questionService: QuestionService) extends Inject
       case None =>
         NotFound
     }
-  }
-
-  def hideCharacters(quote: Quote): Quote = {
-    val transformation = quote.statements
-      .flatMap(_.character)
-      .distinct
-      .zipWithIndex
-      .map {
-        case (char, index) => (char, s"Person ${index + 1}")
-      }
-      .toMap
-
-    quote.copy(
-      statements = quote.statements.map(statement => statement.copy(character = statement.character.map(transformation)))
-    )
   }
 }

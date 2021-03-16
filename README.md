@@ -18,3 +18,5 @@ ie:
 * https://github.com/ssut/py-googletrans
 * https://stackoverflow.com/questions/65095668/googletrans-api-attributeerror/65109962#65109962
 * https://platform.systran.net/reference/translation
+* https://github.com/marytts/marytts
+* https://github.com/Sciss/jump3r

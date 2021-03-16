@@ -27,7 +27,7 @@ abstract class TranslationAgent(service: TranslationService, translationRepo: Tr
     .repeat(())
     .throttle(1, 1.second)
     .flatMapConcat { _ =>
-      Source(translationRepo.listUnprocessed(service.name))
+      Source(translationRepo.listWithoutTranslation(service.name))
     }
     .throttle(1, 1.second)
     .to(

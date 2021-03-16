@@ -6,7 +6,8 @@ case class Question(
     correctMovie: MovieData,
     otherMovies: Seq[MovieData],
     originalQuote: Quote,
-    translatedQuote: Quote
+    translatedQuote: Quote,
+    spokenQuoteDataUrl: String
 )
 
 object Question {

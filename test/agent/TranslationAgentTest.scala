@@ -42,7 +42,7 @@ class TranslationAgentTest extends AnyFunSuite with GuiceOneAppPerSuite with Eve
     )
 
     eventually(timeout = Timeout(1.25.seconds)) {
-      assert(translationsRepo.listUnprocessed(service.name).isEmpty)
+      assert(translationsRepo.listWithoutTranslation(service.name).isEmpty)
     }
 
     translationsRepo.list().head.translation match {
@@ -71,7 +71,7 @@ class TranslationAgentTest extends AnyFunSuite with GuiceOneAppPerSuite with Eve
     )
 
     eventually(timeout = Timeout(1.25.seconds)) {
-      assert(translationsRepo.listUnprocessed(service.name).isEmpty)
+      assert(translationsRepo.listWithoutTranslation(service.name).isEmpty)
     }
 
     translationsRepo.list().head.translation match {
