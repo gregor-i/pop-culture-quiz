@@ -25,6 +25,7 @@ class QuestionService @Inject() (db: Database, movieRepo: MovieRepo) {
           SQL"""SELECT *
               FROM translations INNER JOIN movies ON translations.movie_id = movies.movie_id
               WHERE translation->>'Translated' IS NOT NULL
+                AND speech->>'Processed' IS NOT NULL
                 AND (movies.data->>'releaseYear') :: integer >= ${releaseYearMin}
                 AND (movies.data->>'releaseYear') :: integer <= ${releaseYearMax}
               ORDER BY random()
