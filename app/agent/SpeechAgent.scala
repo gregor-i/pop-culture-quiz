@@ -21,7 +21,7 @@ class SpeechAgent @Inject() (
     ex: ExecutionContext,
     mat: Materializer
 ) extends Agent {
-  var running: Boolean             = true
+  var running: Boolean             = false
   val pollInterval: FiniteDuration = 5.second
 
   Source
