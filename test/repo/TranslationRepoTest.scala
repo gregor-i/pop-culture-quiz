@@ -38,7 +38,7 @@ class TranslationRepoTest extends AnyFunSuite with GuiceOneAppPerSuite with Befo
     assert(translationsRepo.listWithoutTranslation("otherService").isEmpty)
     assert(translationsRepo.listWithoutSpeech() == Seq(rowWithTranslation))
 
-    val rowWithSpeech = rowWithTranslation.copy(speech = SpeechState.Processed(Random.nextBytes(15)))
+    val rowWithSpeech = rowWithTranslation.copy(speech = SpeechState.Processed("some data url"))
     assert(translationsRepo.upsert(rowWithSpeech) == 1)
     assert(translationsRepo.list().contains(rowWithSpeech))
     assert(translationsRepo.listWithoutSpeech().isEmpty)

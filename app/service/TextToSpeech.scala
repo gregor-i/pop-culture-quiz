@@ -7,7 +7,7 @@ import play.api.Logger
 import java.io.{File, FileInputStream}
 import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success, Try}
+import scala.util.Try
 
 object TextToSpeech {
   private val mary: Try[LocalMaryInterface] = Try(
@@ -21,7 +21,6 @@ object TextToSpeech {
     val wavFile   = File.createTempFile(processId, ".wav")
     val mp3File   = File.createTempFile(processId, ".mp3")
 
-    logger.info(s"converting text to mp3 (${text.length} chars)")
     val process = for {
       mary <- Future.fromTry(this.mary)
       _ <- Future {
@@ -30,7 +29,7 @@ object TextToSpeech {
         MaryAudioUtils.writeWavFile(samples, wavFile.getAbsolutePath, audio.getFormat)
       }
       _ <- Future {
-        de.sciss.jump3r.Main.main(Array("-S", "-v", wavFile.getAbsolutePath, mp3File.getAbsolutePath))
+        new ConvertWavToMp3().run(wavFile, mp3File)
       }
       bytes <- Future {
         val bis = new FileInputStream(mp3File)
@@ -39,7 +38,7 @@ object TextToSpeech {
           .takeWhile(_ != -1)
           .map(_.toByte)
           .toList
-        logger.info(s"converted mp3 file has size ${ret.size / 1024} kilobytes.")
+        logger.info(s"converted ${text.length} byte of text to mp3 file with size ${ret.size / 1024} kilobytes.")
         bis.close()
         ret
       }
