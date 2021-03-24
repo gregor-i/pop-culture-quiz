@@ -2,17 +2,11 @@
 
 **using google translate to scramble up movie quotes**
 
-## setup
-install sbt from https://www.scala-sbt.org/
+This project is in early prove of concept state.
 
-## running with backend:
-the backend requires a running postgres instance, configured with the environment variable `DATABASE_URL`.
+Check out the current development state on [Heroku](https://pop-culture-quiz-2.herokuapp.com/). The first page load may be slow, as the container might be hibernating.
 
-ie:
-`DATABASE_URL="jdbc:postgresql://localhost:5432/" sbt`
-
-
-## related work:
+## related stuff:
 
 * https://github.com/arnaudjuracek/google-translate-chain
 * https://github.com/ssut/py-googletrans
