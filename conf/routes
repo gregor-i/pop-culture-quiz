@@ -13,7 +13,7 @@ GET   /game                      controller.GameController.game(releaseYearMin: 
 GET   /admin                     controller.AdminUiController.movies()
 GET   /admin/movies/:movieId     controller.AdminUiController.movieQuotes(movieId: String)
 GET   /admin/agents              controller.AgentController.ui()
-GET   /admin/translations        controller.AdminUiController.translations()
+GET   /admin/translations        controller.AdminUiController.translations(page: Option[Int])
 
 GET   /api/agents                controller.AgentController.state()
 POST  /api/agents/:name/start    controller.AgentController.start(name: String)

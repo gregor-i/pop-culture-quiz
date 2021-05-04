@@ -52,9 +52,9 @@ class TranslationRepo @Inject() (db: Database) extends JsonColumn {
       )
     )
 
-  def list(): Seq[TranslationRow] =
+  def list(offset: Int = 0, limit: Int = 100): Seq[TranslationRow] =
     db.withConnection { implicit con =>
-      SQL"""SELECT * FROM translations"""
+      SQL"""SELECT * FROM translations LIMIT ${limit} OFFSET ${offset}"""
         .as(TranslationRepo.parser.*)
     }
 

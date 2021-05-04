@@ -15,8 +15,8 @@ class AdminUiController @Inject() (movieRepo: MovieRepo, translationRepo: Transl
     Ok(views.html.admin.Movies(movies))
   }
 
-  def translations() = Action {
-    val translations = translationRepo.list()
+  def translations(page: Option[Int]) = Action {
+    val translations = translationRepo.list(offset = 100 * page.fold(0)(_ - 1), limit = 100)
     Ok(views.html.admin.Translations(translations))
   }
 
