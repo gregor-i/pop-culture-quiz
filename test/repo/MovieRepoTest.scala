@@ -51,4 +51,10 @@ class MovieRepoTest extends AnyFunSuite with GuiceOneAppPerSuite with BeforeAndA
     val movie = repo.get("tt1345836").get
     assert(movie.quotes == Right(quotes))
   }
+
+  test("failed result handling") {
+    repo.addNewMovie("movieId")
+    repo.setMovieData("movieId", Left("error message"))
+    assert(repo.get("movieId").get.data == Left("Error: error message"))
+  }
 }

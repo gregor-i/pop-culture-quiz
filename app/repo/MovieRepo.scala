@@ -88,9 +88,21 @@ object MovieRepo extends JsonColumn {
       movieId <- SqlParser.str("movie_id")
       data    <- SqlParser.get[Option[Json]]("data")
       quotes  <- SqlParser.get[Option[Json]]("quotes")
-    } yield MovieRow(
-      movieId = movieId,
-      data = data.toRight("Not Loaded").flatMap(_.as[MovieData].left.map(_.getMessage())),
-      quotes = quotes.toRight("Not Loaded").flatMap(_.as[Map[String, Quote]].left.map(_.getMessage()))
-    )
+    } yield {
+      MovieRow(
+        movieId = movieId,
+        data = data
+          .toRight("Not Loaded")
+          .flatMap { json =>
+            json
+              .as[MovieData]
+              .map(Right.apply)
+              .orElse(json.as[String].map(Left.apply))
+              .left
+              .map(_.getMessage())
+              .flatten
+          },
+        quotes = quotes.toRight("Not Loaded").flatMap(_.as[Map[String, Quote]].left.map(_.getMessage()))
+      )
+    }
 }
