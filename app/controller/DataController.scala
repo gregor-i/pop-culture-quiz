@@ -1,6 +1,8 @@
 package controller
 
 import akka.actor.ActorSystem
+import io.lemonlabs.uri.Url
+import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import play.api.libs.json.JsObject
 import play.api.mvc.InjectedController
 import repo.{MovieRepo, MovieRow, TranslationRepo}
@@ -20,6 +22,22 @@ class DataController @Inject() (movieRepo: MovieRepo, translationRepo: Translati
         movieRepo.addNewMovie(movieId)
         Accepted("Movie registered and scheduled for crawling")
     }
+  }
+
+  def registerTopMovies() = Action {
+    val url = "https://www.imdb.com/chart/top"
+
+    val movieIds = JsoupBrowser().get(url)
+      .body.select(".titleColumn a")
+      .map(_.attr("href"))
+      .map(Url.parse(_).path.parts)
+      .collect{
+        case Vector("title", movieId, _) => movieId
+      }
+
+    val newMovieIds = movieIds.filter(movieRepo.get(_).isEmpty)
+    newMovieIds.foreach(movieRepo.addNewMovie)
+    Accepted(s"Registered ${newMovieIds.size} movies")
   }
 
   def enqueueTranslation(movieId: String, quoteId: String) = Action(parse.json) { request =>
