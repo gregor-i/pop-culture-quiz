@@ -89,18 +89,18 @@ object TranslationRepo extends JsonColumn {
     for {
       movieId            <- SqlParser.str("movie_id")
       quoteId            <- SqlParser.str("quote_id")
-      quote              <- SqlParser.get[Json]("quote")
-      translation        <- SqlParser.get[Json]("translation")
-      speech             <- SqlParser.get[Json]("speech")
+      quote              <- SqlParser.get[Option[Json]]("quote")
+      translation        <- SqlParser.get[Option[Json]]("translation")
+      speech             <- SqlParser.get[Option[Json]]("speech")
       translationService <- SqlParser.str("translation_service")
       translationChain   <- SqlParser.array[String]("translation_chain")
     } yield TranslationRow(
       movieId,
       quoteId,
-      quote.as[Quote].getOrElse(???),
-      translation.as[TranslationState].getOrElse(???),
+      quote.flatMap(_.as[Quote].toOption).getOrElse(???),
+      translation.flatMap(_.as[TranslationState].toOption).getOrElse(???),
       translationService,
       translationChain.toIndexedSeq,
-      speech.as[SpeechState].getOrElse(SpeechState.NotProcessed)
+      speech.flatMap(_.as[SpeechState].toOption).getOrElse(SpeechState.NotProcessed)
     )
 }

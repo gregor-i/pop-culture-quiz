@@ -17,6 +17,10 @@ class MovieRepoTest extends AnyFunSuite with GuiceOneAppPerSuite with BeforeAndA
     assert(repo.addNewMovie("tt1345836") == 1)
     assert(repo.addNewMovie("tt0121766") == 1)
     assert(repo.list().length == 2)
+
+    val movie = repo.get("tt1345836").get
+    assert(movie.data == Left("Not Loaded"))
+    assert(movie.quotes.isLeft)
   }
 
   test("the initial state is null") {

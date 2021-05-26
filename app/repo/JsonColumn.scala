@@ -5,17 +5,17 @@ import io.circe.{Json, parser}
 import org.postgresql.util.PGobject
 
 trait JsonColumn {
-  implicit def jsonColumnParser: Column[Json] =
-    Column[Json] {
+  implicit def jsonColumnParser: Column[Option[Json]] =
+    Column[Option[Json]] {
       case (obj: PGobject, _) =>
-        parser.parse(obj.getValue).left.map(_ => SqlMappingError("invalid json"))
+        Right(parser.parse(obj.getValue).toOption)
       case (null, _) =>
-        Right(Json.Null)
+        Right(None)
       case other =>
         Left(SqlMappingError("unexpected type"))
     }
 
-  implicit def jsValueToStatement = ToStatement[Json] { (s, i, json) =>
+  implicit def jsValueToStatement: ToStatement[Json] = ToStatement[Json] { (s, i, json) =>
     val pgObject = new PGobject()
     pgObject.setType("JSONB")
     pgObject.setValue(json.noSpaces)
