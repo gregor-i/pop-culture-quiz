@@ -1,12 +1,13 @@
 package repo
 
-import model.{Quote, SpeechState, TranslationState}
-import play.api.db.Database
-
-import javax.inject.{Inject, Singleton}
 import anorm._
 import io.circe.Json
 import io.circe.syntax._
+import model.{Quote, SpeechState, TranslationState}
+import play.api.db.Database
+import play.api.{Environment, Mode}
+
+import javax.inject.{Inject, Singleton}
 
 case class TranslationRow(
     movieId: String,
@@ -19,7 +20,9 @@ case class TranslationRow(
 )
 
 @Singleton
-class TranslationRepo @Inject() (db: Database) extends JsonColumn {
+class TranslationRepo @Inject() (env: Environment)(db: Database) extends JsonColumn {
+  if(db.url.contains("amazonaws") && env.mode == Mode.Test)
+    throw new Exception("don't run tests against production")
 
   def upsert(translationRow: TranslationRow): Int =
     db.withConnection { implicit con =>

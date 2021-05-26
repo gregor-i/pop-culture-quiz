@@ -4,15 +4,19 @@ import akka.stream.Materializer
 import anorm._
 import io.circe.Json
 import io.circe.syntax._
-import model.{MovieData, Quote, QuoteCrawlerState}
+import model.{MovieData, Quote}
 import play.api.db.Database
+import play.api.{Environment, Mode}
 
 import javax.inject.{Inject, Singleton}
 
 case class MovieRow(movieId: String, data: Either[String, MovieData], quotes: Either[String, Map[String, Quote]])
 
 @Singleton
-class MovieRepo @Inject() (db: Database)(implicit mat: Materializer) extends JsonColumn {
+class MovieRepo @Inject()(db: Database, env: Environment)(implicit mat: Materializer) extends JsonColumn {
+  if(db.url.contains("amazonaws") && env.mode == Mode.Test)
+    throw new Exception("don't run tests against production")
+
   def list(): Seq[MovieRow] =
     db.withConnection { implicit con =>
       SQL"""SELECT * FROM movies"""
