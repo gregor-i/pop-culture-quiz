@@ -13,8 +13,8 @@ import javax.inject.{Inject, Singleton}
 case class MovieRow(movieId: String, data: Either[String, MovieData], quotes: Either[String, Map[String, Quote]])
 
 @Singleton
-class MovieRepo @Inject()(db: Database, env: Environment)(implicit mat: Materializer) extends JsonColumn {
-  if(db.url.contains("amazonaws") && env.mode == Mode.Test)
+class MovieRepo @Inject() (db: Database, env: Environment)(implicit mat: Materializer) extends JsonColumn {
+  if (db.url.contains("amazonaws") && env.mode == Mode.Test)
     throw new Exception("don't run tests against production")
 
   def list(): Seq[MovieRow] =

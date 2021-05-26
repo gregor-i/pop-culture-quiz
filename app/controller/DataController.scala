@@ -27,11 +27,13 @@ class DataController @Inject() (movieRepo: MovieRepo, translationRepo: Translati
   def registerTopMovies() = Action {
     val url = "https://www.imdb.com/chart/top"
 
-    val movieIds = JsoupBrowser().get(url)
-      .body.select(".titleColumn a")
+    val movieIds = JsoupBrowser()
+      .get(url)
+      .body
+      .select(".titleColumn a")
       .map(_.attr("href"))
       .map(Url.parse(_).path.parts)
-      .collect{
+      .collect {
         case Vector("title", movieId, _) => movieId
       }
 

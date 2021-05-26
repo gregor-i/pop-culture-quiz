@@ -21,7 +21,7 @@ case class TranslationRow(
 
 @Singleton
 class TranslationRepo @Inject() (env: Environment)(db: Database) extends JsonColumn {
-  if(db.url.contains("amazonaws") && env.mode == Mode.Test)
+  if (db.url.contains("amazonaws") && env.mode == Mode.Test)
     throw new Exception("don't run tests against production")
 
   def upsert(translationRow: TranslationRow): Int =
