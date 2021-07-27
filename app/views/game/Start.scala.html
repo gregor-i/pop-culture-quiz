@@ -24,6 +24,10 @@
         if(releaseYearMax)
           url.searchParams.append("releaseYearMax", releaseYearMax);
 
+        let readOutQuote = document.querySelector("#start-game [name=readOutQuote]:checked").value
+        if(readOutQuote)
+          url.searchParams.append("readOutQuote", readOutQuote);
+
         document.location = url.href
       }
       form.addEventListener('submit', submit)
@@ -35,7 +39,7 @@
   <form id="start-game" class="block box" style="max-width: 600px; margin-left: auto; margin-right: auto; margin-top: 40px;">
     <h1 class="title">Pop-Culture-Quiz</h1>
     <div class="field is-horizontal">
-      <div class="field-label is-normal" style="flex-grow: 2;"><label class="label">Release Year from:</label></div>
+      <div class="field-label is-normal" style="flex-grow: 2;"><label class="label">release year from:</label></div>
       <div class="field-body">
         <div class="control">
           <input class="input" type="text" name="releaseYearMin" placeholder="1995">
@@ -44,10 +48,30 @@
     </div>
 
     <div class="field is-horizontal">
-      <div class="field-label is-normal" style="flex-grow: 2;"><label class="label">Release Year to:</label></div>
+      <div class="field-label is-normal" style="flex-grow: 2;"><label class="label">release year to:</label></div>
       <div class="field-body">
         <div class="control">
           <input class="input" type="text" name="releaseYearMax" placeholder="2015">
+        </div>
+      </div>
+    </div>
+
+    <div class="field is-horizontal">
+      <div class="field-label" style="flex-grow: 2;"><label class="label">
+        read out quote:
+      </label></div>
+      <div class="field-body">
+        <div class="field">
+          <div class="control">
+            <label class="radio">
+              <input type="radio" name="readOutQuote" value="true">
+              Yes
+            </label>
+            <label class="radio">
+              <input type="radio" name="readOutQuote" value="false" checked>
+              No
+            </label>
+          </div>
         </div>
       </div>
     </div>

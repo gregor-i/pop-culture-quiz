@@ -1,6 +1,7 @@
 package repo
 
 import anorm._
+import model.SpeechState.Processed
 import model.{Question, SpeechState, TranslationState}
 import play.api.db.Database
 
@@ -10,7 +11,7 @@ import javax.inject.Singleton
 @Singleton
 class QuestionService @Inject() (db: Database, movieRepo: MovieRepo) {
 
-  def getOne(releaseYearMin: Int, releaseYearMax: Int): Option[Question] =
+  def getOne(releaseYearMin: Int, releaseYearMax: Int, readOutQuote: Boolean): Option[Question] =
     for {
       TranslationRow(
         movieId,
@@ -19,13 +20,13 @@ class QuestionService @Inject() (db: Database, movieRepo: MovieRepo) {
         TranslationState.Translated(translation),
         translationService,
         translationChain,
-        SpeechState.Processed(spokenQuoteDataUrl)
+        speechState
       ) <- db
         .withConnection { implicit con =>
           SQL"""SELECT *
               FROM translations INNER JOIN movies ON translations.movie_id = movies.movie_id
               WHERE translation->>'Translated' IS NOT NULL
-                AND speech->>'Processed' IS NOT NULL
+                AND (speech->>'Processed' IS NOT NULL OR NOT ${readOutQuote})
                 AND (movies.data->>'releaseYear') :: integer >= ${releaseYearMin}
                 AND (movies.data->>'releaseYear') :: integer <= ${releaseYearMax}
               ORDER BY random()
@@ -52,7 +53,7 @@ class QuestionService @Inject() (db: Database, movieRepo: MovieRepo) {
       translatedQuote = translation,
       correctMovie = correctMovie,
       otherMovies = otherMovies,
-      spokenQuoteDataUrl = spokenQuoteDataUrl
+      spokenQuoteDataUrl = if(readOutQuote) Some(speechState.asInstanceOf[Processed].dataUrl) else None
     )
 
   def countMovies(releaseYearMin: Int, releaseYearMax: Int): Int =

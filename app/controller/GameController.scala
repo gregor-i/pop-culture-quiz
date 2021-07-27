@@ -18,10 +18,11 @@ class GameController @Inject() (questionService: QuestionService) extends Inject
     Ok(views.html.game.Start())
   }
 
-  def game(releaseYearMin: Int, releaseYearMax: Int) = Action {
+  def game(releaseYearMin: Int, releaseYearMax: Int, readOutQuote: Boolean) = Action {
     questionService.getOne(
       releaseYearMax = releaseYearMax,
-      releaseYearMin = releaseYearMin
+      releaseYearMin = releaseYearMin,
+      readOutQuote = readOutQuote
     ) match {
       case Some(question) =>
         Ok(
@@ -39,7 +40,7 @@ class GameController @Inject() (questionService: QuestionService) extends Inject
 
   }
 
-  def meta(releaseYearMin: Int, releaseYearMax: Int) = Action {
+  def meta(releaseYearMin: Int, releaseYearMax: Int, readOutQuote: Boolean) = Action {
     Ok(
       Json.obj(
         "countMovies" ->
@@ -52,10 +53,11 @@ class GameController @Inject() (questionService: QuestionService) extends Inject
     )
   }
 
-  def getOne(releaseYearMin: Int, releaseYearMax: Int) = Action {
+  def getOne(releaseYearMin: Int, releaseYearMax: Int, readOutQuote: Boolean) = Action {
     questionService.getOne(
       releaseYearMax = releaseYearMax,
-      releaseYearMin = releaseYearMin
+      releaseYearMin = releaseYearMin,
+      readOutQuote = readOutQuote
     ) match {
       case Some(question) =>
         Ok(question.asJson)
