@@ -18,6 +18,7 @@
 
     <logger name="access" level="info"/>
     <logger name="imdb.IMDBClient" level="info"/>
+    <logger name="translation.TranslationChain" level="info"/>
     <logger name="translation.systran.SystranTranslate" level="info"/>
     <logger name="translation.google.GoogleTranslate" level="info"/>
     <logger name="service.TextToSpeech" level="info"/>

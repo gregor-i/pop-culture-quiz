@@ -52,7 +52,7 @@ object GoogleTranslate extends TranslationService {
     if (texts.isEmpty)
       Future.failed(new Exception("no texts given to translate"))
     else {
-      logger.info(s"Translating [${texts.mkString(",").take(10)}...] from ${src} to ${dest}")
+      logger.info(s"Translating from ${src} to ${dest}")
       for {
         response <- Http()
           .singleRequest(HttpRequest(uri = uri(text = texts, src = src, dest = dest)))
