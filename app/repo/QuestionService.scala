@@ -53,7 +53,7 @@ class QuestionService @Inject() (db: Database, movieRepo: MovieRepo) {
       translatedQuote = translation,
       correctMovie = correctMovie,
       otherMovies = otherMovies,
-      spokenQuoteDataUrl = if(readOutQuote) Some(speechState.asInstanceOf[Processed].dataUrl) else None
+      spokenQuoteDataUrl = if (readOutQuote) Some(speechState.asInstanceOf[Processed].dataUrl) else None
     )
 
   def countMovies(releaseYearMin: Int, releaseYearMax: Int): Int =

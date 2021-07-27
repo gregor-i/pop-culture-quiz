@@ -17,6 +17,7 @@
     </root>
 
     <logger name="access" level="info"/>
+    <logger name="agent.Agent" level="info"/>
     <logger name="imdb.IMDBClient" level="info"/>
     <logger name="translation.TranslationChain" level="info"/>
     <logger name="translation.systran.SystranTranslate" level="info"/>

@@ -1,6 +1,14 @@
 package controller
 
-import agent.{Agent, GoogleTranslationAgent, IMDBAgent, SpeechAgent, SystranTranslationAgent, TranslationAgent}
+import agent.{
+  Agent,
+  GoogleTranslationAgent,
+  IMDBMoviePageAgent,
+  IMDBQuotesAgent,
+  SpeechAgent,
+  SystranTranslationAgent,
+  TranslationAgent
+}
 import play.api.libs.json.{JsObject, JsString}
 import play.api.mvc.InjectedController
 
@@ -8,14 +16,16 @@ import javax.inject.{Inject, Singleton}
 
 @Singleton()
 class AgentController @Inject() (
-    imdbAgent: IMDBAgent,
+    imdbMoviePageAgent: IMDBMoviePageAgent,
+    imdbQuotesAgent: IMDBQuotesAgent,
     googleTranslationAgent: GoogleTranslationAgent,
     systranTranslationAgent: SystranTranslationAgent,
     speechAgent: SpeechAgent
 ) extends InjectedController {
 
   val agents: Map[String, Agent] = Map(
-    "IMDBAgent"               -> imdbAgent,
+    "IMDBMoviePageAgent"      -> imdbMoviePageAgent,
+    "IMDBQuotesAgent"         -> imdbQuotesAgent,
     "GoogleTranslationAgent"  -> googleTranslationAgent,
     "SystranTranslationAgent" -> systranTranslationAgent,
     "SpeechAgent"             -> speechAgent
@@ -35,7 +45,7 @@ class AgentController @Inject() (
   def start(agentName: String) = Action {
     agents.get(agentName) match {
       case Some(agent) =>
-        agent.running = true
+        agent.start()
         Ok(s"Started ${agentName}")
       case None => NotFound
     }
@@ -44,7 +54,7 @@ class AgentController @Inject() (
   def stop(agentName: String) = Action {
     agents.get(agentName) match {
       case Some(agent) =>
-        agent.running = false
+        agent.stop()
         Ok(s"Stopped ${agentName}")
       case None => NotFound
     }
