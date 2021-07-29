@@ -68,6 +68,9 @@ class TranslationRepo @Inject() (env: Environment)(db: Database) extends JsonCol
             FROM translations
             WHERE translation = ${state.asJson}
               AND translation_service = $service
+            ORDER BY (SELECT CAST(movies.quotes->translations.quote_id->>'score' AS float)
+                      FROM movies
+                      WHERE movies.movie_id = translations.movie_id) DESC
             LIMIT 10"""
         .as(TranslationRepo.parser.*)
     }

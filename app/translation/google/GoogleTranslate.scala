@@ -18,9 +18,11 @@ object GoogleTranslate extends TranslationService {
 
   val defaultChain = Seq("ar", "bn", "zh-tw", "cs", "nl", "eo", "fi", "el", "ht", "iw", "ta", "uz", "vi", "cy", "xh", "yo")
 
-  val logger = Logger(this.getClass)
+  private val requestInterval = 10.second
 
-  def uri(text: Seq[String], src: String, dest: String) =
+  private val logger = Logger(this.getClass)
+
+  private def uri(text: Seq[String], src: String, dest: String) =
     Url(scheme = "https", host = "translate.googleapis.com", path = "/translate_a/single")
       .addParam("client", "gtx")
       .addParam("sl", src)
@@ -68,20 +70,20 @@ object GoogleTranslate extends TranslationService {
           case Right(translation) => Future.successful(translation)
         }
         _ <- Future {
-          Thread.sleep(30000)
+          Thread.sleep(requestInterval.toMillis)
           true
         }
       } yield handleMultiSentenceTexts(result, texts)
     }
   }
 
-  def decoder: Decoder[Map[String, String]] = Decoder.instance { cursor =>
+  private def decoder: Decoder[Map[String, String]] = Decoder.instance { cursor =>
     cursor.downArray
       .as(Decoder.decodeSeq(decoderTranslation))
       .map(_.flatten.toMap)
   }
 
-  def handleMultiSentenceTexts(translations: Map[String, String], texts: Seq[String]): Map[String, String] = {
+  private def handleMultiSentenceTexts(translations: Map[String, String], texts: Seq[String]): Map[String, String] = {
     texts.map { text =>
       val translated = translations.foldLeft(text) { (text, translation) =>
         text.replace(translation._1, translation._2)
