@@ -48,7 +48,7 @@ class GoogleTranslationAgent @Inject() (translationRepo: TranslationRepo)(
     implicit as: ActorSystem,
     ex: ExecutionContext,
     mat: Materializer
-) extends TranslationAgent(GoogleTranslate, translationRepo)
+) extends TranslationAgent(GoogleTranslate, translationRepo) with Autostart
 
 @Singleton
 class SystranTranslationAgent @Inject() (translationRepo: TranslationRepo)(

@@ -22,22 +22,19 @@ class AgentController @Inject() (
     systranTranslationAgent: SystranTranslationAgent,
     speechAgent: SpeechAgent
 ) extends InjectedController {
-
-  val agents: Map[String, Agent] = Map(
-    "IMDBMoviePageAgent"      -> imdbMoviePageAgent,
-    "IMDBQuotesAgent"         -> imdbQuotesAgent,
-    "GoogleTranslationAgent"  -> googleTranslationAgent,
-    "SystranTranslationAgent" -> systranTranslationAgent,
-    "SpeechAgent"             -> speechAgent
-  )
+  val agents: Map[String, Agent] =
+    Seq(
+      imdbMoviePageAgent,
+      imdbQuotesAgent,
+      googleTranslationAgent,
+      systranTranslationAgent,
+      speechAgent
+    ).map(agent => (agent.name, agent)).toMap
 
   def state() = Action {
     Ok(
       JsObject(
-        agents.map {
-          case (key, value) =>
-            key -> JsString(if (value.running) "running" else "stopped")
-        }.toSeq
+        agents.view.mapValues(agent => JsString(if (agent.running) "running" else "stopped")).toSeq
       )
     )
   }
