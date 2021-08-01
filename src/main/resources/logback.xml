@@ -1,0 +1,25 @@
+<configuration>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%level] %logger{15} - %message%n%xException{10}</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="application" level="DEBUG"/>
+    <logger name="akka.streams.Materializer" level="DEBUG"/>
+
+    <root level="WARN">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+    <logger name="Main" level="info"/>
+    <logger name="access" level="info"/>
+    <logger name="agent.Agent" level="info"/>
+    <logger name="imdb.IMDBClient" level="info"/>
+    <logger name="translation.TranslationChain" level="info"/>
+    <logger name="translation.systran.SystranTranslate" level="info"/>
+    <logger name="translation.google.GoogleTranslate" level="info"/>
+    <logger name="service.TextToSpeech" level="info"/>
+
+</configuration>
