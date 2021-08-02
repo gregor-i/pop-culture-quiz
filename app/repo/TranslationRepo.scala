@@ -85,6 +85,16 @@ class TranslationRepo @Inject() (env: Environment)(db: Database) extends JsonCol
             LIMIT 10"""
         .as(TranslationRepo.parser.*)
     }
+
+  def progress(): Map[String, Int] =
+    db.withConnection(implicit con =>
+      SQL"""select jsonb_object_keys(translation) as key, count(*) as count
+            from translations
+            group by jsonb_object_keys(translation)"""
+        .as((SqlParser.str(1) ~ SqlParser.int(2)).*)
+        .map(t => (t._1, t._2))
+        .toMap
+    )
 }
 
 object TranslationRepo extends JsonColumn {

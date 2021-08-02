@@ -16,8 +16,9 @@ class AdminUiController @Inject() (movieRepo: MovieRepo, translationRepo: Transl
   }
 
   def translations(page: Option[Int]) = Action {
-    val translations = translationRepo.list(offset = 100 * page.fold(0)(_ - 1), limit = 100)
-    Ok(views.html.admin.Translations(translations))
+    val translations = translationRepo.list(offset = 100 * (page.getOrElse(1) - 1), limit = 100)
+    val progress = translationRepo.progress()
+    Ok(views.html.admin.Translations(translations, progress))
   }
 
   def movieQuotes(movieId: String) = Action {

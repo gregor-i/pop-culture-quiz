@@ -1,7 +1,7 @@
 @import repo._
 @import model._
 
-@(translations: Seq[TranslationRow])
+@(translations: Seq[TranslationRow], progress: Map[String, Int])
 
 
 <!DOCTYPE html>
@@ -38,6 +38,14 @@
 <body>
   <h1 class="title">Pop-Culture-Quiz Admin: Translations</h1>
 
+  <h2 class="title">Progress</h2>
+  <section>
+    <ul>
+      @for((key, value) <- progress){
+        <li><b>@key:</b> @value</li>
+      }
+    </ul>
+  </section>
 
   <form id="enqueue-quote" class="block box" style="max-width: 600px; margin-left: auto; margin-right: auto;">
     <div class="field is-horizontal">
