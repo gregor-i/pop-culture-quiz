@@ -96,7 +96,8 @@ class Routing(repo: Repo, agents: Agents) { routing =>
 
     def translations = (get & path("admin" / "translations") & parameter("page".as[Int].withDefault(1))) { page =>
       val translations = repo.translationRepo.list(offset = 100 * page, limit = 100)
-      complete(admin.html.Translations(translations))
+      val progress     = repo.translationRepo.progress()
+      complete(admin.html.Translations(translations, progress))
     }
 
     def movieQuotes = (get & path("admin" / "movies" / Segment)) { movieId =>

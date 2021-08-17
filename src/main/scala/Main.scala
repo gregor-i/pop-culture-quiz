@@ -29,7 +29,7 @@ object Main {
     Evolutions.applyEvolutions(repo.db)
     logger.info("finished applying evolutions.")
 
-    val port = config.getInt("http.port")
+    val port          = config.getInt("http.port")
     val bindingFuture = Http().newServerAt("0.0.0.0", port).bind(routing.routes)
 
     logger.info(s"Server now online on port ${port}.")
