@@ -29,9 +29,10 @@ object Main {
     Evolutions.applyEvolutions(repo.db)
     logger.info("finished applying evolutions.")
 
-    val bindingFuture = Http().newServerAt("0.0.0.0", config.getInt("http.port")).bind(routing.routes)
+    val port = config.getInt("http.port")
+    val bindingFuture = Http().newServerAt("0.0.0.0", port).bind(routing.routes)
 
-    logger.info(s"Server now online.")
+    logger.info(s"Server now online on port ${port}.")
 //    StdIn.readLine() // let it run until user presses return
 //    bindingFuture
 //      .flatMap { server =>
