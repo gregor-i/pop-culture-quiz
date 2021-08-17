@@ -32,20 +32,20 @@ object Main {
     val bindingFuture = Http().newServerAt("localhost", 8080).bind(routing.routes)
 
     logger.info(s"Server now online.")
-    StdIn.readLine() // let it run until user presses return
-    bindingFuture
-      .flatMap { server =>
-        logger.info("unbinding akka http server")
-        server.unbind()
-      }
-      .flatMap { _ =>
-        logger.info("terminating actor system")
-        system.terminate()
-      }
-      .flatMap { _ =>
-        logger.info("shutting down database connection")
-        Future(repo.db.shutdown())
-      }
-      .onComplete(_ => logger.info("good bye"))
+//    StdIn.readLine() // let it run until user presses return
+//    bindingFuture
+//      .flatMap { server =>
+//        logger.info("unbinding akka http server")
+//        server.unbind()
+//      }
+//      .flatMap { _ =>
+//        logger.info("terminating actor system")
+//        system.terminate()
+//      }
+//      .flatMap { _ =>
+//        logger.info("shutting down database connection")
+//        Future(repo.db.shutdown())
+//      }
+//      .onComplete(_ => logger.info("good bye"))
   }
 }
