@@ -5,6 +5,7 @@ ThisBuild / scalacOptions ++= Seq("-feature", "-deprecation", "-Ymacro-annotatio
 ThisBuild / scalafmtOnCompile := true
 
 enablePlugins(SbtTwirl)
+enablePlugins(JavaAppPackaging)
 
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor-typed" % "2.6.8",

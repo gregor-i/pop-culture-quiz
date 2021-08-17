@@ -17,7 +17,7 @@ object Main {
     implicit val executionContext: ExecutionContext = system.dispatcher
     implicit val materializer: Materializer         = Materializer(system)
 
-    val config                                      = ConfigFactory.load()
+    val config = ConfigFactory.load()
 
     val repo    = new Repo(config)
     val agents  = new Agents(repo)
