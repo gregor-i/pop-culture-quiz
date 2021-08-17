@@ -29,7 +29,7 @@ object Main {
     Evolutions.applyEvolutions(repo.db)
     logger.info("finished applying evolutions.")
 
-    val bindingFuture = Http().newServerAt("localhost", 8080).bind(routing.routes)
+    val bindingFuture = Http().newServerAt("0.0.0.0", config.getInt("http.port")).bind(routing.routes)
 
     logger.info(s"Server now online.")
 //    StdIn.readLine() // let it run until user presses return
