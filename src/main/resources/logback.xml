@@ -14,6 +14,7 @@
     </root>
 
     <logger name="Main" level="info"/>
+    <logger name="korolev" level="trace"/>
     <logger name="access" level="info"/>
     <logger name="agent.Agent" level="info"/>
     <logger name="imdb.IMDBClient" level="info"/>

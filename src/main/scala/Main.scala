@@ -1,13 +1,13 @@
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
+import akka.http.scaladsl.server.Directives._
 import akka.stream.Materializer
 import com.typesafe.config.ConfigFactory
 import di.{Agents, Repo}
 import org.slf4j.LoggerFactory
 import play.api.db.evolutions.Evolutions
 
-import scala.concurrent.{ExecutionContext, Future}
-import scala.io.StdIn
+import scala.concurrent.ExecutionContext
 
 object Main {
   val logger = LoggerFactory.getLogger(this.getClass.getSimpleName.stripSuffix("$"))
@@ -30,7 +30,11 @@ object Main {
     logger.info("finished applying evolutions.")
 
     val port          = config.getInt("http.port")
-    val bindingFuture = Http().newServerAt("0.0.0.0", port).bind(routing.routes)
+    val bindingFuture =
+//      Http().newServerAt("0.0.0.0", port).bind(routing.routes ~ new Fontend(agents).route)
+//      Http().newServerAt("0.0.0.0", port).bind(routing.routes ~ pathPrefix("korolev")(new MyKorolevProject(agents).route))
+      Http().newServerAt("0.0.0.0", port).bind(new Frontend(agents).route)
+//      Http().newServerAt("0.0.0.0", port).bind(routing.routes)
 
     logger.info(s"Server now online on port ${port}.")
 //    StdIn.readLine() // let it run until user presses return

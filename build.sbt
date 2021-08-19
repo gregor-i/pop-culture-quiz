@@ -3,6 +3,7 @@ name := "pop-culture-puzzle"
 ThisBuild / scalaVersion := "2.13.5"
 ThisBuild / scalacOptions ++= Seq("-feature", "-deprecation", "-Ymacro-annotations")
 ThisBuild / scalafmtOnCompile := true
+run / fork := true
 
 enablePlugins(SbtTwirl)
 enablePlugins(JavaAppPackaging)
@@ -14,6 +15,7 @@ libraryDependencies ++= Seq(
   "de.heikoseeberger" %% "akka-http-circe"  % "1.36.0"
 )
 
+libraryDependencies += "org.fomkin" %% "korolev-akka" % "0.17.1"
 libraryDependencies += "com.typesafe.play"       %% "play-jdbc"            % "2.8.8"
 libraryDependencies += "com.typesafe.play"       %% "play-jdbc-evolutions" % "2.8.8"
 libraryDependencies += "com.zaxxer"              % "HikariCP"              % "5.0.0"
