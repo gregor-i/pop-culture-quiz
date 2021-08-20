@@ -22,7 +22,7 @@ object Main {
 
     val repo    = new Repo(config)
     val agents  = new Agents(repo)
-    val routing = new Routing(repo, agents)
+    val routing = new Routing(repo)
 
     repo.db.withConnection(_ => logger.info("Database connection established."))
 
@@ -32,7 +32,7 @@ object Main {
 
     val port = config.getInt("http.port")
     val bindingFuture =
-      Http().newServerAt("0.0.0.0", port).bind(routing.routes ~ Frontend(agents))
+      Http().newServerAt("0.0.0.0", port).bind(routing.routes ~ Frontend(agents, repo))
 
     logger.info(s"Server now online on port ${port}.")
 //    StdIn.readLine() // let it run until user presses return

@@ -4,14 +4,13 @@ import akka.http.scaladsl.server.Directives._
 import akka.util.ByteString
 import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
 import di.{Agents, Repo}
-import io.circe.Json
 import play.api.http.Status
 import repo.MovieRow
 import service.HideCharacterNames
 
 import scala.util.Random
 
-class Routing(repo: Repo, agents: Agents) { routing =>
+class Routing(repo: Repo) { routing =>
 
   implicit private val twirl: Marshaller[play.twirl.api.Content, HttpResponse] =
     ToResponseMarshallable.marshaller
@@ -57,12 +56,7 @@ class Routing(repo: Repo, agents: Agents) { routing =>
   }
 
   object AdminRoutes {
-    def all = pathPrefix("admin")(concat(movies, translations, movieQuotes))
-
-    def movies = (get & pathEndOrSingleSlash) {
-      val movies = repo.movieRepo.list().sortBy(_.movieId)
-      complete(admin.html.Movies(movies))
-    }
+    def all = pathPrefix("admin")(concat(translations, movieQuotes))
 
     def translations = (get & path("translations") & parameter("page".as[Int].withDefault(1))) { page =>
       val translations = repo.translationRepo.list(offset = 100 * page, limit = 100)
