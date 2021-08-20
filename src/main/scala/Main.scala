@@ -4,6 +4,7 @@ import akka.http.scaladsl.server.Directives._
 import akka.stream.Materializer
 import com.typesafe.config.ConfigFactory
 import di.{Agents, Repo}
+import frontend.Frontend
 import org.slf4j.LoggerFactory
 import play.api.db.evolutions.Evolutions
 
@@ -31,8 +32,7 @@ object Main {
 
     val port = config.getInt("http.port")
     val bindingFuture =
-      Http().newServerAt("0.0.0.0", port).bind(routing.routes ~ new Frontend(agents).route)
-//      Http().newServerAt("0.0.0.0", port).bind(new Frontend(agents).route)
+      Http().newServerAt("0.0.0.0", port).bind(routing.routes ~ Frontend(agents))
 
     logger.info(s"Server now online on port ${port}.")
 //    StdIn.readLine() // let it run until user presses return
