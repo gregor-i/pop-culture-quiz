@@ -52,12 +52,16 @@ class Frontend(agents: Agents)(implicit as: ActorSystem, ex: ExecutionContext) {
             h1(`class` := "title", s"Pop-Culture-Quiz Admin: Agents ${i}"),
             table(
               `class` := "table",
-              tr(
-                td("Agent"),
-                td("Running"),
-                td()
+              thead(
+                tr(
+                  td("Agent"),
+                  td("Running"),
+                  td()
+                )
               ),
-              seqToNode(agents.all.map(renderAgent))
+              tbody(
+                seqToNode(agents.all.map(renderAgent))
+              )
             )
           )
         )
@@ -106,34 +110,30 @@ class Frontend(agents: Agents)(implicit as: ActorSystem, ex: ExecutionContext) {
   )
 
   private def startAgent(agent: Agent): Access => Future[Unit] =
-    _.transition(state => AdminAgentsState(-5))
-//    _.transition { state =>
-//      println(state)
-//      println(s"start ${agent.name}")
-//      agent.start()
-//      state
-//    }
+    _.transition { state =>
+      println(state)
+      println(s"start ${agent.name}")
+      agent.start()
+      state
+    }
 
   private def stopAgent(agent: Agent): Access => Future[Unit] =
-    _.transition(state => AdminAgentsState(5))
-//    _.evalJs("console.log(1 + 1)").map(println)
-//    _.transition { state =>
-//      println(state)
-//      println(s"stop ${agent.name}")
-//      agent.stop()
-//      state
-//    }
+    _.transition { state =>
+      println(state)
+      println(s"stop ${agent.name}")
+      agent.stop()
+      state
+    }
 
   private def renderAgent(agent: Agent): Node =
     tr(
       td(agent.name),
       td(if (agent.running) "running" else "stopped"),
       td(
-        button("dummy", event("click")(_.transition(_ => AdminAgentsState(2)))),
         if (agent.running)
-          button(`class` := "button", event("onclick")(stopAgent(agent)), "Stop")
+          button(`class` := "button", "Stop", event("click")(stopAgent(agent)))
         else
-          button(`class` := "button", event("onclick")(startAgent(agent)), "Start")
+          button(`class` := "button", "Start", event("click")(startAgent(agent)))
       )
     )
 
