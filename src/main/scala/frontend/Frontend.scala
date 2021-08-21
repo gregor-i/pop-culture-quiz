@@ -22,6 +22,7 @@ object Frontend {
     def router = Router[Future, FrontendState](
       toState = {
         case Root                                             => game.IndexPage.load(global)
+        case Root / "game"                                    => game.QuestionPage.load(global)
         case Root / "admin"                                   => admin.IndexPage.load(global)
         case Root / "admin" / "agents"                        => admin.AgentsPage.load(global)
         case Root / "admin" / "movies"                        => admin.MoviesPage.load(global)
@@ -41,6 +42,7 @@ object Frontend {
 
     def render: FrontendState => levsha.Document.Node[Context.Binding[Future, FrontendState, Any]] = {
       case state: GameIndexState         => game.IndexPage.render(state)
+      case state: GameQuestionState      => game.QuestionPage.render(state, global)
       case state: AdminState             => admin.IndexPage.render(state)
       case state: AdminAgentsState       => admin.AgentsPage.render(state)
       case state: AdminTranslationsState => admin.TranslationsPage.render(state)

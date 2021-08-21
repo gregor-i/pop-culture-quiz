@@ -7,7 +7,6 @@ run / fork := true
 test / fork := true
 Test / parallelExecution := false
 
-enablePlugins(SbtTwirl)
 enablePlugins(JavaAppPackaging)
 
 libraryDependencies ++= Seq(
@@ -24,7 +23,6 @@ libraryDependencies += "com.zaxxer"              % "HikariCP"              % "5.
 libraryDependencies += "org.postgresql"          % "postgresql"            % "42.2.20"
 libraryDependencies += "org.playframework.anorm" %% "anorm"                % "2.6.10"
 libraryDependencies += "org.playframework.anorm" %% "anorm-postgres"       % "2.6.10"
-libraryDependencies += "org.scalatestplus.play"  %% "scalatestplus-play"   % "5.1.0" % Test
 libraryDependencies += "net.ruippeixotog"        %% "scala-scraper"        % "2.2.1"
 libraryDependencies += "org.scalatest"           %% "scalatest"            % "3.2.9" % Test
 libraryDependencies += "io.lemonlabs"            %% "scala-uri"            % "3.2.0"
