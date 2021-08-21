@@ -19,10 +19,7 @@ class Routing(repo: Repo) { routing =>
   val routes = GameRoutes.all
 
   object GameRoutes {
-    def all = concat(indexRoute, gameRoute)
-    def indexRoute = pathEndOrSingleSlash {
-      get { complete(game.html.Start()) }
-    }
+    def all = concat(gameRoute)
 
     def gameRoute = path("game") {
       parameters(
