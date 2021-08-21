@@ -1,15 +1,16 @@
-package frontend.pages
+package frontend.pages.admin
 
 import di.Global
-import frontend.{AdminMoviesState, FrontendState, Page}
 import frontend.Frontend.globalContext.Node
+import frontend.pages.Common
+import frontend.{AdminMoviesState, FrontendState, Page}
 import levsha.dsl._
 import levsha.dsl.html._
 import repo.MovieRow
 
 import scala.concurrent.{ExecutionContext, Future}
 
-object AdminMoviesPage extends Page[AdminMoviesState] {
+object MoviesPage extends Page[AdminMoviesState] {
   override def load(global: Global)(state: FrontendState)(implicit ex: ExecutionContext): Future[FrontendState] =
     Future {
       val movies = global.repo.movieRepo.list().sortBy(_.movieId)

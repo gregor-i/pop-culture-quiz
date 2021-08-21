@@ -1,8 +1,9 @@
-package frontend.pages
+package frontend.pages.admin
 
 import di.Global
-import frontend.{AdminTranslationsState, FrontendState, Page}
 import frontend.Frontend.globalContext._
+import frontend.pages.Common
+import frontend.{AdminTranslationsState, FrontendState}
 import levsha.dsl._
 import levsha.dsl.html._
 import model.TranslationState
@@ -10,7 +11,7 @@ import repo.TranslationRow
 
 import scala.concurrent.{ExecutionContext, Future}
 
-object AdminTranslationsPage /*extends Page[AdminTranslationsState]*/ {
+object TranslationsPage /*extends Page[AdminTranslationsState]*/ {
 
   def load(global: Global, pageQP: Option[String])(state: FrontendState)(implicit ex: ExecutionContext): Future[FrontendState] =
     Future {

@@ -1,15 +1,16 @@
-package frontend.pages
+package frontend.pages.admin
 
 import dataprocessing.agent.Agent
 import di.Global
 import frontend.Frontend.globalContext._
+import frontend.pages.Common
 import frontend.{AdminAgentsState, FrontendState, Page}
 import levsha.dsl._
 import levsha.dsl.html._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-object AdminAgentsPage extends Page[AdminAgentsState] {
+object AgentsPage extends Page[AdminAgentsState] {
   def load(global: Global)(state: FrontendState)(implicit ex: ExecutionContext): Future[AdminAgentsState] =
     Future.successful(AdminAgentsState(global.agents))
 
