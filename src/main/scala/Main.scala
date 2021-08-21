@@ -27,7 +27,7 @@ object Main {
     repo.db.withConnection(_ => logger.info("Database connection established."))
 
     logger.info("applying schema evolutions.")
-    Evolutions.applyEvolutions(repo.db)
+    repo.setupSchema()
     logger.info("finished applying evolutions.")
 
     val port = config.getInt("http.port")

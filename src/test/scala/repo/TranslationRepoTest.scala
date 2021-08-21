@@ -1,21 +1,18 @@
 package repo
 
-import model.{Quote, SpeechState, TranslatedQuote, TranslationState}
+import model.{Quote, SpeechState, TranslationState}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.funsuite.AnyFunSuite
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 
-import scala.util.Random
+class TranslationRepoTest extends AnyFunSuite with BeforeAndAfterEach {
 
-class TranslationRepoTest extends AnyFunSuite with GuiceOneAppPerSuite with BeforeAndAfterEach {
-
-  val movieRepo: MovieRepo              = app.injector.instanceOf[MovieRepo]
-  val translationsRepo: TranslationRepo = app.injector.instanceOf[TranslationRepo]
+  val movieRepo: MovieRepo              = TestRepo.movieRepo
+  val translationsRepo: TranslationRepo = TestRepo.translationRepo
 
   val quote = Quote(Seq.empty, 1d)
 
   override def afterEach(): Unit = {
-    movieRepo.truncate()
+    TestRepo.truncate()
   }
 
   test("enqueue a quote for translation") {

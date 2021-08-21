@@ -7,22 +7,21 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.Eventually
 import org.scalatest.concurrent.PatienceConfiguration.Timeout
 import org.scalatest.funsuite.AnyFunSuite
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import repo.{MovieRepo, TranslationRepo}
+import repo.{MovieRepo, TestRepo, TranslationRepo}
 import translation.TranslationService
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}
 
-class TranslationAgentTest extends AnyFunSuite with GuiceOneAppPerSuite with Eventually with BeforeAndAfterEach {
+class TranslationAgentTest extends AnyFunSuite with Eventually with BeforeAndAfterEach {
 
-  val movieRepo: MovieRepo              = app.injector.instanceOf[MovieRepo]
-  val translationsRepo: TranslationRepo = app.injector.instanceOf[TranslationRepo]
+  val movieRepo: MovieRepo              = TestRepo.movieRepo
+  val translationsRepo: TranslationRepo = TestRepo.translationRepo
 
   val quote = Quote(Seq.empty, 1d)
 
   override def afterEach() = {
-    movieRepo.truncate()
+    TestRepo.truncate()
   }
 
   test("handles translations") {
@@ -30,7 +29,7 @@ class TranslationAgentTest extends AnyFunSuite with GuiceOneAppPerSuite with Eve
     val service = new DummyService()
     val agent   = new TranslationAgent(service, translationsRepo)(as, as.dispatcher, Materializer.createMaterializer(as)) {}
 
-    agent.running = true
+    agent.start()
 
     movieRepo.addNewMovie("movieId")
     translationsRepo.enqueue(
@@ -59,7 +58,7 @@ class TranslationAgentTest extends AnyFunSuite with GuiceOneAppPerSuite with Eve
     val service = new FailingDummyService()
     val agent   = new TranslationAgent(service, translationsRepo)(as, as.dispatcher, Materializer.createMaterializer(as)) {}
 
-    agent.running = true
+    agent.start()
 
     movieRepo.addNewMovie("movieId")
     translationsRepo.enqueue(

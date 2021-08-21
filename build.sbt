@@ -4,6 +4,8 @@ ThisBuild / scalaVersion := "2.13.5"
 ThisBuild / scalacOptions ++= Seq("-feature", "-deprecation", "-Ymacro-annotations")
 ThisBuild / scalafmtOnCompile := true
 run / fork := true
+test / fork := true
+Test / parallelExecution := false
 
 enablePlugins(SbtTwirl)
 enablePlugins(JavaAppPackaging)

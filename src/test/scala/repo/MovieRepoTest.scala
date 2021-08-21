@@ -3,14 +3,13 @@ package repo
 import model.{MovieData, Quote}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.funsuite.AnyFunSuite
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 
-class MovieRepoTest extends AnyFunSuite with GuiceOneAppPerSuite with BeforeAndAfterEach {
+class MovieRepoTest extends AnyFunSuite with BeforeAndAfterEach {
 
-  val repo: MovieRepo = app.injector.instanceOf[MovieRepo]
+  val repo: MovieRepo = TestRepo.movieRepo
 
   override def afterEach(): Unit = {
-    repo.truncate()
+    TestRepo.truncate()
   }
 
   test("insert a new movie") {

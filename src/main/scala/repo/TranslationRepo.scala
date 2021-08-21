@@ -4,7 +4,6 @@ import anorm._
 import io.circe.Json
 import io.circe.syntax._
 import model.{Quote, SpeechState, TranslationState}
-import play.api.Mode
 import play.api.db.Database
 
 case class TranslationRow(
@@ -17,10 +16,7 @@ case class TranslationRow(
     speech: SpeechState = SpeechState.NotProcessed
 )
 
-class TranslationRepo(db: Database, mode: Mode) extends JsonColumn {
-  if (db.url.contains("amazonaws") && mode == Mode.Test)
-    throw new Exception("don't run tests against production")
-
+class TranslationRepo(db: Database) extends JsonColumn {
   def upsert(translationRow: TranslationRow): Int =
     db.withConnection { implicit con =>
       SQL"""INSERT INTO translations (movie_id, quote_id, quote, translation_service, translation_chain, translation, speech)

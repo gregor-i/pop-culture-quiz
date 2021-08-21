@@ -1,19 +1,14 @@
 package repo
 
-import akka.stream.Materializer
 import anorm._
 import io.circe.Json
 import io.circe.syntax._
 import model.{MovieData, Quote}
-import play.api.Mode
 import play.api.db.Database
 
 case class MovieRow(movieId: String, data: Either[String, MovieData], quotes: Either[String, Map[String, Quote]])
 
-class MovieRepo(db: Database, mode: Mode)(implicit mat: Materializer) extends JsonColumn {
-  if (db.url.contains("amazonaws") && mode == Mode.Test)
-    throw new Exception("don't run tests against production")
-
+class MovieRepo(db: Database) extends JsonColumn {
   def list(): Seq[MovieRow] =
     db.withConnection { implicit con =>
       SQL"""SELECT * FROM movies"""
@@ -70,12 +65,6 @@ class MovieRepo(db: Database, mode: Mode)(implicit mat: Materializer) extends Js
     db.withConnection { implicit con =>
       SQL"""SELECT * FROM movies WHERE quotes IS NULL LIMIT 10"""
         .as(MovieRepo.parser.*)
-    }
-
-  def truncate(): Int =
-    db.withConnection { implicit con =>
-      SQL"""TRUNCATE movies CASCADE"""
-        .executeUpdate()
     }
 }
 

@@ -76,13 +76,13 @@ object GoogleTranslate extends TranslationService {
     }
   }
 
-  private def decoder: Decoder[Map[String, String]] = Decoder.instance { cursor =>
+  def decoder: Decoder[Map[String, String]] = Decoder.instance { cursor =>
     cursor.downArray
       .as(Decoder.decodeSeq(decoderTranslation))
       .map(_.flatten.toMap)
   }
 
-  private def handleMultiSentenceTexts(translations: Map[String, String], texts: Seq[String]): Map[String, String] = {
+  def handleMultiSentenceTexts(translations: Map[String, String], texts: Seq[String]): Map[String, String] = {
     texts.map { text =>
       val translated = translations.foldLeft(text) { (text, translation) =>
         text.replace(translation._1, translation._2)
