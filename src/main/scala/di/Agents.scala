@@ -1,6 +1,6 @@
 package di
 
-import agent._
+import dataprocessing.agent._
 import akka.actor.ActorSystem
 import akka.stream.Materializer
 

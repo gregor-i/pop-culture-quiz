@@ -1,6 +1,6 @@
 package frontend.pages
 
-import agent.Agent
+import dataprocessing.agent.Agent
 import di.Agents
 import frontend.Frontend.globalContext._
 import levsha.dsl._

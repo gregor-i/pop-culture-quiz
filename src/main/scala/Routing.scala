@@ -6,7 +6,7 @@ import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
 import di.{Agents, Repo}
 import play.api.http.Status
 import repo.MovieRow
-import service.HideCharacterNames
+import dataprocessing.service.HideCharacterNames
 
 import scala.util.Random
 
