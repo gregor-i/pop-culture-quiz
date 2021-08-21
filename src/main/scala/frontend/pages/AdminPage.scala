@@ -1,11 +1,20 @@
 package frontend.pages
 
-import frontend.AdminState
+import di.Global
 import frontend.Frontend.globalContext._
+import frontend.{AdminState, FrontendState, Page}
 import levsha.dsl._
 import levsha.dsl.html._
 
-object AdminPage {
+import scala.concurrent.{ExecutionContext, Future}
+
+object AdminPage extends Page[AdminState] {
+  def load(global: Global)(state: FrontendState)(implicit ex: ExecutionContext): Future[AdminState] =
+    Future {
+      AdminState(
+        progress = global.repo.translationRepo.progress()
+      )
+    }
 
   def render(state: AdminState): Node =
     optimize {

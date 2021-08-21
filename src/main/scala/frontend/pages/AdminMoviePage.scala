@@ -1,12 +1,24 @@
 package frontend.pages
 
-import frontend.AdminMovieState
+import di.Global
+import frontend.{AdminMovieState, FrontendState, NotFoundState, Page}
 import frontend.Frontend.globalContext._
 import levsha.dsl._
 import levsha.dsl.html._
 import model.Quote
 
-object AdminMoviePage {
+import scala.concurrent.{ExecutionContext, Future}
+
+object AdminMoviePage /*extends Page[AdminMovieState]*/ {
+
+  def load(global: Global, movieId: String)(state: FrontendState)(implicit ex: ExecutionContext): Future[FrontendState] =
+    Future {
+      global.repo.movieRepo.get(movieId) match {
+        case Some(row) => AdminMovieState(row)
+        case None      => NotFoundState
+      }
+    }
+
   def render(state: AdminMovieState): Node = {
     import state.row._
     optimize {
