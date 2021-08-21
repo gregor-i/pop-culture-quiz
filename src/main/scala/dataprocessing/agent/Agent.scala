@@ -10,6 +10,8 @@ trait Agent {
 
   val name = this.getClass.getSimpleName
 
+  def autostart: Boolean = false
+
   def start(): Unit =
     killSwitch match {
       case Some(_) =>
@@ -31,8 +33,4 @@ trait Agent {
   def running: Boolean = killSwitch.isDefined
 
   private[agent] def startStream(): UniqueKillSwitch
-}
-
-trait Autostart { _: Agent =>
-  this.start()
 }

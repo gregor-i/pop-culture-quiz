@@ -46,8 +46,9 @@ class GoogleTranslationAgent(translationRepo: TranslationRepo)(
     implicit as: ActorSystem,
     ex: ExecutionContext,
     mat: Materializer
-) extends TranslationAgent(GoogleTranslate, translationRepo)
-    with Autostart
+) extends TranslationAgent(GoogleTranslate, translationRepo) {
+  override def autostart: Boolean = true
+}
 
 class SystranTranslationAgent(translationRepo: TranslationRepo)(
     implicit as: ActorSystem,

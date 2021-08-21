@@ -6,7 +6,6 @@ import com.typesafe.config.ConfigFactory
 import di.{Agents, Repo}
 import frontend.Frontend
 import org.slf4j.LoggerFactory
-import play.api.db.evolutions.Evolutions
 
 import scala.concurrent.ExecutionContext
 
@@ -29,6 +28,11 @@ object Main {
     logger.info("applying schema evolutions.")
     repo.setupSchema()
     logger.info("finished applying evolutions.")
+
+    agents.all.filter(_.autostart).foreach { agent =>
+      logger.info(s"Autostarting ${agent.name}")
+      agent.start()
+    }
 
     val port = config.getInt("http.port")
     val bindingFuture =
