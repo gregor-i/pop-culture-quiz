@@ -56,21 +56,12 @@ class Routing(repo: Repo) { routing =>
   }
 
   object AdminRoutes {
-    def all = pathPrefix("admin")(concat(translations, movieQuotes))
+    def all = pathPrefix("admin")(concat(translations))
 
     def translations = (get & path("translations") & parameter("page".as[Int].withDefault(1))) { page =>
       val translations = repo.translationRepo.list(offset = 100 * page, limit = 100)
       val progress     = repo.translationRepo.progress()
       complete(admin.html.Translations(translations, progress))
-    }
-
-    def movieQuotes = (get & path("movies" / Segment)) { movieId =>
-      repo.movieRepo.get(movieId) match {
-        case Some(MovieRow(_, data, quotes)) =>
-          complete(admin.html.MovieQuotes(movieId, data, quotes))
-        case None =>
-          complete(Status.NOT_FOUND, "movie not found")
-      }
     }
   }
 }

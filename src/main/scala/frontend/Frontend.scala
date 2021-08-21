@@ -3,7 +3,7 @@ package frontend
 import akka.actor.ActorSystem
 import akka.http.scaladsl.server.Route
 import di.{Agents, Repo}
-import frontend.pages.{AdminAgentsPage, AdminMoviesPage, LoadingPage, NotFoundPage}
+import frontend.pages.{AdminAgentsPage, AdminMoviePage, AdminMoviesPage, LoadingPage, NotFoundPage}
 import korolev.akka.{AkkaHttpServerConfig, akkaHttpService}
 import korolev.server._
 import korolev.state.javaSerialization._
@@ -26,16 +26,27 @@ object Frontend {
               val movies = repo.movieRepo.list().sortBy(_.movieId)
               AdminMoviesState(movies)
             }
+        case Root / "admin" / "movies" / movieId =>
+          _ =>
+            Future {
+              repo.movieRepo.get(movieId) match {
+                case Some(row) => AdminMovieState(row)
+                case None      => NotFoundState
+              }
+            }
         case _ => _ => Future.successful(NotFoundState)
       },
       fromState = {
-        case AdminAgentsState => Root / "admin" / "agents"
+        case AdminAgentsState     => Root / "admin" / "agents"
+        case _: AdminMoviesState  => Root / "admin" / "movies"
+        case AdminMovieState(row) => Root / "admin" / "movies" / row.movieId
       }
     )
 
     def render: FrontendState => levsha.Document.Node[Context.Binding[Future, FrontendState, Any]] = {
       case AdminAgentsState        => AdminAgentsPage.render(agents)
       case state: AdminMoviesState => AdminMoviesPage.render(state)
+      case state: AdminMovieState  => AdminMoviePage.render(state)
       case NotFoundState           => NotFoundPage.render
       case LoadingState            => LoadingPage.render
     }
