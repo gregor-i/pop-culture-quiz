@@ -16,7 +16,7 @@ class Routing(repo: Repo) { routing =>
     ToResponseMarshallable.marshaller
       .compose(content => HttpEntity.Strict(ContentTypes.`text/html(UTF-8)`, ByteString(content.body)))
 
-  val routes = concat(GameRoutes.all, AdminRoutes.all)
+  val routes = GameRoutes.all
 
   object GameRoutes {
     def all = concat(indexRoute, gameRoute)
@@ -52,16 +52,6 @@ class Routing(repo: Repo) { routing =>
           }
         }
       }
-    }
-  }
-
-  object AdminRoutes {
-    def all = pathPrefix("admin")(concat(translations))
-
-    def translations = (get & path("translations") & parameter("page".as[Int].withDefault(1))) { page =>
-      val translations = repo.translationRepo.list(offset = 100 * page, limit = 100)
-      val progress     = repo.translationRepo.progress()
-      complete(admin.html.Translations(translations, progress))
     }
   }
 }
