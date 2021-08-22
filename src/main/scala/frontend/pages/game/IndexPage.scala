@@ -58,7 +58,7 @@ object IndexPage extends Page[GameIndexState] {
                 `class` := "field-body",
                 div(
                   `class` := "control",
-                  input(`class` := "button is-primary", `type` := "submit", value := "Play!")
+                  a(`class` := "button is-primary", href := "/game", "Play!")
                 )
               )
             )

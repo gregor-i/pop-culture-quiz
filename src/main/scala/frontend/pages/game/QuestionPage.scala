@@ -62,10 +62,7 @@ object QuestionPage {
               movies.map(
                 movie =>
                   button(
-                    `class` := "button option",
-                    // todo: this is buggy
-                    backgroundColor @= (if (revealed && movie == correctMovie) "rgba(0, 255, 0, 0.25)" else "none"),
-                    borderColor @= (if (revealed && movie == correctMovie) "green" else "none"),
+                    `class` := s"button option ${if (revealed && movie == correctMovie) "correct-answer" else ""}",
                     movie.englishTitle,
                     span(`class` := "tag", movie.releaseYear.toString),
                     event("click")(_.transition(_ => state.copy(revealed = true)))
