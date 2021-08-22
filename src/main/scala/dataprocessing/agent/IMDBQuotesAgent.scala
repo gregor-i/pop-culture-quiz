@@ -8,6 +8,7 @@ import repo.MovieRepo
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
+import scala.util.control.NonFatal
 
 class IMDBQuotesAgent(movieRepo: MovieRepo)(
     implicit as: ActorSystem,
@@ -31,7 +32,9 @@ class IMDBQuotesAgent(movieRepo: MovieRepo)(
             .getQuotesPage(movieId)
             .map(IMDBParser.extractQuotes)
             .map(Right(_))
-            .recover(ex => Left(ex.getMessage))
+            .recover {
+              case NonFatal(ex) => Left(ex.getMessage)
+            }
             .map(movieRepo.setQuotes(movieId, _))
         }
       )
