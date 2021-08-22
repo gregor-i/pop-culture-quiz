@@ -30,29 +30,12 @@ object Main {
     logger.info("finished applying evolutions.")
 
     agents.all.filter(_.autostart).foreach { agent =>
-      logger.info(s"Autostarting ${agent.name}")
+      logger.info(s"auto starting ${agent.name}")
       agent.start()
     }
 
     val port = config.getInt("http.port")
-    val bindingFuture =
-      Http().newServerAt("0.0.0.0", port).bind(Assets.routes ~ Frontend(global))
-
+    Http().newServerAt("0.0.0.0", port).bind(Assets.routes ~ Frontend(global))
     logger.info(s"Server now online on port ${port}.")
-//    StdIn.readLine() // let it run until user presses return
-//    bindingFuture
-//      .flatMap { server =>
-//        logger.info("unbinding akka http server")
-//        server.unbind()
-//      }
-//      .flatMap { _ =>
-//        logger.info("terminating actor system")
-//        system.terminate()
-//      }
-//      .flatMap { _ =>
-//        logger.info("shutting down database connection")
-//        Future(repo.db.shutdown())
-//      }
-//      .onComplete(_ => logger.info("good bye"))
   }
 }
