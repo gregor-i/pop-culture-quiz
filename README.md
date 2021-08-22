@@ -23,3 +23,9 @@ Docker command:
 docker run -p 5432:5432 -e POSTGRES_USER=postgres \
 	--name postgres -d postgres:11.5
 ```
+
+## Favicon
+```
+seed = 89074.94367230032
+n = 7
+```
