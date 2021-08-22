@@ -12,8 +12,7 @@ enablePlugins(JavaAppPackaging)
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor-typed" % "2.6.8",
   "com.typesafe.akka" %% "akka-stream"      % "2.6.8",
-  "com.typesafe.akka" %% "akka-http"        % "10.2.5",
-  "de.heikoseeberger" %% "akka-http-circe"  % "1.36.0"
+  "com.typesafe.akka" %% "akka-http"        % "10.2.5"
 )
 
 libraryDependencies += "org.fomkin" %% "korolev-akka" % "0.17.1"
