@@ -1,19 +1,23 @@
 package frontend.pages.game
 
 import di.Global
-import frontend.Frontend.globalContext.Node
+import frontend.Frontend.globalContext.{Access, Node, elementId, event}
 import frontend.pages.Common
-import frontend.{FrontendState, GameIndexState, Page}
+import frontend.{FrontendState, GameIndexState}
 import levsha.dsl._
 import levsha.dsl.html._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-object IndexPage extends Page[GameIndexState] {
-  override def load(global: Global)(state: FrontendState)(implicit ex: ExecutionContext): Future[FrontendState] =
+object IndexPage /*extends Page[GameIndexState]*/ {
+  def load(global: Global)(state: FrontendState)(implicit ex: ExecutionContext): Future[FrontendState] =
     Future.successful(GameIndexState())
 
-  override def render(state: GameIndexState): Node =
+  private val releaseYearMinField = elementId()
+  private val releaseYearMaxField = elementId()
+  private val readOutQuoteField   = elementId()
+
+  def render(global: Global, state: GameIndexState)(implicit ex: ExecutionContext): Node =
     optimize {
       Html(
         Common.head("Pop-Culture-Quiz"),
@@ -26,28 +30,34 @@ object IndexPage extends Page[GameIndexState] {
             h1(`class` := "title", "Pop-Culture-Quiz"),
             formularElement(
               "release year from:",
-              input(`class` := "input", `type` := "text", name := "releaseYearMin", placeholder := "1995")
+              input(
+                `class` := "input",
+                `type` := "text",
+                releaseYearMinField,
+                placeholder := "1995",
+                min := "1900",
+                max := "2025"
+              )
             ),
             formularElement(
               "release year to:",
-              input(`class` := "input", `type` := "text", name := "releaseYearMax", placeholder := "2015")
+              input(
+                `class` := "input",
+                `type` := "text",
+                releaseYearMaxField,
+                placeholder := "2015",
+                min := "1900",
+                max := "2025"
+              )
             ),
-            div(
-              `class` := "field is-horizontal",
-              div(`class` := "field-label", flexGrow @= "2", label(`class` := "label", "read out quote:")),
+            formularElement(
+              "read out quote:",
               div(
-                `class` := "field-body",
-                div(
-                  `class` := "field",
-                  div(
-                    `class` := "control",
-                    label(`class` := "radio", input(`type` := "radio", name := "readOutQuote", value := "true"), " Yes "),
-                    label(
-                      `class` := "radio",
-                      input(`type` := "radio", name := "readOutQuote", value := "false", checked),
-                      " No "
-                    )
-                  )
+                `class` := "select",
+                select(
+                  readOutQuoteField,
+                  option("No", value := "false"),
+                  option("Yes", value := "true")
                 )
               )
             ),
@@ -58,14 +68,27 @@ object IndexPage extends Page[GameIndexState] {
                 `class` := "field-body",
                 div(
                   `class` := "control",
-                  a(`class` := "button is-primary", href := "/game", "Play!")
+                  button(`class` := "button is-primary", `type` := "submit", "Play!")
                 )
               )
-            )
+            ),
+            event("submit")(onSubmit(global))
           )
         )
       )
     }
+
+  def onSubmit(global: Global)(access: Access)(implicit ex: ExecutionContext) =
+    for {
+      releaseYearMin <- access.valueOf(releaseYearMinField).map(_.toIntOption)
+      releaseYearMax <- access.valueOf(releaseYearMaxField).map(_.toIntOption)
+      readOutQuote <- access.valueOf(readOutQuoteField).map {
+        case "true"  => true
+        case "false" => false
+      }
+      nextState <- QuestionPage.randomQuestion(releaseYearMin, releaseYearMax, readOutQuote, global)
+      _         <- access.transition(_ => nextState)
+    } yield ()
 
   def formularElement(labelText: String, element: Node): Node =
     div(

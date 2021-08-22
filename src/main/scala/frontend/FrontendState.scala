@@ -7,6 +7,9 @@ import repo.{MovieRow, TranslationRow}
 sealed trait FrontendState
 case class GameIndexState() extends FrontendState
 case class GameQuestionState(
+    releaseYearMin: Option[Int],
+    releaseYearMax: Option[Int],
+    readOutQuote: Boolean,
     translation: Quote,
     original: Quote,
     correctMovie: MovieData,

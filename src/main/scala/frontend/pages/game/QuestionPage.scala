@@ -4,25 +4,22 @@ import dataprocessing.service.HideCharacterNames
 import di.Global
 import frontend.Frontend.globalContext._
 import frontend.pages.Common
-import frontend.{FrontendState, GameQuestionState, NotFoundState, Page}
+import frontend.{FrontendState, GameQuestionState, NotFoundState}
 import levsha.dsl._
 import levsha.dsl.html._
 import model.Quote
 
-import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Random
-import scala.concurrent.duration.Duration
 
 object QuestionPage {
   def load(global: Global)(state: FrontendState)(implicit ex: ExecutionContext): Future[FrontendState] = {
-    randomQuestion(global)
+    randomQuestion(???, ???, ???, global)
   }
 
-  def randomQuestion(global: Global)(implicit ex: ExecutionContext) = {
-    val releaseYearMax = 2030
-    val releaseYearMin = 1900
-    val readOutQuote   = false
-
+  def randomQuestion(releaseYearMin: Option[Int], releaseYearMax: Option[Int], readOutQuote: Boolean, global: Global)(
+      implicit ex: ExecutionContext
+  ) =
     Future {
       global.repo.questionService.getOne(
         releaseYearMax = releaseYearMax,
@@ -31,6 +28,9 @@ object QuestionPage {
       ) match {
         case Some(question) =>
           GameQuestionState(
+            releaseYearMin = releaseYearMin,
+            releaseYearMax = releaseYearMax,
+            readOutQuote = readOutQuote,
             translation = HideCharacterNames(question.translatedQuote),
             original = question.originalQuote,
             correctMovie = question.correctMovie,
@@ -42,7 +42,6 @@ object QuestionPage {
           NotFoundState
       }
     }
-  }
 
   def render(state: GameQuestionState, global: Global)(implicit ex: ExecutionContext): Node = {
     import state._
@@ -79,7 +78,9 @@ object QuestionPage {
                   `class` := "button is-link",
                   "Next",
                   event("click")(
-                    _.transition(_ => Await.result(randomQuestion(global), Duration.Inf))
+                    access =>
+                      randomQuestion(releaseYearMin, releaseYearMax, readOutQuote, global)
+                        .flatMap(nextState => access.transition(_ => nextState))
                   )
                 )
               )

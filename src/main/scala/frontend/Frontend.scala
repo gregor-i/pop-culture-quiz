@@ -41,7 +41,7 @@ object Frontend {
     )
 
     def render: FrontendState => levsha.Document.Node[Context.Binding[Future, FrontendState, Any]] = {
-      case state: GameIndexState         => game.IndexPage.render(state)
+      case state: GameIndexState         => game.IndexPage.render(global, state)
       case state: GameQuestionState      => game.QuestionPage.render(state, global)
       case state: AdminState             => admin.IndexPage.render(state)
       case state: AdminAgentsState       => admin.AgentsPage.render(state)

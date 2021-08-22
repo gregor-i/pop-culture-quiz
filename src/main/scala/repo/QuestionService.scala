@@ -7,7 +7,7 @@ import play.api.db.Database
 
 class QuestionService(db: Database, movieRepo: MovieRepo) {
 
-  def getOne(releaseYearMin: Int, releaseYearMax: Int, readOutQuote: Boolean): Option[Question] =
+  def getOne(releaseYearMin: Option[Int], releaseYearMax: Option[Int], readOutQuote: Boolean): Option[Question] =
     for {
       TranslationRow(
         movieId,
@@ -23,8 +23,8 @@ class QuestionService(db: Database, movieRepo: MovieRepo) {
               FROM translations INNER JOIN movies ON translations.movie_id = movies.movie_id
               WHERE translation->>'Translated' IS NOT NULL
                 AND (speech->>'Processed' IS NOT NULL OR NOT ${readOutQuote})
-                AND (movies.data->>'releaseYear') :: integer >= ${releaseYearMin}
-                AND (movies.data->>'releaseYear') :: integer <= ${releaseYearMax}
+                AND ((movies.data->>'releaseYear') :: integer >= ${releaseYearMin} or ${releaseYearMin.isEmpty})
+                AND ((movies.data->>'releaseYear') :: integer <= ${releaseYearMax} or ${releaseYearMax.isEmpty})
               ORDER BY random()
               LIMIT 1
            """
@@ -37,8 +37,8 @@ class QuestionService(db: Database, movieRepo: MovieRepo) {
               FROM movies
               WHERE movie_id <> ${movieId}
                 AND data->>'englishTitle' IS NOT NULL
-                AND (movies.data->>'releaseYear') :: integer >= ${releaseYearMin}
-                AND (movies.data->>'releaseYear') :: integer <= ${releaseYearMax}
+                AND ((movies.data->>'releaseYear') :: integer >= ${releaseYearMin} or ${releaseYearMin.isEmpty})
+                AND ((movies.data->>'releaseYear') :: integer <= ${releaseYearMax} or ${releaseYearMax.isEmpty})
               ORDER BY random()
               LIMIT 3"""
             .as(MovieRepo.parser.*)
@@ -51,26 +51,4 @@ class QuestionService(db: Database, movieRepo: MovieRepo) {
       otherMovies = otherMovies,
       spokenQuoteDataUrl = if (readOutQuote) Some(speechState.asInstanceOf[Processed].dataUrl) else None
     )
-
-  def countMovies(releaseYearMin: Int, releaseYearMax: Int): Int =
-    db.withConnection { implicit con =>
-      SQL"""SELECT count(*)
-              FROM movies
-              WHERE data->>'englishTitle' IS NOT NULL
-                AND (movies.data->>'releaseYear') :: integer >= ${releaseYearMin}
-                AND (movies.data->>'releaseYear') :: integer <= ${releaseYearMax}
-           """
-        .as(SqlParser.scalar[Int].single)
-    }
-
-  def countTranslations(releaseYearMin: Int, releaseYearMax: Int): Int =
-    db.withConnection { implicit con =>
-      SQL"""SELECT count(*)
-              FROM translations INNER JOIN movies ON translations.movie_id = movies.movie_id
-              WHERE translation->>'Translated' IS NOT NULL
-                AND (movies.data->>'releaseYear') :: integer >= ${releaseYearMin}
-                AND (movies.data->>'releaseYear') :: integer <= ${releaseYearMax}
-           """
-        .as(SqlParser.scalar[Int].single)
-    }
 }
