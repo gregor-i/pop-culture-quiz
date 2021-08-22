@@ -4,7 +4,7 @@ import akka.http.scaladsl.server.Directives._
 import akka.stream.Materializer
 import com.typesafe.config.ConfigFactory
 import di.{Agents, Global, Repo}
-import frontend.Frontend
+import frontend.{Assets, Frontend}
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.ExecutionContext
@@ -36,7 +36,7 @@ object Main {
 
     val port = config.getInt("http.port")
     val bindingFuture =
-      Http().newServerAt("0.0.0.0", port).bind(Frontend(global))
+      Http().newServerAt("0.0.0.0", port).bind(Assets.routes ~ Frontend(global))
 
     logger.info(s"Server now online on port ${port}.")
 //    StdIn.readLine() // let it run until user presses return

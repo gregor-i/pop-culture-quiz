@@ -4,13 +4,12 @@
 .sass-cache/
 .bsp/
 
-build/
-
 target/
 
 .idea/
 
 node_modules/
+src/main/resources/assets/
 
 temp/
 
