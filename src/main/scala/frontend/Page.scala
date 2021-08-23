@@ -1,11 +1,10 @@
 package frontend
 
-import di.{Global, Repo}
-
-import scala.concurrent.{ExecutionContext, Future}
 import frontend.Frontend.globalContext._
 
+import scala.concurrent.{ExecutionContext, Future}
+
 trait Page[S <: FrontendState] {
-  def load(global: Global)(state: FrontendState)(implicit ex: ExecutionContext): Future[FrontendState]
+  def load(state: FrontendState)(implicit ex: ExecutionContext): Future[FrontendState]
   def render(state: S): Node
 }

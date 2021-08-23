@@ -17,7 +17,7 @@ case class GameQuestionState(
     revealed: Boolean
 ) extends FrontendState
 case class AdminState(progress: Map[String, Int])                               extends FrontendState
-case class AdminAgentsState(agents: Agents)                                     extends FrontendState
+case object AdminAgentsState                                                    extends FrontendState
 case class AdminMoviesState(movies: Seq[MovieRow])                              extends FrontendState
 case class AdminMovieState(row: MovieRow)                                       extends FrontendState
 case class AdminTranslationsState(page: Int, translations: Seq[TranslationRow]) extends FrontendState

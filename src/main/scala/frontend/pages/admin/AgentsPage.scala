@@ -1,20 +1,20 @@
 package frontend.pages.admin
 
 import dataprocessing.agent.Agent
-import di.Global
+import di.Agents
 import frontend.Frontend.globalContext._
 import frontend.pages.Common
-import frontend.{AdminAgentsState, FrontendState, Page}
+import frontend.{AdminAgentsState, FrontendState}
 import levsha.dsl._
 import levsha.dsl.html._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-object AgentsPage extends Page[AdminAgentsState] {
-  def load(global: Global)(state: FrontendState)(implicit ex: ExecutionContext): Future[AdminAgentsState] =
-    Future.successful(AdminAgentsState(global.agents))
+class AgentsPage(agents: Agents) /*extends Page[AdminAgentsState.type]*/ {
+  def load(state: FrontendState)(implicit ex: ExecutionContext): Future[AdminAgentsState.type] =
+    Future.successful(AdminAgentsState)
 
-  def render(state: AdminAgentsState): Node =
+  def render(state: AdminAgentsState.type): Node =
     optimize {
       Html(
         Common.head("Admin / Agents"),
@@ -30,7 +30,7 @@ object AgentsPage extends Page[AdminAgentsState] {
               )
             ),
             tbody(
-              seqToNode(state.agents.all.map(renderAgent))
+              seqToNode(agents.all.map(renderAgent))
             )
           )
         )

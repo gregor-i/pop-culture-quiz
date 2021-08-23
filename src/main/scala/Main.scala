@@ -3,7 +3,7 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
 import akka.stream.Materializer
 import com.typesafe.config.ConfigFactory
-import di.{Agents, Global, Repo}
+import di.{Agents, Pages, Repo}
 import frontend.{Assets, Frontend}
 import org.slf4j.LoggerFactory
 
@@ -21,7 +21,7 @@ object Main {
 
     val repo   = new Repo(config)
     val agents = new Agents(repo)
-    val global = new Global(agents, repo)
+    val pages  = new Pages(agents, repo)
 
     repo.db.withConnection(_ => logger.info("Database connection established."))
 
@@ -34,8 +34,10 @@ object Main {
       agent.start()
     }
 
+    val frontend = new Frontend(pages)
+
     val port = config.getInt("http.port")
-    Http().newServerAt("0.0.0.0", port).bind(Assets.routes ~ Frontend(global))
+    Http().newServerAt("0.0.0.0", port).bind(Assets.routes ~ frontend.route)
     logger.info(s"Server now online on port ${port}.")
   }
 }

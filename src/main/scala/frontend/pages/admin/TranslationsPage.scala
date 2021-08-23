@@ -1,22 +1,21 @@
 package frontend.pages.admin
 
-import di.Global
 import frontend.Frontend.globalContext._
 import frontend.pages.Common
 import frontend.{AdminTranslationsState, FrontendState}
 import levsha.dsl._
 import levsha.dsl.html._
 import model.TranslationState
-import repo.TranslationRow
+import repo.{TranslationRepo, TranslationRow}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-object TranslationsPage /*extends Page[AdminTranslationsState]*/ {
+class TranslationsPage(translationRepo: TranslationRepo) /*extends Page[AdminTranslationsState]*/ {
 
-  def load(global: Global, pageQP: Option[String])(state: FrontendState)(implicit ex: ExecutionContext): Future[FrontendState] =
+  def load(pageQP: Option[String])(state: FrontendState)(implicit ex: ExecutionContext): Future[FrontendState] =
     Future {
       val pageNumber   = pageQP.flatMap(_.toIntOption).getOrElse(1)
-      val translations = global.repo.translationRepo.list(offset = (pageNumber - 1) * 100)
+      val translations = translationRepo.list(offset = (pageNumber - 1) * 100)
       AdminTranslationsState(pageNumber, translations)
     }
 

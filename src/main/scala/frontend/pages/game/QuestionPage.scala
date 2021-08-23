@@ -1,27 +1,25 @@
 package frontend.pages.game
 
 import dataprocessing.service.HideCharacterNames
-import di.Global
 import frontend.Frontend.globalContext._
 import frontend.pages.Common
 import frontend.{FrontendState, GameQuestionState, NotFoundState}
 import levsha.dsl._
 import levsha.dsl.html._
 import model.Quote
+import repo.QuestionService
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Random
 
-object QuestionPage {
-  def load(global: Global)(state: FrontendState)(implicit ex: ExecutionContext): Future[FrontendState] = {
-    randomQuestion(???, ???, ???, global)
+class QuestionPage(questionService: QuestionService)(implicit ex: ExecutionContext) {
+  def load(state: FrontendState): Future[FrontendState] = {
+    randomQuestion(None, None, false)
   }
 
-  def randomQuestion(releaseYearMin: Option[Int], releaseYearMax: Option[Int], readOutQuote: Boolean, global: Global)(
-      implicit ex: ExecutionContext
-  ) =
+  def randomQuestion(releaseYearMin: Option[Int], releaseYearMax: Option[Int], readOutQuote: Boolean) =
     Future {
-      global.repo.questionService.getOne(
+      questionService.getOne(
         releaseYearMax = releaseYearMax,
         releaseYearMin = releaseYearMin,
         readOutQuote = readOutQuote
@@ -43,7 +41,7 @@ object QuestionPage {
       }
     }
 
-  def render(state: GameQuestionState, global: Global)(implicit ex: ExecutionContext): Node = {
+  def render(state: GameQuestionState)(implicit ex: ExecutionContext): Node = {
     import state._
 
     val reavealedOption = Option(revealed).filter(identity)
@@ -79,7 +77,7 @@ object QuestionPage {
                   "Next",
                   event("click")(
                     access =>
-                      randomQuestion(releaseYearMin, releaseYearMax, readOutQuote, global)
+                      randomQuestion(releaseYearMin, releaseYearMax, readOutQuote)
                         .flatMap(nextState => access.transition(_ => nextState))
                   )
                 )

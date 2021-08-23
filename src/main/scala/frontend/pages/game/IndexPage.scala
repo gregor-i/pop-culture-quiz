@@ -1,6 +1,5 @@
 package frontend.pages.game
 
-import di.Global
 import frontend.Frontend.globalContext.{Access, Node, elementId, event}
 import frontend.pages.Common
 import frontend.{FrontendState, GameIndexState}
@@ -9,15 +8,15 @@ import levsha.dsl.html._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-object IndexPage /*extends Page[GameIndexState]*/ {
-  def load(global: Global)(state: FrontendState)(implicit ex: ExecutionContext): Future[FrontendState] =
+class IndexPage(questionPage: QuestionPage)(implicit ex: ExecutionContext) /*extends Page[GameIndexState]*/ {
+  def load(state: FrontendState): Future[FrontendState] =
     Future.successful(GameIndexState())
 
   private val releaseYearMinField = elementId()
   private val releaseYearMaxField = elementId()
   private val readOutQuoteField   = elementId()
 
-  def render(global: Global, state: GameIndexState)(implicit ex: ExecutionContext): Node =
+  def render(state: GameIndexState)(implicit ex: ExecutionContext): Node =
     optimize {
       Html(
         Common.head("Pop-Culture-Quiz"),
@@ -72,13 +71,13 @@ object IndexPage /*extends Page[GameIndexState]*/ {
                 )
               )
             ),
-            event("submit")(onSubmit(global))
+            event("submit")(onSubmit)
           )
         )
       )
     }
 
-  def onSubmit(global: Global)(access: Access)(implicit ex: ExecutionContext) =
+  def onSubmit(access: Access) =
     for {
       releaseYearMin <- access.valueOf(releaseYearMinField).map(_.toIntOption)
       releaseYearMax <- access.valueOf(releaseYearMaxField).map(_.toIntOption)
@@ -86,7 +85,7 @@ object IndexPage /*extends Page[GameIndexState]*/ {
         case "true"  => true
         case "false" => false
       }
-      nextState <- QuestionPage.randomQuestion(releaseYearMin, releaseYearMax, readOutQuote, global)
+      nextState <- questionPage.randomQuestion(releaseYearMin, releaseYearMax, readOutQuote)
       _         <- access.transition(_ => nextState)
     } yield ()
 
