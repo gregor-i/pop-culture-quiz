@@ -2,21 +2,29 @@ package frontend.pages.game
 
 import frontend.Frontend.globalContext.{Access, Node, elementId, event}
 import frontend.pages.Common
-import frontend.{FrontendState, GameIndexState}
+import frontend.{FrontendState, GameIndexState, Page}
+import korolev.web.PathAndQuery
+import korolev.web.PathAndQuery.Root
 import levsha.dsl._
 import levsha.dsl.html._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class IndexPage(questionPage: QuestionPage)(implicit ex: ExecutionContext) /*extends Page[GameIndexState]*/ {
-  def load(state: FrontendState): Future[FrontendState] =
-    Future.successful(GameIndexState())
+class IndexPage(questionPage: QuestionPage)(implicit ex: ExecutionContext) extends Page[GameIndexState] {
+
+  def fromState: PartialFunction[FrontendState, PathAndQuery] = {
+    case _: GameIndexState => Root
+  }
+
+  def toState: PartialFunction[PathAndQuery, FrontendState => Future[FrontendState]] = {
+    case Root => _ => Future.successful(GameIndexState())
+  }
 
   private val releaseYearMinField = elementId()
   private val releaseYearMaxField = elementId()
   private val readOutQuoteField   = elementId()
 
-  def render(state: GameIndexState)(implicit ex: ExecutionContext): Node =
+  def render(state: GameIndexState): Node =
     optimize {
       Html(
         Common.head("Pop-Culture-Quiz"),

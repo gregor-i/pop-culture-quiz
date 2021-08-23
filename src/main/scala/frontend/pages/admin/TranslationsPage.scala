@@ -2,7 +2,9 @@ package frontend.pages.admin
 
 import frontend.Frontend.globalContext._
 import frontend.pages.Common
-import frontend.{AdminTranslationsState, FrontendState}
+import frontend.{AdminTranslationsState, FrontendState, Page}
+import korolev.web.PathAndQuery
+import korolev.web.PathAndQuery.{/, :?*, OQP, Root}
 import levsha.dsl._
 import levsha.dsl.html._
 import model.TranslationState
@@ -10,14 +12,23 @@ import repo.{TranslationRepo, TranslationRow}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class TranslationsPage(translationRepo: TranslationRepo) /*extends Page[AdminTranslationsState]*/ {
+class TranslationsPage(translationRepo: TranslationRepo)(implicit ex: ExecutionContext) extends Page[AdminTranslationsState] {
 
-  def load(pageQP: Option[String])(state: FrontendState)(implicit ex: ExecutionContext): Future[FrontendState] =
-    Future {
-      val pageNumber   = pageQP.flatMap(_.toIntOption).getOrElse(1)
-      val translations = translationRepo.list(offset = (pageNumber - 1) * 100)
-      AdminTranslationsState(pageNumber, translations)
-    }
+  private object PageQP extends OQP("page")
+
+  def fromState: PartialFunction[FrontendState, PathAndQuery] = {
+    case AdminTranslationsState(page, _) => Root / "admin" / "translations" :? "page" -> page.toString
+  }
+
+  def toState: PartialFunction[PathAndQuery, FrontendState => Future[FrontendState]] = {
+    case Root / "admin" / "translations" :?* PageQP(page) =>
+      _ =>
+        Future {
+          val pageNumber   = page.flatMap(_.toIntOption).getOrElse(1)
+          val translations = translationRepo.list(offset = (pageNumber - 1) * 100)
+          AdminTranslationsState(pageNumber, translations)
+        }
+  }
 
   def render(state: AdminTranslationsState): Node =
     optimize {

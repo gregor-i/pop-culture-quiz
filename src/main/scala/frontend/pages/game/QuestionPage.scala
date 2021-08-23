@@ -3,7 +3,9 @@ package frontend.pages.game
 import dataprocessing.service.HideCharacterNames
 import frontend.Frontend.globalContext._
 import frontend.pages.Common
-import frontend.{FrontendState, GameQuestionState, NotFoundState}
+import frontend.{FrontendState, GameQuestionState, NotFoundState, Page}
+import korolev.web.PathAndQuery
+import korolev.web.PathAndQuery.{/, Root}
 import levsha.dsl._
 import levsha.dsl.html._
 import model.Quote
@@ -12,9 +14,14 @@ import repo.QuestionService
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Random
 
-class QuestionPage(questionService: QuestionService)(implicit ex: ExecutionContext) {
-  def load(state: FrontendState): Future[FrontendState] = {
-    randomQuestion(None, None, false)
+class QuestionPage(questionService: QuestionService)(implicit ex: ExecutionContext) extends Page[GameQuestionState] {
+
+  def fromState: PartialFunction[FrontendState, PathAndQuery] = {
+    case _: GameQuestionState => Root / "game"
+  }
+
+  def toState: PartialFunction[PathAndQuery, FrontendState => Future[FrontendState]] = {
+    case Root / "game" => _ => randomQuestion(None, None, false)
   }
 
   def randomQuestion(releaseYearMin: Option[Int], releaseYearMax: Option[Int], readOutQuote: Boolean) =
@@ -41,7 +48,7 @@ class QuestionPage(questionService: QuestionService)(implicit ex: ExecutionConte
       }
     }
 
-  def render(state: GameQuestionState)(implicit ex: ExecutionContext): Node = {
+  def render(state: GameQuestionState): Node = {
     import state._
 
     val reavealedOption = Option(revealed).filter(identity)

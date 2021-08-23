@@ -2,19 +2,29 @@ package frontend.pages.admin
 
 import frontend.Frontend.globalContext.Node
 import frontend.pages.Common
-import frontend.{AdminMoviesState, FrontendState}
+import frontend.{AdminMoviesState, FrontendState, Page}
+import korolev.web.PathAndQuery
+import korolev.web.PathAndQuery.{/, Root}
 import levsha.dsl._
 import levsha.dsl.html._
 import repo.{MovieRepo, MovieRow}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class MoviesPage(movieRepo: MovieRepo) /*extends Page[AdminMoviesState]*/ {
-  def load(state: FrontendState)(implicit ex: ExecutionContext): Future[FrontendState] =
-    Future {
-      val movies = movieRepo.list().sortBy(_.movieId)
-      AdminMoviesState(movies)
-    }
+class MoviesPage(movieRepo: MovieRepo)(implicit ex: ExecutionContext) extends Page[AdminMoviesState] {
+
+  def fromState: PartialFunction[FrontendState, PathAndQuery] = {
+    case _: AdminMoviesState => Root / "admin" / "movies"
+  }
+
+  def toState: PartialFunction[PathAndQuery, FrontendState => Future[FrontendState]] = {
+    case Root / "admin" / "movies" =>
+      _ =>
+        Future {
+          val movies = movieRepo.list().sortBy(_.movieId)
+          AdminMoviesState(movies)
+        }
+  }
 
   def render(state: AdminMoviesState): Node =
     optimize {

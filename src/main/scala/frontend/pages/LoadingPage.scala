@@ -1,11 +1,12 @@
 package frontend.pages
 
-import levsha.dsl.html.{Html, `class`, body, fontSize, i, left, marginLeft, position, top}
-import levsha.dsl._
 import frontend.Frontend.globalContext.Node
+import frontend.{LoadingState, NoRouting, Page}
+import levsha.dsl._
+import levsha.dsl.html._
 
-object LoadingPage {
-  val render: Node =
+object LoadingPage extends Page[LoadingState.type] with NoRouting {
+  def render(state: LoadingState.type): Node =
     optimize {
       Html(
         Common.head("Loading ... "),
@@ -21,5 +22,4 @@ object LoadingPage {
         )
       )
     }
-
 }

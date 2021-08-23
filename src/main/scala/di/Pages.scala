@@ -1,6 +1,6 @@
 package di
 
-import frontend.pages
+import frontend.{FrontendState, Page, pages}
 
 import scala.concurrent.ExecutionContext
 
@@ -17,4 +17,14 @@ class Pages(agents: Agents, repo: Repo)(implicit ex: ExecutionContext) {
     val questionPage = new pages.game.QuestionPage(repo.questionService)
     val indexPage    = new pages.game.IndexPage(questionPage)
   }
+
+  val all: Seq[Page[_]] = Seq(
+    game.indexPage,
+    game.questionPage,
+    admin.indexPage,
+    admin.agentsPage,
+    admin.moviePage,
+    admin.moviesPage,
+    admin.translationsPage
+  )
 }

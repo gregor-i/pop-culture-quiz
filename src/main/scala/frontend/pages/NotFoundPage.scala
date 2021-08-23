@@ -1,12 +1,12 @@
 package frontend.pages
 
-import levsha.dsl.html._
-import levsha.dsl._
-
 import frontend.Frontend.globalContext.Node
+import frontend.{NoRouting, NotFoundState, Page}
+import levsha.dsl._
+import levsha.dsl.html._
 
-object NotFoundPage {
-  val render: Node = optimize {
+object NotFoundPage extends Page[NotFoundState.type] with NoRouting {
+  def render(state: NotFoundState.type): Node = optimize {
     Html(
       Common.head("404: Not Found"),
       body(

@@ -4,15 +4,23 @@ import dataprocessing.agent.Agent
 import di.Agents
 import frontend.Frontend.globalContext._
 import frontend.pages.Common
-import frontend.{AdminAgentsState, FrontendState}
+import frontend.{AdminAgentsState, FrontendState, Page}
+import korolev.web.PathAndQuery
+import korolev.web.PathAndQuery.{/, Root}
 import levsha.dsl._
 import levsha.dsl.html._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class AgentsPage(agents: Agents) /*extends Page[AdminAgentsState.type]*/ {
-  def load(state: FrontendState)(implicit ex: ExecutionContext): Future[AdminAgentsState.type] =
-    Future.successful(AdminAgentsState)
+class AgentsPage(agents: Agents)(implicit ex: ExecutionContext) extends Page[AdminAgentsState.type] {
+
+  def fromState: PartialFunction[FrontendState, PathAndQuery] = {
+    case AdminAgentsState => Root / "admin" / "agents"
+  }
+
+  def toState: PartialFunction[PathAndQuery, FrontendState => Future[FrontendState]] = {
+    case Root / "admin" / "agents" => _ => Future.successful(AdminAgentsState)
+  }
 
   def render(state: AdminAgentsState.type): Node =
     optimize {

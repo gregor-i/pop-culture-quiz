@@ -2,20 +2,30 @@ package frontend.pages.admin
 
 import frontend.Frontend.globalContext._
 import frontend.pages.Common
-import frontend.{AdminState, FrontendState}
+import frontend.{AdminState, FrontendState, Page}
+import korolev.web.PathAndQuery
+import korolev.web.PathAndQuery.{/, Root}
 import levsha.dsl._
 import levsha.dsl.html._
 import repo.TranslationRepo
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class IndexPage(translationRepo: TranslationRepo) /*extends Page[AdminState]*/ {
-  def load(state: FrontendState)(implicit ex: ExecutionContext): Future[AdminState] =
-    Future {
-      AdminState(
-        progress = translationRepo.progress()
-      )
-    }
+class IndexPage(translationRepo: TranslationRepo)(implicit ex: ExecutionContext) extends Page[AdminState] {
+
+  def fromState: PartialFunction[FrontendState, PathAndQuery] = {
+    case _: AdminState => Root / "admin"
+  }
+
+  def toState: PartialFunction[PathAndQuery, FrontendState => Future[FrontendState]] = {
+    case Root / "admin" =>
+      _ =>
+        Future {
+          AdminState(
+            progress = translationRepo.progress()
+          )
+        }
+  }
 
   def render(state: AdminState): Node =
     optimize {
