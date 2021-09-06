@@ -1,7 +1,6 @@
 package frontend
 
-import di.Agents
-import model.{GameSettings, MovieData, Quote}
+import model.{GameSettings, Question}
 import repo.{MovieRow, TranslationRow}
 
 sealed trait FrontendState {
@@ -12,10 +11,7 @@ case class RoomState(deviceId: String, id: String) extends FrontendState
 case class GameQuestionState(
     deviceId: String,
     gameSettings: GameSettings,
-    translation: Quote,
-    original: Quote,
-    correctMovie: MovieData,
-    movies: Seq[MovieData],
+    question: Question,
     revealed: Boolean
 ) extends FrontendState
 case class AdminState(deviceId: String, progress: Map[String, Int])                               extends FrontendState

@@ -8,7 +8,9 @@ case class Question(
     originalQuote: Quote,
     translatedQuote: Quote,
     spokenQuoteDataUrl: Option[String]
-)
+) {
+  def movies: Seq[MovieData] = (correctMovie +: otherMovies).sortBy(_.englishTitle)
+}
 
 object Question {
   implicit val codec: Codec[Question] = io.circe.generic.semiauto.deriveCodec[Question]

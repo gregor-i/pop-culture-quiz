@@ -1,6 +1,5 @@
 package frontend.pages.game
 
-import dataprocessing.service.HideCharacterNames
 import frontend.Frontend.globalContext._
 import frontend.pages.Common
 import frontend.{FrontendState, GameQuestionState, NotFoundState, Page}
@@ -12,7 +11,6 @@ import model.{GameSettings, Quote}
 import repo.QuestionService
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Random
 
 class QuestionPage(questionService: QuestionService)(implicit ex: ExecutionContext) extends Page[GameQuestionState] {
 
@@ -31,10 +29,7 @@ class QuestionPage(questionService: QuestionService)(implicit ex: ExecutionConte
           GameQuestionState(
             deviceId = deviceId,
             gameSettings = gameSettings,
-            translation = HideCharacterNames(question.translatedQuote),
-            original = question.originalQuote,
-            correctMovie = question.correctMovie,
-            movies = Random.shuffle((question.correctMovie +: question.otherMovies)),
+            question = question,
             revealed = false
           )
 
@@ -53,15 +48,15 @@ class QuestionPage(questionService: QuestionService)(implicit ex: ExecutionConte
         body(
           `class` := "container",
           h1(`class` := "title", "Pop-Culture-Quiz"),
-          quoteBlock("Scrambled:", translation),
+          quoteBlock("Scrambled:", question.translatedQuote),
           // todo: audio
           div(
             `class` := "buttons block options",
             seqToNode(
-              movies.map(
+              question.movies.map(
                 movie =>
                   button(
-                    `class` := s"button option ${if (revealed && movie == correctMovie) "correct-answer" else ""}",
+                    `class` := s"button option ${if (revealed && movie == question.correctMovie) "correct-answer" else ""}",
                     movie.englishTitle,
                     span(`class` := "tag", movie.releaseYear.toString),
                     event("click")(_.transition(_ => state.copy(revealed = true)))
@@ -69,7 +64,7 @@ class QuestionPage(questionService: QuestionService)(implicit ex: ExecutionConte
               )
             )
           ),
-          reavealedOption.map(_ => quoteBlock("Original:", original)),
+          reavealedOption.map(_ => quoteBlock("Original:", question.originalQuote)),
           reavealedOption.map(
             _ =>
               div(

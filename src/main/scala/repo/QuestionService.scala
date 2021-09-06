@@ -1,25 +1,29 @@
 package repo
 
 import anorm._
+import dataprocessing.service.HideCharacterNames
 import model.SpeechState.Processed
-import model.{GameSettings, Question, TranslationState}
+import model.{GameSettings, MovieData, Question, TranslationState}
 import play.api.db.Database
 
 class QuestionService(db: Database, movieRepo: MovieRepo) {
 
   def getOne(gameSettings: GameSettings): Option[Question] =
     for {
-      TranslationRow(
-        movieId,
-        quoteId,
-        original,
-        TranslationState.Translated(translation),
-        translationService,
-        translationChain,
-        speechState
-      ) <- db
-        .withConnection { implicit con =>
-          SQL"""SELECT *
+      translatedQuote <- pickTranslatedQuote(gameSettings)
+      correctMovie    <- movieRepo.get(translatedQuote.movieId).flatMap(_.data.toOption)
+      otherMovies = pickOtherOptions(translatedQuote.movieId, gameSettings)
+    } yield Question(
+      originalQuote = translatedQuote.quote,
+      translatedQuote = HideCharacterNames(translatedQuote.translation.asInstanceOf[TranslationState.Translated].quote),
+      correctMovie = correctMovie,
+      otherMovies = otherMovies,
+      spokenQuoteDataUrl = if (gameSettings.readOutQuote) Some(translatedQuote.speech.asInstanceOf[Processed].dataUrl) else None
+    )
+
+  private def pickTranslatedQuote(gameSettings: GameSettings): Option[TranslationRow] =
+    db.withConnection { implicit con =>
+      SQL"""SELECT *
               FROM translations INNER JOIN movies ON translations.movie_id = movies.movie_id
               WHERE translation->>'Translated' IS NOT NULL
                 AND (speech->>'Processed' IS NOT NULL OR NOT ${gameSettings.readOutQuote})
@@ -28,12 +32,12 @@ class QuestionService(db: Database, movieRepo: MovieRepo) {
               ORDER BY random()
               LIMIT 1
            """
-            .as(TranslationRepo.parser.singleOpt)
-        }
-      correctMovie <- movieRepo.get(movieId).flatMap(_.data.toOption)
-      otherMovies = db
-        .withConnection { implicit con =>
-          SQL"""SELECT *
+        .as(TranslationRepo.parser.singleOpt)
+    }
+
+  private def pickOtherOptions(movieId: String, gameSettings: GameSettings): List[MovieData] =
+    db.withConnection { implicit con =>
+        SQL"""SELECT *
               FROM movies
               WHERE movie_id <> ${movieId}
                 AND data->>'englishTitle' IS NOT NULL
@@ -41,14 +45,7 @@ class QuestionService(db: Database, movieRepo: MovieRepo) {
                 AND ((movies.data->>'releaseYear') :: integer <= ${gameSettings.releaseYearMax} or ${gameSettings.releaseYearMax.isEmpty})
               ORDER BY random()
               LIMIT 3"""
-            .as(MovieRepo.parser.*)
-        }
-        .flatMap(_.data.toOption)
-    } yield Question(
-      originalQuote = original,
-      translatedQuote = translation,
-      correctMovie = correctMovie,
-      otherMovies = otherMovies,
-      spokenQuoteDataUrl = if (gameSettings.readOutQuote) Some(speechState.asInstanceOf[Processed].dataUrl) else None
-    )
+          .as(MovieRepo.parser.*)
+      }
+      .flatMap(_.data.toOption)
 }
