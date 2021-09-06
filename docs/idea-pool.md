@@ -28,5 +28,3 @@
 * track questions with bad feedback and don't use them again.
 
 ## Technical Stuff
-
-* Host Bulma and Fontawesome myself
