@@ -24,7 +24,7 @@ class Frontend(pages: Pages)(implicit as: ActorSystem, ex: ExecutionContext) {
         .map(_.toState)
         .reduce(_ orElse _)
         .orElse({
-          case _ => _ => Future.successful(NotFoundState)
+          case _ => state => Future.successful(NotFoundState(state.deviceId))
         }),
       fromState = pages.all.map(_.fromState).reduce(_ orElse _)
     )
@@ -38,7 +38,7 @@ class Frontend(pages: Pages)(implicit as: ActorSystem, ex: ExecutionContext) {
           .render(state)
 
     val config = KorolevServiceConfig[Future, FrontendState, Any](
-      stateLoader = StateLoader.default(LoadingState),
+      stateLoader = StateLoader.forDeviceId(deviceId => Future.successful(LoadingState(deviceId))),
       document = render,
       router = router
     )

@@ -5,8 +5,8 @@ import frontend.{LoadingState, NoRouting, Page}
 import levsha.dsl._
 import levsha.dsl.html._
 
-object LoadingPage extends Page[LoadingState.type] with NoRouting {
-  def render(state: LoadingState.type): Node =
+object LoadingPage extends Page[LoadingState] with NoRouting {
+  def render(state: LoadingState): Node =
     optimize {
       Html(
         Common.head("Loading ... "),

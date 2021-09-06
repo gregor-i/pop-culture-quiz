@@ -12,17 +12,17 @@ import levsha.dsl.html._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class AgentsPage(agents: Agents)(implicit ex: ExecutionContext) extends Page[AdminAgentsState.type] {
+class AgentsPage(agents: Agents)(implicit ex: ExecutionContext) extends Page[AdminAgentsState] {
 
   def fromState: PartialFunction[FrontendState, PathAndQuery] = {
-    case AdminAgentsState => Root / "admin" / "agents"
+    case _: AdminAgentsState => Root / "admin" / "agents"
   }
 
   def toState: PartialFunction[PathAndQuery, FrontendState => Future[FrontendState]] = {
-    case Root / "admin" / "agents" => _ => Future.successful(AdminAgentsState)
+    case Root / "admin" / "agents" => state => Future.successful(AdminAgentsState(state.deviceId))
   }
 
-  def render(state: AdminAgentsState.type): Node =
+  def render(state: AdminAgentsState): Node =
     optimize {
       Html(
         Common.head("Admin / Agents"),

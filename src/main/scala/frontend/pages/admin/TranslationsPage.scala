@@ -17,16 +17,16 @@ class TranslationsPage(translationRepo: TranslationRepo)(implicit ex: ExecutionC
   private object PageQP extends OQP("page")
 
   def fromState: PartialFunction[FrontendState, PathAndQuery] = {
-    case AdminTranslationsState(page, _) => Root / "admin" / "translations" :? "page" -> page.toString
+    case state: AdminTranslationsState => Root / "admin" / "translations" :? "page" -> state.page.toString
   }
 
   def toState: PartialFunction[PathAndQuery, FrontendState => Future[FrontendState]] = {
     case Root / "admin" / "translations" :?* PageQP(page) =>
-      _ =>
+      state =>
         Future {
           val pageNumber   = page.flatMap(_.toIntOption).getOrElse(1)
           val translations = translationRepo.list(offset = (pageNumber - 1) * 100)
-          AdminTranslationsState(pageNumber, translations)
+          AdminTranslationsState(state.deviceId, pageNumber, translations)
         }
   }
 

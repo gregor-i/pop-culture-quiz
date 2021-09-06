@@ -5,8 +5,8 @@ import frontend.{NoRouting, NotFoundState, Page}
 import levsha.dsl._
 import levsha.dsl.html._
 
-object NotFoundPage extends Page[NotFoundState.type] with NoRouting {
-  def render(state: NotFoundState.type): Node = optimize {
+object NotFoundPage extends Page[NotFoundState] with NoRouting {
+  def render(state: NotFoundState): Node = optimize {
     Html(
       Common.head("404: Not Found"),
       body(

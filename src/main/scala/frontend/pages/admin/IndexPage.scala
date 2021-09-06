@@ -19,9 +19,10 @@ class IndexPage(translationRepo: TranslationRepo)(implicit ex: ExecutionContext)
 
   def toState: PartialFunction[PathAndQuery, FrontendState => Future[FrontendState]] = {
     case Root / "admin" =>
-      _ =>
+      state =>
         Future {
           AdminState(
+            state.deviceId,
             progress = translationRepo.progress()
           )
         }

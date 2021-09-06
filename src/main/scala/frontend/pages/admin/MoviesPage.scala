@@ -19,10 +19,10 @@ class MoviesPage(movieRepo: MovieRepo)(implicit ex: ExecutionContext) extends Pa
 
   def toState: PartialFunction[PathAndQuery, FrontendState => Future[FrontendState]] = {
     case Root / "admin" / "movies" =>
-      _ =>
+      state =>
         Future {
           val movies = movieRepo.list().sortBy(_.movieId)
-          AdminMoviesState(movies)
+          AdminMoviesState(state.deviceId, movies)
         }
   }
 

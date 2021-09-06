@@ -15,16 +15,16 @@ import scala.concurrent.{ExecutionContext, Future}
 class MoviePage(movieRepo: MovieRepo)(implicit ex: ExecutionContext) extends Page[AdminMovieState] {
 
   def fromState: PartialFunction[FrontendState, PathAndQuery] = {
-    case AdminMovieState(row) => Root / "admin" / "movies" / row.movieId
+    case state: AdminMovieState => Root / "admin" / "movies" / state.row.movieId
   }
 
   def toState: PartialFunction[PathAndQuery, FrontendState => Future[FrontendState]] = {
     case Root / "admin" / "movies" / movieId =>
-      _ =>
+      state =>
         Future {
           movieRepo.get(movieId) match {
-            case Some(row) => AdminMovieState(row)
-            case None      => NotFoundState
+            case Some(row) => AdminMovieState(state.deviceId, row)
+            case None      => NotFoundState(state.deviceId)
           }
         }
   }

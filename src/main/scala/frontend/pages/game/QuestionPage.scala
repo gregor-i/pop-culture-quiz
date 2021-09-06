@@ -21,10 +21,10 @@ class QuestionPage(questionService: QuestionService)(implicit ex: ExecutionConte
   }
 
   def toState: PartialFunction[PathAndQuery, FrontendState => Future[FrontendState]] = {
-    case Root / "game" => _ => randomQuestion(None, None, false)
+    case Root / "game" => state => randomQuestion(state.deviceId, None, None, false)
   }
 
-  def randomQuestion(releaseYearMin: Option[Int], releaseYearMax: Option[Int], readOutQuote: Boolean) =
+  def randomQuestion(deviceId: String, releaseYearMin: Option[Int], releaseYearMax: Option[Int], readOutQuote: Boolean) =
     Future {
       questionService.getOne(
         releaseYearMax = releaseYearMax,
@@ -33,6 +33,7 @@ class QuestionPage(questionService: QuestionService)(implicit ex: ExecutionConte
       ) match {
         case Some(question) =>
           GameQuestionState(
+            deviceId = deviceId,
             releaseYearMin = releaseYearMin,
             releaseYearMax = releaseYearMax,
             readOutQuote = readOutQuote,
@@ -44,7 +45,7 @@ class QuestionPage(questionService: QuestionService)(implicit ex: ExecutionConte
           )
 
         case None =>
-          NotFoundState
+          NotFoundState(deviceId)
       }
     }
 
@@ -84,7 +85,7 @@ class QuestionPage(questionService: QuestionService)(implicit ex: ExecutionConte
                   "Next",
                   event("click")(
                     access =>
-                      randomQuestion(releaseYearMin, releaseYearMax, readOutQuote)
+                      randomQuestion(state.deviceId, releaseYearMin, releaseYearMax, readOutQuote)
                         .flatMap(nextState => access.transition(_ => nextState))
                   )
                 )

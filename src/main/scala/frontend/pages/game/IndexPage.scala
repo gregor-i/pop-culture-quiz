@@ -17,7 +17,7 @@ class IndexPage(questionPage: QuestionPage)(implicit ex: ExecutionContext) exten
   }
 
   def toState: PartialFunction[PathAndQuery, FrontendState => Future[FrontendState]] = {
-    case Root => _ => Future.successful(GameIndexState())
+    case Root => state => Future.successful(GameIndexState(state.deviceId))
   }
 
   private val releaseYearMinField = elementId()
@@ -79,13 +79,13 @@ class IndexPage(questionPage: QuestionPage)(implicit ex: ExecutionContext) exten
                 )
               )
             ),
-            event("submit")(onSubmit)
+            event("submit")(onSubmit(state))
           )
         )
       )
     }
 
-  def onSubmit(access: Access) =
+  def onSubmit(state: GameIndexState)(access: Access) =
     for {
       releaseYearMin <- access.valueOf(releaseYearMinField).map(_.toIntOption)
       releaseYearMax <- access.valueOf(releaseYearMaxField).map(_.toIntOption)
@@ -93,7 +93,7 @@ class IndexPage(questionPage: QuestionPage)(implicit ex: ExecutionContext) exten
         case "true"  => true
         case "false" => false
       }
-      nextState <- questionPage.randomQuestion(releaseYearMin, releaseYearMax, readOutQuote)
+      nextState <- questionPage.randomQuestion(state.deviceId, releaseYearMin, releaseYearMax, readOutQuote)
       _         <- access.transition(_ => nextState)
     } yield ()
 
