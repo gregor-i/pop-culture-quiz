@@ -7,6 +7,7 @@ import korolev.web.PathAndQuery
 import korolev.web.PathAndQuery.Root
 import levsha.dsl._
 import levsha.dsl.html._
+import model.GameSettings
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -93,7 +94,8 @@ class IndexPage(questionPage: QuestionPage)(implicit ex: ExecutionContext) exten
         case "true"  => true
         case "false" => false
       }
-      nextState <- questionPage.randomQuestion(state.deviceId, releaseYearMin, releaseYearMax, readOutQuote)
+      gameSettings = GameSettings(releaseYearMin, releaseYearMax, readOutQuote)
+      nextState <- questionPage.randomQuestion(state.deviceId, gameSettings)
       _         <- access.transition(_ => nextState)
     } yield ()
 

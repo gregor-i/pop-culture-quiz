@@ -2,12 +2,12 @@ package repo
 
 import anorm._
 import model.SpeechState.Processed
-import model.{Question, TranslationState}
+import model.{GameSettings, Question, TranslationState}
 import play.api.db.Database
 
 class QuestionService(db: Database, movieRepo: MovieRepo) {
 
-  def getOne(releaseYearMin: Option[Int], releaseYearMax: Option[Int], readOutQuote: Boolean): Option[Question] =
+  def getOne(gameSettings: GameSettings): Option[Question] =
     for {
       TranslationRow(
         movieId,
@@ -22,9 +22,9 @@ class QuestionService(db: Database, movieRepo: MovieRepo) {
           SQL"""SELECT *
               FROM translations INNER JOIN movies ON translations.movie_id = movies.movie_id
               WHERE translation->>'Translated' IS NOT NULL
-                AND (speech->>'Processed' IS NOT NULL OR NOT ${readOutQuote})
-                AND ((movies.data->>'releaseYear') :: integer >= ${releaseYearMin} or ${releaseYearMin.isEmpty})
-                AND ((movies.data->>'releaseYear') :: integer <= ${releaseYearMax} or ${releaseYearMax.isEmpty})
+                AND (speech->>'Processed' IS NOT NULL OR NOT ${gameSettings.readOutQuote})
+                AND ((movies.data->>'releaseYear') :: integer >= ${gameSettings.releaseYearMin} or ${gameSettings.releaseYearMin.isEmpty})
+                AND ((movies.data->>'releaseYear') :: integer <= ${gameSettings.releaseYearMax} or ${gameSettings.releaseYearMax.isEmpty})
               ORDER BY random()
               LIMIT 1
            """
@@ -37,8 +37,8 @@ class QuestionService(db: Database, movieRepo: MovieRepo) {
               FROM movies
               WHERE movie_id <> ${movieId}
                 AND data->>'englishTitle' IS NOT NULL
-                AND ((movies.data->>'releaseYear') :: integer >= ${releaseYearMin} or ${releaseYearMin.isEmpty})
-                AND ((movies.data->>'releaseYear') :: integer <= ${releaseYearMax} or ${releaseYearMax.isEmpty})
+                AND ((movies.data->>'releaseYear') :: integer >= ${gameSettings.releaseYearMin} or ${gameSettings.releaseYearMin.isEmpty})
+                AND ((movies.data->>'releaseYear') :: integer <= ${gameSettings.releaseYearMax} or ${gameSettings.releaseYearMax.isEmpty})
               ORDER BY random()
               LIMIT 3"""
             .as(MovieRepo.parser.*)
@@ -49,6 +49,6 @@ class QuestionService(db: Database, movieRepo: MovieRepo) {
       translatedQuote = translation,
       correctMovie = correctMovie,
       otherMovies = otherMovies,
-      spokenQuoteDataUrl = if (readOutQuote) Some(speechState.asInstanceOf[Processed].dataUrl) else None
+      spokenQuoteDataUrl = if (gameSettings.readOutQuote) Some(speechState.asInstanceOf[Processed].dataUrl) else None
     )
 }

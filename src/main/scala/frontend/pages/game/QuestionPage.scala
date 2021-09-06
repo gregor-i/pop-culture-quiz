@@ -8,7 +8,7 @@ import korolev.web.PathAndQuery
 import korolev.web.PathAndQuery.{/, Root}
 import levsha.dsl._
 import levsha.dsl.html._
-import model.Quote
+import model.{GameSettings, Quote}
 import repo.QuestionService
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -21,22 +21,16 @@ class QuestionPage(questionService: QuestionService)(implicit ex: ExecutionConte
   }
 
   def toState: PartialFunction[PathAndQuery, FrontendState => Future[FrontendState]] = {
-    case Root / "game" => state => randomQuestion(state.deviceId, None, None, false)
+    case Root / "game" => state => randomQuestion(state.deviceId, GameSettings.default)
   }
 
-  def randomQuestion(deviceId: String, releaseYearMin: Option[Int], releaseYearMax: Option[Int], readOutQuote: Boolean) =
+  def randomQuestion(deviceId: String, gameSettings: GameSettings) =
     Future {
-      questionService.getOne(
-        releaseYearMax = releaseYearMax,
-        releaseYearMin = releaseYearMin,
-        readOutQuote = readOutQuote
-      ) match {
+      questionService.getOne(gameSettings) match {
         case Some(question) =>
           GameQuestionState(
             deviceId = deviceId,
-            releaseYearMin = releaseYearMin,
-            releaseYearMax = releaseYearMax,
-            readOutQuote = readOutQuote,
+            gameSettings = gameSettings,
             translation = HideCharacterNames(question.translatedQuote),
             original = question.originalQuote,
             correctMovie = question.correctMovie,
@@ -85,7 +79,7 @@ class QuestionPage(questionService: QuestionService)(implicit ex: ExecutionConte
                   "Next",
                   event("click")(
                     access =>
-                      randomQuestion(state.deviceId, releaseYearMin, releaseYearMax, readOutQuote)
+                      randomQuestion(deviceId, gameSettings)
                         .flatMap(nextState => access.transition(_ => nextState))
                   )
                 )

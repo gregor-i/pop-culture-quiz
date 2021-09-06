@@ -1,7 +1,7 @@
 package frontend
 
 import di.Agents
-import model.{MovieData, Quote}
+import model.{GameSettings, MovieData, Quote}
 import repo.{MovieRow, TranslationRow}
 
 sealed trait FrontendState {
@@ -11,9 +11,7 @@ case class GameIndexState(deviceId: String)        extends FrontendState
 case class RoomState(deviceId: String, id: String) extends FrontendState
 case class GameQuestionState(
     deviceId: String,
-    releaseYearMin: Option[Int],
-    releaseYearMax: Option[Int],
-    readOutQuote: Boolean,
+    gameSettings: GameSettings,
     translation: Quote,
     original: Quote,
     correctMovie: MovieData,
