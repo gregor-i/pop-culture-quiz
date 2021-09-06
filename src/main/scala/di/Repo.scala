@@ -11,9 +11,8 @@ class Repo(config: Config)(implicit mat: Materializer) {
   private val dbUrl = config.getString("db.default.url")
   val db: Database  = Databases(driver = classOf[org.postgresql.Driver].getName, url = dbUrl)
 
-  def setupSchema(): Unit = {
+  def setupSchema(): Unit =
     Evolutions.applyEvolutions(db)
-  }
 
   val movieRepo       = new MovieRepo(db)
   val translationRepo = new TranslationRepo(db)

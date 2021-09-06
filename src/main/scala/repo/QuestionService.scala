@@ -18,7 +18,8 @@ class QuestionService(db: Database, movieRepo: MovieRepo) {
       translatedQuote = HideCharacterNames(translatedQuote.translation.asInstanceOf[TranslationState.Translated].quote),
       correctMovie = correctMovie,
       otherMovies = otherMovies,
-      spokenQuoteDataUrl = if (gameSettings.readOutQuote) Some(translatedQuote.speech.asInstanceOf[Processed].dataUrl) else None
+      translationId = translatedQuote.id,
+      speechAvailable = translatedQuote.speech.isInstanceOf[Processed]
     )
 
   private def pickTranslatedQuote(gameSettings: GameSettings): Option[TranslationRow] =

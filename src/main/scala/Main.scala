@@ -4,7 +4,7 @@ import akka.http.scaladsl.server.Directives._
 import akka.stream.Materializer
 import com.typesafe.config.ConfigFactory
 import di.{Agents, Pages, Repo}
-import frontend.{Assets, Frontend}
+import frontend.{API, Assets, Frontend}
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.ExecutionContext
@@ -34,10 +34,11 @@ object Main {
       agent.start()
     }
 
+    val api      = new API(repo.translationRepo)
     val frontend = new Frontend(pages)
 
     val port = config.getInt("http.port")
-    Http().newServerAt("0.0.0.0", port).bind(Assets.routes ~ frontend.route)
+    Http().newServerAt("0.0.0.0", port).bind(Assets.routes ~ api.routes ~ frontend.route)
     logger.info(s"Server now online on port ${port}.")
   }
 }

@@ -5,9 +5,10 @@ import akka.stream.scaladsl.{Keep, Sink, Source}
 import akka.stream.{KillSwitches, Materializer, UniqueKillSwitch}
 import model._
 import repo.{TranslationRepo, TranslationRow}
-import dataprocessing.service.{Mp3ToDataUrl, TextToSpeech}
+import dataprocessing.service.TextToSpeech
+import org.apache.commons.net.util.Base64
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration._
 import scala.util.control.NonFatal
 
@@ -33,19 +34,20 @@ class SpeechAgent(
       .throttle(1, pollInterval)
       .to(
         Sink.foreachAsync(1) {
-          case row @ TranslationRow(_, _, _, TranslationState.Translated(translated), _, _, _) =>
+          case TranslationRow(id, _, _, _, _, _, TranslationState.Translated(translated), _) =>
             TextToSpeech
               .toMp3Bytes(quoteToString(translated))
-              .map(Mp3ToDataUrl.apply)
-              .map { dataUrl =>
-                row.copy(speech = SpeechState.Processed(dataUrl))
-              }
+              .map(Base64.encodeBase64String)
+              .map(SpeechState.Processed.apply)
               .recover {
-                case NonFatal(exception) => row.copy(speech = SpeechState.UnexpectedError(exception.getMessage))
+                case NonFatal(exception) => SpeechState.UnexpectedError(exception.getMessage)
               }
-              .map { row =>
-                translationRepo.upsert(row)
+              .map { newState =>
+                translationRepo.setSpeechState(id, newState)
               }
+          case _ =>
+            // todo: do something smarter to suppress the warning ...
+            Future.successful(())
         }
       )
       .run()

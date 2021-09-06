@@ -35,7 +35,7 @@ abstract class TranslationAgent(service: TranslationService, translationRepo: Tr
           TranslateQuote(quote = translationRow.quote, service = service, chain = translationRow.translationChain)
             .map(translated => TranslationState.Translated(translated))
             .recover(exception => TranslationState.UnexpectedError(exception.getMessage))
-            .map(state => translationRepo.upsert(translationRow.copy(translation = state)))
+            .map(state => translationRepo.setTranslationState(translationRow.id, state))
         }
       )
       .run()
@@ -47,7 +47,7 @@ class GoogleTranslationAgent(translationRepo: TranslationRepo)(
     ex: ExecutionContext,
     mat: Materializer
 ) extends TranslationAgent(GoogleTranslate, translationRepo) {
-  override def autostart: Boolean = true
+  override def autostart: Boolean = false
 }
 
 class SystranTranslationAgent(translationRepo: TranslationRepo)(

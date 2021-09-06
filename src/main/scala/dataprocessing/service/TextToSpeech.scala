@@ -16,7 +16,7 @@ object TextToSpeech {
 
   private val logger = LoggerFactory.getLogger(this.getClass)
 
-  def toMp3Bytes(text: String)(implicit ex: ExecutionContext): Future[Seq[Byte]] = {
+  def toMp3Bytes(text: String)(implicit ex: ExecutionContext): Future[Array[Byte]] = {
     val processId = UUID.randomUUID().toString
     val wavFile   = File.createTempFile(processId, ".wav")
     val mp3File   = File.createTempFile(processId, ".mp3")
@@ -37,7 +37,7 @@ object TextToSpeech {
           .continually(bis.read())
           .takeWhile(_ != -1)
           .map(_.toByte)
-          .toList
+          .toArray
         logger.info(s"converted ${text.length} byte of text to mp3 file with size ${ret.size / 1024} kilobytes.")
         bis.close()
         ret

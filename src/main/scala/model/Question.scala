@@ -7,7 +7,8 @@ case class Question(
     otherMovies: Seq[MovieData],
     originalQuote: Quote,
     translatedQuote: Quote,
-    spokenQuoteDataUrl: Option[String]
+    translationId: Int,
+    speechAvailable: Boolean
 ) {
   def movies: Seq[MovieData] = (correctMovie +: otherMovies).sortBy(_.englishTitle)
 }

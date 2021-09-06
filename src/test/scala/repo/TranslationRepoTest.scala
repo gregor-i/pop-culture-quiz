@@ -17,27 +17,20 @@ class TranslationRepoTest extends AnyFunSuite with BeforeAndAfterEach {
 
   test("enqueue a quote for translation") {
     assert(movieRepo.addNewMovie("movieId") == 1)
-    assert(translationsRepo.enqueue("movieId", "quoteId", quote, "translationService", Seq("de", "fr")) == 1)
-    assert(translationsRepo.enqueue("movieId", "quoteId", quote, "translationService", Seq("de", "ar")) == 1)
+    val id = translationsRepo.enqueue("movieId", "quoteId", quote, "translationService", Seq("de", "fr"))
+    translationsRepo.enqueue("movieId", "quoteId", quote, "translationService", Seq("de", "ar"))
 
     assert(translationsRepo.listWithoutTranslation("translationService").length == 2)
     assert(translationsRepo.listWithoutSpeech().isEmpty)
 
-    val rowWithTranslation = translationsRepo
-      .list()
-      .find(_.translationChain == Seq("de", "fr"))
-      .get
-      .copy(translation = TranslationState.Translated(quote))
-
-    assert(translationsRepo.upsert(rowWithTranslation) == 1)
+    assert(translationsRepo.setTranslationState(id, TranslationState.Translated(quote)) == 1)
     assert(translationsRepo.listWithoutTranslation("translationService").length == 1)
-    assert(translationsRepo.list().contains(rowWithTranslation))
+    assert(translationsRepo.list().exists(_.id == id))
     assert(translationsRepo.listWithoutTranslation("otherService").isEmpty)
-    assert(translationsRepo.listWithoutSpeech() == Seq(rowWithTranslation))
+    assert(translationsRepo.listWithoutSpeech().map(_.id) == Seq(id))
 
-    val rowWithSpeech = rowWithTranslation.copy(speech = SpeechState.Processed("some data url"))
-    assert(translationsRepo.upsert(rowWithSpeech) == 1)
-    assert(translationsRepo.list().contains(rowWithSpeech))
+    assert(translationsRepo.setSpeechState(id, SpeechState.Processed("some data url")) == 1)
+    assert(translationsRepo.list().exists(_.id == id))
     assert(translationsRepo.listWithoutSpeech().isEmpty)
   }
 

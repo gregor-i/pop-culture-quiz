@@ -28,3 +28,5 @@
 * track questions with bad feedback and don't use them again.
 
 ## Technical Stuff
+
+* after upgrading to scala 3: use opaque types for movieId, quoteId, translationId

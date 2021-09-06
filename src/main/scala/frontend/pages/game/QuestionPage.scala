@@ -49,7 +49,21 @@ class QuestionPage(questionService: QuestionService)(implicit ex: ExecutionConte
           `class` := "container",
           h1(`class` := "title", "Pop-Culture-Quiz"),
           quoteBlock("Scrambled:", question.translatedQuote),
-          // todo: audio
+          Option(state.question.speechAvailable).filter(identity).filter(_ => !state.revealed).map { _ =>
+            div(
+              `class` := "audio",
+              audio(
+                if (state.gameSettings.readOutQuote)
+                  autoplay := "autoplay"
+                else
+                  autoplay := "null",
+                controls := "controls",
+                source(
+                  src := s"/api/translations/${state.question.translationId}/speech"
+                )
+              )
+            )
+          },
           div(
             `class` := "buttons block options",
             seqToNode(
