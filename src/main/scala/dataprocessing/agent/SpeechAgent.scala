@@ -14,8 +14,7 @@ import scala.util.control.NonFatal
 
 class SpeechAgent(
     translationRepo: TranslationRepo
-)(
-    implicit
+)(implicit
     as: ActorSystem,
     ex: ExecutionContext,
     mat: Materializer
@@ -39,8 +38,8 @@ class SpeechAgent(
               .toMp3Bytes(quoteToString(translated))
               .map(Base64.encodeBase64String)
               .map(SpeechState.Processed.apply)
-              .recover {
-                case NonFatal(exception) => SpeechState.UnexpectedError(exception.getMessage)
+              .recover { case NonFatal(exception) =>
+                SpeechState.UnexpectedError(exception.getMessage)
               }
               .map { newState =>
                 translationRepo.setSpeechState(id, newState)

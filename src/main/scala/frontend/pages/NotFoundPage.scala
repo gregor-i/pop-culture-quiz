@@ -17,7 +17,7 @@ object NotFoundPage extends Page[NotFoundState] with NoRouting {
             div(
               `class` := "message-body",
               div(`class` := "title", "404: NotFound."),
-              a(href := "/", "return to landing page")
+              a(href      := "/", "return to landing page")
             )
           )
         )

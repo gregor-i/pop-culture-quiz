@@ -17,7 +17,7 @@ class API(translationRepo: TranslationRepo) {
         val mediaType = MediaType.audio("mpeg", MediaType.Compressible)
         complete(HttpEntity(mediaType, rawBytes))
       case Some(other) => complete(StatusCodes.BadRequest -> other.toString)
-      case None        => complete(StatusCodes.NotFound   -> "translation not found")
+      case None        => complete(StatusCodes.NotFound -> "translation not found")
     }
   }
 }

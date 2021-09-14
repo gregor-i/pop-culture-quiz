@@ -11,12 +11,12 @@ import levsha.dsl.html._
 import scala.concurrent.Future
 
 class RoomPage extends Page[RoomState] {
-  override def fromState: PartialFunction[FrontendState, PathAndQuery] = {
-    case state: RoomState => Root / "room" / state.id
+  override def fromState: PartialFunction[FrontendState, PathAndQuery] = { case state: RoomState =>
+    Root / "room" / state.id
   }
 
-  override def toState: PartialFunction[PathAndQuery, FrontendState => Future[FrontendState]] = {
-    case Root / "room" / roomId => state => Future.successful(RoomState(state.deviceId, roomId))
+  override def toState: PartialFunction[PathAndQuery, FrontendState => Future[FrontendState]] = { case Root / "room" / roomId =>
+    state => Future.successful(RoomState(state.deviceId, roomId))
   }
 
   override def render(state: RoomState): Node =

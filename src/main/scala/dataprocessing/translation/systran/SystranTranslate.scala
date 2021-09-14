@@ -58,8 +58,8 @@ object SystranTranslate extends TranslationService {
       .addParam("key", apiKey)
       .toStringPunycode
 
-  def apply(texts: Seq[String], src: String, dest: String)(
-      implicit as: ActorSystem,
+  def apply(texts: Seq[String], src: String, dest: String)(implicit
+      as: ActorSystem,
       ex: ExecutionContext
   ): Future[Map[String, String]] = {
     require(texts.nonEmpty, "no texts given to translate")

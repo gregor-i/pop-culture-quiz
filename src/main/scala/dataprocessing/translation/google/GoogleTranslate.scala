@@ -46,12 +46,11 @@ object GoogleTranslate extends TranslationService {
       .addParam("q", text.mkString("\n"))
       .toStringPunycode
 
-  def apply(texts: Seq[String], src: String, dest: String)(
-      implicit as: ActorSystem,
+  def apply(texts: Seq[String], src: String, dest: String)(implicit
+      as: ActorSystem,
       ex: ExecutionContext
   ): Future[Map[String, String]] = {
-    if (texts.isEmpty)
-      Future.failed(new Exception("no texts given to translate"))
+    if (texts.isEmpty) Future.failed(new Exception("no texts given to translate"))
     else {
       logger.info(s"Translating from ${src} to ${dest}")
       for {

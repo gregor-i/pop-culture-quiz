@@ -10,8 +10,8 @@ import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
 import scala.util.control.NonFatal
 
-class IMDBMoviePageAgent(movieRepo: MovieRepo)(
-    implicit as: ActorSystem,
+class IMDBMoviePageAgent(movieRepo: MovieRepo)(implicit
+    as: ActorSystem,
     ex: ExecutionContext,
     mat: Materializer
 ) extends Agent {
@@ -36,8 +36,8 @@ class IMDBMoviePageAgent(movieRepo: MovieRepo)(
               case Some(movieData) => Right(movieData)
               case None            => Left("failed to parse html")
             }
-            .recover {
-              case NonFatal(ex) => Left(ex.getMessage)
+            .recover { case NonFatal(ex) =>
+              Left(ex.getMessage)
             }
             .map(movieRepo.setMovieData(movieId, _))
         }

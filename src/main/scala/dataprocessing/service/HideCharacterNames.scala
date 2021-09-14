@@ -8,8 +8,8 @@ object HideCharacterNames {
       .flatMap(_.character)
       .distinct
       .zipWithIndex
-      .map {
-        case (char, index) => (char, s"Person ${index + 1}")
+      .map { case (char, index) =>
+        (char, s"Person ${index + 1}")
       }
       .toMap
 

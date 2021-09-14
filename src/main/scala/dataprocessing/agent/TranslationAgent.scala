@@ -13,8 +13,8 @@ import dataprocessing.translation.systran.SystranTranslate
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
 
-abstract class TranslationAgent(service: TranslationService, translationRepo: TranslationRepo)(
-    implicit as: ActorSystem,
+abstract class TranslationAgent(service: TranslationService, translationRepo: TranslationRepo)(implicit
+    as: ActorSystem,
     ex: ExecutionContext,
     mat: Materializer
 ) extends Agent {
@@ -42,16 +42,16 @@ abstract class TranslationAgent(service: TranslationService, translationRepo: Tr
 
 }
 
-class GoogleTranslationAgent(translationRepo: TranslationRepo)(
-    implicit as: ActorSystem,
+class GoogleTranslationAgent(translationRepo: TranslationRepo)(implicit
+    as: ActorSystem,
     ex: ExecutionContext,
     mat: Materializer
 ) extends TranslationAgent(GoogleTranslate, translationRepo) {
   override def autostart: Boolean = false
 }
 
-class SystranTranslationAgent(translationRepo: TranslationRepo)(
-    implicit as: ActorSystem,
+class SystranTranslationAgent(translationRepo: TranslationRepo)(implicit
+    as: ActorSystem,
     ex: ExecutionContext,
     mat: Materializer
 ) extends TranslationAgent(SystranTranslate, translationRepo)

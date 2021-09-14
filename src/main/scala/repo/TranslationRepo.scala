@@ -79,14 +79,13 @@ class TranslationRepo(db: Database) extends JsonColumn {
     }
 
   def progress(): Map[String, Int] =
-    db.withConnection(
-      implicit con =>
-        SQL"""select jsonb_object_keys(translation) as key, count(*) as count
+    db.withConnection(implicit con =>
+      SQL"""select jsonb_object_keys(translation) as key, count(*) as count
             from translations
             group by jsonb_object_keys(translation)"""
-          .as((SqlParser.str(1) ~ SqlParser.int(2)).*)
-          .map(t => (t._1, t._2))
-          .toMap
+        .as((SqlParser.str(1) ~ SqlParser.int(2)).*)
+        .map(t => (t._1, t._2))
+        .toMap
     )
 }
 

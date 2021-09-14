@@ -14,12 +14,12 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class AgentsPage(agents: Agents)(implicit ex: ExecutionContext) extends Page[AdminAgentsState] {
 
-  def fromState: PartialFunction[FrontendState, PathAndQuery] = {
-    case _: AdminAgentsState => Root / "admin" / "agents"
+  def fromState: PartialFunction[FrontendState, PathAndQuery] = { case _: AdminAgentsState =>
+    Root / "admin" / "agents"
   }
 
-  def toState: PartialFunction[PathAndQuery, FrontendState => Future[FrontendState]] = {
-    case Root / "admin" / "agents" => state => Future.successful(AdminAgentsState(state.deviceId))
+  def toState: PartialFunction[PathAndQuery, FrontendState => Future[FrontendState]] = { case Root / "admin" / "agents" =>
+    state => Future.successful(AdminAgentsState(state.deviceId))
   }
 
   def render(state: AdminAgentsState): Node =

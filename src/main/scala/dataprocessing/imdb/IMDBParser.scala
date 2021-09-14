@@ -45,8 +45,8 @@ object IMDBParser {
       val score = quoteElement
         .select(".interesting-count-text")
         .map(_.text.trim)
-        .collectFirst {
-          case s"${upvotes} of ${votes} found this interesting" => (upvotes.replace(",", "").toInt, votes.replace(",", "").toInt)
+        .collectFirst { case s"${upvotes} of ${votes} found this interesting" =>
+          (upvotes.replace(",", "").toInt, votes.replace(",", "").toInt)
         }
         .fold(1d) { case (upvotes, votes) => Score.score(upvotes, votes) }
       val statements = quoteElement.select(".sodatext").head.children.map { p =>

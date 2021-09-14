@@ -10,8 +10,8 @@ object TranslationChain {
 
   private val logger = LoggerFactory.getLogger(this.getClass)
 
-  def apply(texts: Seq[String], lang: String = defaultLang, chain: Seq[String], service: TranslationService)(
-      implicit as: ActorSystem,
+  def apply(texts: Seq[String], lang: String = defaultLang, chain: Seq[String], service: TranslationService)(implicit
+      as: ActorSystem,
       ex: ExecutionContext
   ): Future[Map[String, String]] = {
     val fullChain = lang +: chain :+ lang
@@ -26,8 +26,8 @@ object TranslationChain {
     translation
   }
 
-  def step(translations: Map[String, String], src: String, dest: String, service: TranslationService)(
-      implicit as: ActorSystem,
+  def step(translations: Map[String, String], src: String, dest: String, service: TranslationService)(implicit
+      as: ActorSystem,
       ex: ExecutionContext
   ): Future[Map[String, String]] = {
     service(src = src, dest = dest, texts = translations.values.toSeq)

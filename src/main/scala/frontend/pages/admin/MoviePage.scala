@@ -14,8 +14,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class MoviePage(movieRepo: MovieRepo)(implicit ex: ExecutionContext) extends Page[AdminMovieState] {
 
-  def fromState: PartialFunction[FrontendState, PathAndQuery] = {
-    case state: AdminMovieState => Root / "admin" / "movies" / state.row.movieId
+  def fromState: PartialFunction[FrontendState, PathAndQuery] = { case state: AdminMovieState =>
+    Root / "admin" / "movies" / state.row.movieId
   }
 
   def toState: PartialFunction[PathAndQuery, FrontendState => Future[FrontendState]] = {
@@ -68,13 +68,12 @@ class MoviePage(movieRepo: MovieRepo)(implicit ex: ExecutionContext) extends Pag
         tr(th("Quote Id"), th("Score"), th("Quote")),
         tbody(
           seqToNode(
-            quotes.toSeq.sortBy(_._2.score).reverse.map {
-              case (quoteId, quote) =>
-                tr(
-                  td(Common.imdbQuoteLink(movieId, quoteId)),
-                  td((quote.score * 100).toInt.toString, "%"),
-                  td(Common.quote(quote))
-                )
+            quotes.toSeq.sortBy(_._2.score).reverse.map { case (quoteId, quote) =>
+              tr(
+                td(Common.imdbQuoteLink(movieId, quoteId)),
+                td((quote.score * 100).toInt.toString, "%"),
+                td(Common.quote(quote))
+              )
             }
           )
         )

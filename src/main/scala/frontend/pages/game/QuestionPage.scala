@@ -14,12 +14,12 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class QuestionPage(questionService: QuestionService)(implicit ex: ExecutionContext) extends Page[GameQuestionState] {
 
-  def fromState: PartialFunction[FrontendState, PathAndQuery] = {
-    case _: GameQuestionState => Root / "game"
+  def fromState: PartialFunction[FrontendState, PathAndQuery] = { case _: GameQuestionState =>
+    Root / "game"
   }
 
-  def toState: PartialFunction[PathAndQuery, FrontendState => Future[FrontendState]] = {
-    case Root / "game" => state => randomQuestion(state.deviceId, GameSettings.default)
+  def toState: PartialFunction[PathAndQuery, FrontendState => Future[FrontendState]] = { case Root / "game" =>
+    state => randomQuestion(state.deviceId, GameSettings.default)
   }
 
   def randomQuestion(deviceId: String, gameSettings: GameSettings) =
@@ -67,32 +67,29 @@ class QuestionPage(questionService: QuestionService)(implicit ex: ExecutionConte
           div(
             `class` := "buttons block options",
             seqToNode(
-              question.movies.map(
-                movie =>
-                  button(
-                    `class` := s"button option ${if (revealed && movie == question.correctMovie) "correct-answer" else ""}",
-                    movie.englishTitle,
-                    span(`class` := "tag", movie.releaseYear.toString),
-                    event("click")(_.transition(_ => state.copy(revealed = true)))
-                  )
+              question.movies.map(movie =>
+                button(
+                  `class` := s"button option ${if (revealed && movie == question.correctMovie) "correct-answer" else ""}",
+                  movie.englishTitle,
+                  span(`class` := "tag", movie.releaseYear.toString),
+                  event("click")(_.transition(_ => state.copy(revealed = true)))
+                )
               )
             )
           ),
           reavealedOption.map(_ => quoteBlock("Original:", question.originalQuote)),
-          reavealedOption.map(
-            _ =>
-              div(
-                `class` := "block",
-                a(
-                  `class` := "button is-link",
-                  "Next",
-                  event("click")(
-                    access =>
-                      randomQuestion(deviceId, gameSettings)
-                        .flatMap(nextState => access.transition(_ => nextState))
-                  )
+          reavealedOption.map(_ =>
+            div(
+              `class` := "block",
+              a(
+                `class` := "button is-link",
+                "Next",
+                event("click")(access =>
+                  randomQuestion(deviceId, gameSettings)
+                    .flatMap(nextState => access.transition(_ => nextState))
                 )
               )
+            )
           )
         )
       )

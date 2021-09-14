@@ -11,8 +11,8 @@ object TranslateQuote {
       lang: String = TranslationChain.defaultLang,
       chain: Seq[String],
       service: TranslationService
-  )(
-      implicit as: ActorSystem,
+  )(implicit
+      as: ActorSystem,
       ex: ExecutionContext
   ): Future[Quote] = {
     val texts = quote.statements.flatMap(_.items).map {

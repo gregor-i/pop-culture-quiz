@@ -13,17 +13,16 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class MoviesPage(movieRepo: MovieRepo)(implicit ex: ExecutionContext) extends Page[AdminMoviesState] {
 
-  def fromState: PartialFunction[FrontendState, PathAndQuery] = {
-    case _: AdminMoviesState => Root / "admin" / "movies"
+  def fromState: PartialFunction[FrontendState, PathAndQuery] = { case _: AdminMoviesState =>
+    Root / "admin" / "movies"
   }
 
-  def toState: PartialFunction[PathAndQuery, FrontendState => Future[FrontendState]] = {
-    case Root / "admin" / "movies" =>
-      state =>
-        Future {
-          val movies = movieRepo.list().sortBy(_.movieId)
-          AdminMoviesState(state.deviceId, movies)
-        }
+  def toState: PartialFunction[PathAndQuery, FrontendState => Future[FrontendState]] = { case Root / "admin" / "movies" =>
+    state =>
+      Future {
+        val movies = movieRepo.list().sortBy(_.movieId)
+        AdminMoviesState(state.deviceId, movies)
+      }
   }
 
   def render(state: AdminMoviesState): Node =

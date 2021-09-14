@@ -9,9 +9,9 @@ object Common {
   def head(title: String): Node =
     html.head(
       html.title(title),
-      link(rel := "stylesheet", href := "/assets/app.css"),
+      link(rel  := "stylesheet", href  := "/assets/app.css"),
       meta(name := "viewport", content := "width=device-width, initial-scale=1"),
-      link(rel := "icon", `type` := "image/svg+xml", href := "/assets/favicon.svg")
+      link(rel  := "icon", `type`      := "image/svg+xml", href := "/assets/favicon.svg")
     )
 
   def quote(quote: Quote): Node =

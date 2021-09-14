@@ -13,7 +13,7 @@ case class GameQuestionState(
     gameSettings: GameSettings,
     question: Question,
     revealed: Boolean
-) extends FrontendState
+)                                                                                                 extends FrontendState
 case class AdminState(deviceId: String, progress: Map[String, Int])                               extends FrontendState
 case class AdminAgentsState(deviceId: String)                                                     extends FrontendState
 case class AdminMoviesState(deviceId: String, movies: Seq[MovieRow])                              extends FrontendState

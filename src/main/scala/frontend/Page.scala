@@ -1,18 +1,12 @@
 package frontend
 
-import frontend.Frontend.globalContext._
+import frontend.Frontend.globalContext.Node
 import korolev.web.PathAndQuery
-
 import scala.concurrent.Future
-import scala.reflect.ClassTag
 
-// todo: make to trait with scala 3
-abstract class Page[S <: FrontendState: ClassTag] {
+trait Page[S <: FrontendState] {
   def fromState: PartialFunction[FrontendState, PathAndQuery]
   def toState: PartialFunction[PathAndQuery, FrontendState => Future[FrontendState]]
-
-  def acceptState(frontendState: FrontendState): Boolean =
-    implicitly[ClassTag[S]].runtimeClass == frontendState.getClass
 
   def render(state: S): Node
 }

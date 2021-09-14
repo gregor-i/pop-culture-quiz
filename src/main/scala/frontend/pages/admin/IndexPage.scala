@@ -13,19 +13,18 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class IndexPage(translationRepo: TranslationRepo)(implicit ex: ExecutionContext) extends Page[AdminState] {
 
-  def fromState: PartialFunction[FrontendState, PathAndQuery] = {
-    case _: AdminState => Root / "admin"
+  def fromState: PartialFunction[FrontendState, PathAndQuery] = { case _: AdminState =>
+    Root / "admin"
   }
 
-  def toState: PartialFunction[PathAndQuery, FrontendState => Future[FrontendState]] = {
-    case Root / "admin" =>
-      state =>
-        Future {
-          AdminState(
-            state.deviceId,
-            progress = translationRepo.progress()
-          )
-        }
+  def toState: PartialFunction[PathAndQuery, FrontendState => Future[FrontendState]] = { case Root / "admin" =>
+    state =>
+      Future {
+        AdminState(
+          state.deviceId,
+          progress = translationRepo.progress()
+        )
+      }
   }
 
   def render(state: AdminState): Node =
@@ -44,9 +43,8 @@ class IndexPage(translationRepo: TranslationRepo)(implicit ex: ExecutionContext)
             `class` := "block",
             h2(`class` := "title", "Translation Progress"),
             ul(
-              seqToNode(state.progress.map {
-                case (key, count) =>
-                  li(b(key, ": "), count.toString)
+              seqToNode(state.progress.map { case (key, count) =>
+                li(b(key, ": "), count.toString)
               })
             )
           )

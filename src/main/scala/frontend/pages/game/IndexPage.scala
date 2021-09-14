@@ -13,12 +13,12 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class IndexPage(questionPage: QuestionPage)(implicit ex: ExecutionContext) extends Page[GameIndexState] {
 
-  def fromState: PartialFunction[FrontendState, PathAndQuery] = {
-    case _: GameIndexState => Root
+  def fromState: PartialFunction[FrontendState, PathAndQuery] = { case _: GameIndexState =>
+    Root
   }
 
-  def toState: PartialFunction[PathAndQuery, FrontendState => Future[FrontendState]] = {
-    case Root => state => Future.successful(GameIndexState(state.deviceId))
+  def toState: PartialFunction[PathAndQuery, FrontendState => Future[FrontendState]] = { case Root =>
+    state => Future.successful(GameIndexState(state.deviceId))
   }
 
   private val releaseYearMinField = elementId()
@@ -40,22 +40,22 @@ class IndexPage(questionPage: QuestionPage)(implicit ex: ExecutionContext) exten
               "release year from:",
               input(
                 `class` := "input",
-                `type` := "text",
+                `type`  := "text",
                 releaseYearMinField,
                 placeholder := "1995",
-                min := "1900",
-                max := "2025"
+                min         := "1900",
+                max         := "2025"
               )
             ),
             formularElement(
               "release year to:",
               input(
                 `class` := "input",
-                `type` := "text",
+                `type`  := "text",
                 releaseYearMaxField,
                 placeholder := "2015",
-                min := "1900",
-                max := "2025"
+                min         := "1900",
+                max         := "2025"
               )
             ),
             formularElement(
@@ -64,7 +64,7 @@ class IndexPage(questionPage: QuestionPage)(implicit ex: ExecutionContext) exten
                 `class` := "select",
                 select(
                   readOutQuoteField,
-                  option("No", value := "false"),
+                  option("No", value  := "false"),
                   option("Yes", value := "true")
                 )
               )

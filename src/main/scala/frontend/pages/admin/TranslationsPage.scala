@@ -16,8 +16,8 @@ class TranslationsPage(translationRepo: TranslationRepo)(implicit ex: ExecutionC
 
   private object PageQP extends OQP("page")
 
-  def fromState: PartialFunction[FrontendState, PathAndQuery] = {
-    case state: AdminTranslationsState => Root / "admin" / "translations" :? "page" -> state.page.toString
+  def fromState: PartialFunction[FrontendState, PathAndQuery] = { case state: AdminTranslationsState =>
+    Root / "admin" / "translations" :? "page" -> state.page.toString
   }
 
   def toState: PartialFunction[PathAndQuery, FrontendState => Future[FrontendState]] = {

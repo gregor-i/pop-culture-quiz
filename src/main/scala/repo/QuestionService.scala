@@ -38,7 +38,7 @@ class QuestionService(db: Database, movieRepo: MovieRepo) {
 
   private def pickOtherOptions(movieId: String, gameSettings: GameSettings): List[MovieData] =
     db.withConnection { implicit con =>
-        SQL"""SELECT *
+      SQL"""SELECT *
               FROM movies
               WHERE movie_id <> ${movieId}
                 AND data->>'englishTitle' IS NOT NULL
@@ -46,7 +46,6 @@ class QuestionService(db: Database, movieRepo: MovieRepo) {
                 AND ((movies.data->>'releaseYear') :: integer <= ${gameSettings.releaseYearMax} or ${gameSettings.releaseYearMax.isEmpty})
               ORDER BY random()
               LIMIT 3"""
-          .as(MovieRepo.parser.*)
-      }
-      .flatMap(_.data.toOption)
+        .as(MovieRepo.parser.*)
+    }.flatMap(_.data.toOption)
 }
