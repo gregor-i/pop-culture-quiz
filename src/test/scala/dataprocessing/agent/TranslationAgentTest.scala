@@ -84,8 +84,8 @@ class TranslationAgentTest extends AnyFunSuite with Eventually with BeforeAndAft
 }
 
 private class DummyService extends TranslationService {
-  override def apply(texts: Seq[String], src: String, dest: String)(
-      implicit as: ActorSystem,
+  override def apply(texts: Seq[String], src: String, dest: String)(implicit
+      as: ActorSystem,
       ex: ExecutionContext
   ): Future[Map[String, String]] =
     Future.successful(texts.map(t => (t, t)).toMap)
@@ -95,8 +95,8 @@ private class DummyService extends TranslationService {
 }
 
 private class FailingDummyService extends TranslationService {
-  override def apply(texts: Seq[String], src: String, dest: String)(
-      implicit as: ActorSystem,
+  override def apply(texts: Seq[String], src: String, dest: String)(implicit
+      as: ActorSystem,
       ex: ExecutionContext
   ): Future[Map[String, String]] =
     Future.failed(new Exception("FailingDummyService doin' his thing"))
