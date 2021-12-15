@@ -20,32 +20,32 @@ object SystranTranslate extends TranslationService {
   private val logger = LoggerFactory.getLogger(this.getClass)
 
   val supportedLanguages = Set(
-    "ar", //Arabic,
-    "zh", //Chinese,
-    "nl", //Dutch,
-    "en", //English,
-    "fr", //French,
-    "de", //German,
-    "el", //Greek,
-    "it", //Italian,
-    "ja", //Japanese,
-    "ko", //Korean,
-    "pl", //Polish,
-    "pt", //Portuguese,
-    "ru", //Russian,
-    "es", //Spanish,
-    "sv"  //Swedish
+    "ar", // Arabic,
+    "zh", // Chinese,
+    "nl", // Dutch,
+    "en", // English,
+    "fr", // French,
+    "de", // German,
+    "el", // Greek,
+    "it", // Italian,
+    "ja", // Japanese,
+    "ko", // Korean,
+    "pl", // Polish,
+    "pt", // Portuguese,
+    "ru", // Russian,
+    "es", // Spanish,
+    "sv"  // Swedish
   )
 
   val defaultChain = Seq(
-    "ar", //Arabic,
+    "ar", // Arabic,
     "en",
-    "nl", //Dutch,
-    "en", //English,
-    "zh", //Chinese,
-    "fr", //French,
+    "nl", // Dutch,
+    "en", // English,
+    "zh", // Chinese,
+    "fr", // French,
     "en",
-    "sv" //Swedish
+    "sv" // Swedish
   )
 
   def uri(text: Seq[String], src: String, dest: String) =
