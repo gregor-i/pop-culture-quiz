@@ -1,6 +1,6 @@
 name := "pop-culture-puzzle"
 
-ThisBuild / scalaVersion := "3.0.2"
+ThisBuild / scalaVersion := "3.1.0"
 ThisBuild / scalacOptions ++= Seq("-feature", "-deprecation")
 ThisBuild / scalafmtOnCompile := true
 run / fork                    := true
