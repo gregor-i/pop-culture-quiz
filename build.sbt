@@ -22,6 +22,7 @@ libraryDependencies += "org.playframework.anorm" %% "anorm-postgres"       % "2.
 libraryDependencies += "net.ruippeixotog"        %% "scala-scraper"        % "2.2.1" cross CrossVersion.for3Use2_13
 libraryDependencies += "org.scalatest" %% "scalatest"       % "3.2.9" % Test exclude ("org.scala-lang.modules", "scala-xml_3")
 libraryDependencies += "io.lemonlabs"  %% "scala-uri"       % "4.0.0-M1"
+libraryDependencies += "io.lemonlabs"  %% "scala-uri"       % "4.0.0-M3"
 libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.3.0-alpha10"
 libraryDependencies += "io.circe"      %% "circe-core"      % "0.14.1"
 libraryDependencies += "io.circe"      %% "circe-parser"    % "0.14.1"
