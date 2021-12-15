@@ -12,7 +12,7 @@ enablePlugins(JavaAppPackaging)
 libraryDependencies += "com.typesafe.akka"       %% "akka-actor-typed"     % "2.6.8" cross CrossVersion.for3Use2_13
 libraryDependencies += "com.typesafe.akka"       %% "akka-stream"          % "2.6.8" cross CrossVersion.for3Use2_13
 libraryDependencies += "com.typesafe.akka"       %% "akka-http"            % "10.2.5" cross CrossVersion.for3Use2_13
-libraryDependencies += "org.fomkin"              %% "korolev-akka"         % "1.0.0"
+libraryDependencies += "org.fomkin"              %% "korolev-akka"         % "1.0.1"
 libraryDependencies += "com.typesafe.play"       %% "play-jdbc"            % "2.8.8" cross CrossVersion.for3Use2_13
 libraryDependencies += "com.typesafe.play"       %% "play-jdbc-evolutions" % "2.8.8" cross CrossVersion.for3Use2_13
 libraryDependencies += "com.zaxxer"               % "HikariCP"             % "5.0.0"
