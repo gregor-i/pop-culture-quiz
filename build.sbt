@@ -9,8 +9,8 @@ Test / parallelExecution      := false
 
 enablePlugins(JavaAppPackaging)
 
-libraryDependencies += "com.typesafe.akka"       %% "akka-actor-typed"     % "2.6.8" cross CrossVersion.for3Use2_13
-libraryDependencies += "com.typesafe.akka"       %% "akka-stream"          % "2.6.8" cross CrossVersion.for3Use2_13
+libraryDependencies += "com.typesafe.akka"       %% "akka-actor-typed"     % "2.6.18" cross CrossVersion.for3Use2_13
+libraryDependencies += "com.typesafe.akka"       %% "akka-stream"          % "2.6.18" cross CrossVersion.for3Use2_13
 libraryDependencies += "com.typesafe.akka"       %% "akka-http"            % "10.2.7" cross CrossVersion.for3Use2_13
 libraryDependencies += "org.fomkin"              %% "korolev-akka"         % "1.0.1"
 libraryDependencies += "com.typesafe.play"       %% "play-jdbc"            % "2.8.11" cross CrossVersion.for3Use2_13
