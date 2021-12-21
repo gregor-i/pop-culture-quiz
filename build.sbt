@@ -9,20 +9,24 @@ Test / parallelExecution      := false
 
 enablePlugins(JavaAppPackaging)
 
-libraryDependencies += "com.typesafe.akka"       %% "akka-actor-typed"     % "2.6.8" cross CrossVersion.for3Use2_13
-libraryDependencies += "com.typesafe.akka"       %% "akka-stream"          % "2.6.8" cross CrossVersion.for3Use2_13
+libraryDependencies += "com.typesafe.akka"       %% "akka-actor-typed"     % "2.6.18" cross CrossVersion.for3Use2_13
+libraryDependencies += "com.typesafe.akka"       %% "akka-stream"          % "2.6.18" cross CrossVersion.for3Use2_13
 libraryDependencies += "com.typesafe.akka"       %% "akka-http"            % "10.2.7" cross CrossVersion.for3Use2_13
+
+// todo: remove, as soon as play is no longer needed
+libraryDependencies +=  "com.typesafe.akka"       %% "akka-serialization-jackson"            % "2.6.18" cross CrossVersion.for3Use2_13
+
 libraryDependencies += "org.fomkin"              %% "korolev-akka"         % "1.1.0"
 libraryDependencies += "com.typesafe.play"       %% "play-jdbc"            % "2.8.11" cross CrossVersion.for3Use2_13
 libraryDependencies += "com.typesafe.play"       %% "play-jdbc-evolutions" % "2.8.11" cross CrossVersion.for3Use2_13
 libraryDependencies += "com.zaxxer"               % "HikariCP"             % "5.0.0"
-libraryDependencies += "org.postgresql"           % "postgresql"           % "42.2.24"
+libraryDependencies += "org.postgresql"           % "postgresql"           % "42.3.1"
 libraryDependencies += "org.playframework.anorm" %% "anorm"                % "2.6.10" cross CrossVersion.for3Use2_13
 libraryDependencies += "org.playframework.anorm" %% "anorm-postgres"       % "2.6.10" cross CrossVersion.for3Use2_13
 libraryDependencies += "net.ruippeixotog"        %% "scala-scraper"        % "2.2.1" cross CrossVersion.for3Use2_13
 libraryDependencies += "org.scalatest" %% "scalatest"       % "3.2.10" % Test exclude ("org.scala-lang.modules", "scala-xml_3")
 libraryDependencies += "io.lemonlabs"  %% "scala-uri"       % "4.0.0-M3"
-libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.3.0-alpha10"
+libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.3.0-alpha11"
 libraryDependencies += "io.circe"      %% "circe-core"      % "0.14.1"
 libraryDependencies += "io.circe"      %% "circe-parser"    % "0.14.1"
 libraryDependencies += "io.circe"      %% "circe-generic"   % "0.14.1"
