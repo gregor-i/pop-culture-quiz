@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:11.5
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run tests
+        env:
+          DATABASE_URL: "postgres://postgres:postgres@localhost:5432/postgres"
+        run: sbt test
+
+  build:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: build frontend
+        run: |
+          npm ci
+          npm run build
+      - name:  build backend
+        run: sbt stage
+      - name: build docker
+        run: docker build -t registry.heroku.com/pop-culture-quiz-2/web .
+      - name: release image
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        if: github.ref == 'refs/heads/master'
+        run: |
+          docker login --username=_ --password=$(heroku auth:token) registry.heroku.com
+          docker push registry.heroku.com/pop-culture-quiz-2/web
+          heroku container:release web -a pop-culture-quiz-2
