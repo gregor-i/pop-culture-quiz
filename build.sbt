@@ -17,8 +17,8 @@ libraryDependencies += "com.typesafe.akka" %% "akka-http"        % "10.2.7" cros
 libraryDependencies += "com.typesafe.akka" %% "akka-serialization-jackson" % "2.6.18" cross CrossVersion.for3Use2_13
 
 libraryDependencies += "org.fomkin"              %% "korolev-akka"         % "1.2.0"
-libraryDependencies += "com.typesafe.play"       %% "play-jdbc"            % "2.8.12" cross CrossVersion.for3Use2_13
-libraryDependencies += "com.typesafe.play"       %% "play-jdbc-evolutions" % "2.8.12" cross CrossVersion.for3Use2_13
+libraryDependencies += "com.typesafe.play"       %% "play-jdbc"            % "2.8.13" cross CrossVersion.for3Use2_13
+libraryDependencies += "com.typesafe.play"       %% "play-jdbc-evolutions" % "2.8.13" cross CrossVersion.for3Use2_13
 libraryDependencies += "com.zaxxer"               % "HikariCP"             % "5.0.1"
 libraryDependencies += "org.postgresql"           % "postgresql"           % "42.3.1"
 libraryDependencies += "org.playframework.anorm" %% "anorm"                % "2.6.10" cross CrossVersion.for3Use2_13
