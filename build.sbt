@@ -16,7 +16,7 @@ libraryDependencies += "com.typesafe.akka" %% "akka-http"        % "10.2.8" cros
 // todo: remove, as soon as play is no longer needed
 libraryDependencies += "com.typesafe.akka" %% "akka-serialization-jackson" % "2.6.18" cross CrossVersion.for3Use2_13
 
-libraryDependencies += "org.fomkin"              %% "korolev-akka"         % "1.2.0"
+libraryDependencies += "org.fomkin"              %% "korolev-akka"         % "1.3.0"
 libraryDependencies += "com.typesafe.play"       %% "play-jdbc"            % "2.8.13" cross CrossVersion.for3Use2_13
 libraryDependencies += "com.typesafe.play"       %% "play-jdbc-evolutions" % "2.8.13" cross CrossVersion.for3Use2_13
 libraryDependencies += "com.zaxxer"               % "HikariCP"             % "5.0.1"
