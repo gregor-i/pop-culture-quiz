@@ -9,12 +9,12 @@ Test / parallelExecution      := false
 
 enablePlugins(JavaAppPackaging)
 
-libraryDependencies += "com.typesafe.akka" %% "akka-actor-typed" % "2.6.18" cross CrossVersion.for3Use2_13
-libraryDependencies += "com.typesafe.akka" %% "akka-stream"      % "2.6.18" cross CrossVersion.for3Use2_13
+libraryDependencies += "com.typesafe.akka" %% "akka-actor-typed" % "2.6.19" cross CrossVersion.for3Use2_13
+libraryDependencies += "com.typesafe.akka" %% "akka-stream"      % "2.6.19" cross CrossVersion.for3Use2_13
 libraryDependencies += "com.typesafe.akka" %% "akka-http"        % "10.2.9" cross CrossVersion.for3Use2_13
 
 // todo: remove, as soon as play is no longer needed
-libraryDependencies += "com.typesafe.akka" %% "akka-serialization-jackson" % "2.6.18" cross CrossVersion.for3Use2_13
+libraryDependencies += "com.typesafe.akka" %% "akka-serialization-jackson" % "2.6.19" cross CrossVersion.for3Use2_13
 
 libraryDependencies += "org.fomkin"              %% "korolev-akka"         % "1.3.0"
 libraryDependencies += "com.typesafe.play"       %% "play-jdbc"            % "2.8.13" cross CrossVersion.for3Use2_13
