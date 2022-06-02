@@ -33,5 +33,5 @@ libraryDependencies += "io.circe"      %% "circe-generic"   % "0.14.2"
 
 // Synthesizing speech
 resolvers += Resolver.jcenterRepo
-libraryDependencies += "de.dfki.mary" % "voice-cmu-slt-hsmm" % "5.2"
+libraryDependencies += "de.dfki.mary" % "voice-cmu-slt-hsmm" % "5.2.1"
 libraryDependencies += "de.sciss"     % "jump3r"             % "1.0.5"
