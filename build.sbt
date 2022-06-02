@@ -27,9 +27,9 @@ libraryDependencies += "net.ruippeixotog"        %% "scala-scraper"        % "2.
 libraryDependencies += "org.scalatest" %% "scalatest"       % "3.2.11" % Test exclude ("org.scala-lang.modules", "scala-xml_3")
 libraryDependencies += "io.lemonlabs"  %% "scala-uri"       % "4.0.2"
 libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.3.0-alpha14"
-libraryDependencies += "io.circe"      %% "circe-core"      % "0.14.1"
-libraryDependencies += "io.circe"      %% "circe-parser"    % "0.14.1"
-libraryDependencies += "io.circe"      %% "circe-generic"   % "0.14.1"
+libraryDependencies += "io.circe"      %% "circe-core"      % "0.14.2"
+libraryDependencies += "io.circe"      %% "circe-parser"    % "0.14.2"
+libraryDependencies += "io.circe"      %% "circe-generic"   % "0.14.2"
 
 // Synthesizing speech
 resolvers += Resolver.jcenterRepo
